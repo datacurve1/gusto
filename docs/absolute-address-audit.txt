@@ -1,0 +1,1064 @@
+./json.hpp:6008:    seed ^= h + 0x9e3779b9 + (seed << 6U) + (seed >> 2U);
+./json.hpp:6260:    // end up as the same value, e.g. 0xFFFFFFFF.
+./json.hpp:6359:            else if (wc <= 0x10FFFF)
+./json.hpp:6422:                    const auto charcode = 0x10000u + (((static_cast<unsigned int>(wc) & 0x3FFu) << 10u) | (wc2 & 0x3FFu));
+./json.hpp:7727:                                                        // there is still the 0xD800, 0xDC00 and 0x10000 noise
+./json.hpp:7729:                                                        // (0xD800 << 10) + DC00 - 0x10000 = 0x35FDC00
+./json.hpp:7730:                                                        - 0x35FDC00u);
+./json.hpp:7754:                            JSON_ASSERT(0x00 <= codepoint && codepoint <= 0x10FFFF);
+./json.hpp:15248:                    // NaN is 0xf97e00 in CBOR
+./json.hpp:15255:                    // Infinity is 0xf97c00, -Infinity is 0xf9fc00
+./json.hpp:17020:        const std::uint64_t u_lo = x.f & 0xFFFFFFFFu;
+./json.hpp:17022:        const std::uint64_t v_lo = y.f & 0xFFFFFFFFu;
+./json.hpp:17031:        const std::uint64_t p1_lo = p1 & 0xFFFFFFFFu;
+./json.hpp:17033:        const std::uint64_t p2_lo = p2 & 0xFFFFFFFFu;
+./json.hpp:17297:            { 0xAB70FE17C79AC6CA, -1060, -300 },
+./json.hpp:17298:            { 0xFF77B1FCBEBCDC4F, -1034, -292 },
+./json.hpp:17299:            { 0xBE5691EF416BD60C, -1007, -284 },
+./json.hpp:17300:            { 0x8DD01FAD907FFC3C,  -980, -276 },
+./json.hpp:17301:            { 0xD3515C2831559A83,  -954, -268 },
+./json.hpp:17302:            { 0x9D71AC8FADA6C9B5,  -927, -260 },
+./json.hpp:17303:            { 0xEA9C227723EE8BCB,  -901, -252 },
+./json.hpp:17304:            { 0xAECC49914078536D,  -874, -244 },
+./json.hpp:17305:            { 0x823C12795DB6CE57,  -847, -236 },
+./json.hpp:17306:            { 0xC21094364DFB5637,  -821, -228 },
+./json.hpp:17307:            { 0x9096EA6F3848984F,  -794, -220 },
+./json.hpp:17308:            { 0xD77485CB25823AC7,  -768, -212 },
+./json.hpp:17309:            { 0xA086CFCD97BF97F4,  -741, -204 },
+./json.hpp:17310:            { 0xEF340A98172AACE5,  -715, -196 },
+./json.hpp:17311:            { 0xB23867FB2A35B28E,  -688, -188 },
+./json.hpp:17312:            { 0x84C8D4DFD2C63F3B,  -661, -180 },
+./json.hpp:17313:            { 0xC5DD44271AD3CDBA,  -635, -172 },
+./json.hpp:17314:            { 0x936B9FCEBB25C996,  -608, -164 },
+./json.hpp:17315:            { 0xDBAC6C247D62A584,  -582, -156 },
+./json.hpp:17316:            { 0xA3AB66580D5FDAF6,  -555, -148 },
+./json.hpp:17317:            { 0xF3E2F893DEC3F126,  -529, -140 },
+./json.hpp:17318:            { 0xB5B5ADA8AAFF80B8,  -502, -132 },
+./json.hpp:17319:            { 0x87625F056C7C4A8B,  -475, -124 },
+./json.hpp:17320:            { 0xC9BCFF6034C13053,  -449, -116 },
+./json.hpp:17321:            { 0x964E858C91BA2655,  -422, -108 },
+./json.hpp:17322:            { 0xDFF9772470297EBD,  -396, -100 },
+./json.hpp:17323:            { 0xA6DFBD9FB8E5B88F,  -369,  -92 },
+./json.hpp:17324:            { 0xF8A95FCF88747D94,  -343,  -84 },
+./json.hpp:17325:            { 0xB94470938FA89BCF,  -316,  -76 },
+./json.hpp:17326:            { 0x8A08F0F8BF0F156B,  -289,  -68 },
+./json.hpp:17327:            { 0xCDB02555653131B6,  -263,  -60 },
+./json.hpp:17328:            { 0x993FE2C6D07B7FAC,  -236,  -52 },
+./json.hpp:17329:            { 0xE45C10C42A2B3B06,  -210,  -44 },
+./json.hpp:17330:            { 0xAA242499697392D3,  -183,  -36 },
+./json.hpp:17331:            { 0xFD87B5F28300CA0E,  -157,  -28 },
+./json.hpp:17332:            { 0xBCE5086492111AEB,  -130,  -20 },
+./json.hpp:17333:            { 0x8CBCCC096F5088CC,  -103,  -12 },
+./json.hpp:17334:            { 0xD1B71758E219652C,   -77,   -4 },
+./json.hpp:17335:            { 0x9C40000000000000,   -50,    4 },
+./json.hpp:17336:            { 0xE8D4A51000000000,   -24,   12 },
+./json.hpp:17337:            { 0xAD78EBC5AC620000,     3,   20 },
+./json.hpp:17338:            { 0x813F3978F8940984,    30,   28 },
+./json.hpp:17339:            { 0xC097CE7BC90715B3,    56,   36 },
+./json.hpp:17340:            { 0x8F7E32CE7BEA5C70,    83,   44 },
+./json.hpp:17341:            { 0xD5D238A4ABE98068,   109,   52 },
+./json.hpp:17342:            { 0x9F4F2726179A2245,   136,   60 },
+./json.hpp:17343:            { 0xED63A231D4C4FB27,   162,   68 },
+./json.hpp:17344:            { 0xB0DE65388CC8ADA8,   189,   76 },
+./json.hpp:17345:            { 0x83C7088E1AAB65DB,   216,   84 },
+./json.hpp:17346:            { 0xC45D1DF942711D9A,   242,   92 },
+./json.hpp:17347:            { 0x924D692CA61BE758,   269,  100 },
+./json.hpp:17348:            { 0xDA01EE641A708DEA,   295,  108 },
+./json.hpp:17349:            { 0xA26DA3999AEF774A,   322,  116 },
+./json.hpp:17350:            { 0xF209787BB47D6B85,   348,  124 },
+./json.hpp:17351:            { 0xB454E4A179DD1877,   375,  132 },
+./json.hpp:17352:            { 0x865B86925B9BC5C2,   402,  140 },
+./json.hpp:17353:            { 0xC83553C5C8965D3D,   428,  148 },
+./json.hpp:17354:            { 0x952AB45CFA97A0B3,   455,  156 },
+./json.hpp:17355:            { 0xDE469FBD99A05FE3,   481,  164 },
+./json.hpp:17356:            { 0xA59BC234DB398C25,   508,  172 },
+./json.hpp:17357:            { 0xF6C69A72A3989F5C,   534,  180 },
+./json.hpp:17358:            { 0xB7DCBF5354E9BECE,   561,  188 },
+./json.hpp:17359:            { 0x88FCF317F22241E2,   588,  196 },
+./json.hpp:17360:            { 0xCC20CE9BD35C78A5,   614,  204 },
+./json.hpp:17361:            { 0x98165AF37B2153DF,   641,  212 },
+./json.hpp:17362:            { 0xE2A0B5DC971F303A,   667,  220 },
+./json.hpp:17363:            { 0xA8D9D1535CE3B396,   694,  228 },
+./json.hpp:17364:            { 0xFB9B7CD9A4A7443C,   720,  236 },
+./json.hpp:17365:            { 0xBB764C4CA7A44410,   747,  244 },
+./json.hpp:17366:            { 0x8BAB8EEFB6409C1A,   774,  252 },
+./json.hpp:17367:            { 0xD01FEF10A657842C,   800,  260 },
+./json.hpp:17368:            { 0x9B10A4E5E9913129,   827,  268 },
+./json.hpp:17369:            { 0xE7109BFBA19C0C9D,   853,  276 },
+./json.hpp:17370:            { 0xAC2820D9623BF429,   880,  284 },
+./json.hpp:17371:            { 0x80444B5E7AA7CF85,   907,  292 },
+./json.hpp:17372:            { 0xBF21E44003ACDD2D,   933,  300 },
+./json.hpp:17373:            { 0x8E679C2F5E44FF8F,   960,  308 },
+./json.hpp:17374:            { 0xD433179D9C8CB841,   986,  316 },
+./json.hpp:17375:            { 0x9E19DB92B4E31BA9,  1013,  324 },
+./game_functions.cpp:23:static DWORD get_con_white() { return get_color_index_option(15, 0xfff0f0f0); }
+./game_functions.cpp:25:static DWORD get_con_red() { return get_color_index_option(17, 0xfff00000); }
+./game_functions.cpp:27:static DWORD get_con_blue() { return get_color_index_option(14, 0xff0040f0); }  // Slightly lightened.
+./game_functions.cpp:29:static DWORD get_con_yellow() { return get_color_index_option(16, 0xfff0f000); }
+./game_functions.cpp:31:static DWORD get_con_light_blue() { return get_color_index_option(13, 0xff00f0f0); }
+./game_functions.cpp:33:static DWORD get_con_green() { return get_color_index_option(12, 0xff00f000); }
+./game_functions.cpp:39:  return reinterpret_cast<int(__cdecl *)(void)>(0x00435f28)();
+./game_functions.cpp:224:  return reinterpret_cast<bool(__thiscall *)(int t, int a1, int slot, int a2, int a3)>(0x422b1c)(
+./game_functions.cpp:225:      *(int *)0x63d6b4, from_slot, to_slot, print_error, a3);
+./game_functions.cpp:233:          0x004f11a3)(item, container, print_error);
+./game_functions.cpp:300:    //    ptr[0x110 / 4] = 0xffffffff;
+./game_functions.cpp:313:      reinterpret_cast<void(__cdecl *)(Zeal::GameStructures::GAMECHARINFO *)>(0x004f0c7b)(char_info);  // UpdateLight()
+./game_functions.cpp:401:  return reinterpret_cast<char *(__thiscall *)(int t, UINT id, bool *)>(0x550EFE)(*(int *)0x7f9490, id, nullptr);
+./game_functions.cpp:463:  FunctionType2 can_use_item = reinterpret_cast<FunctionType2>(0x4BB8E8);
+./game_functions.cpp:471:  FunctionType check_loc = reinterpret_cast<FunctionType>(0x4F0DB4);
+./game_functions.cpp:520:  DWORD addr = *(DWORD *)0x7f99c8;  // game pointer to function
+./game_functions.cpp:535:  int ctx = GameInternal::CXWndShowContextMenu(*(int *)Game::WndManager, 0, *(int *)0x8092e8, *(int *)0x8092ec);
+./game_functions.cpp:542:  return *(reinterpret_cast<int *>(0x0063b918)) != 3;  // ScreenMode == 3 when F10 is pressed.
+./game_functions.cpp:582:int *get_sound_manager() { return (int *)(*(int *)0x63dea8); }
+./game_functions.cpp:593:  return reinterpret_cast<Zeal::GameStructures::Entity *(__cdecl *)(const char *name)>(0x0050820e)(name);
+./game_functions.cpp:596:void log(const char *data) { reinterpret_cast<void(__cdecl *)(const char *data)>(0x005240dc)(data); }
+./game_functions.cpp:598:void log(std::string &data) { reinterpret_cast<void(__cdecl *)(const char *data)>(0x5240dc)(data.c_str()); }
+./game_functions.cpp:600:Zeal::GameStructures::GAMECHARINFO *get_char_info() { return (Zeal::GameStructures::GAMECHARINFO *)(*(int *)0x7F94E8); }
+./game_functions.cpp:602:void do_autoattack(bool enabled) { reinterpret_cast<void(__thiscall *)(int, bool)>(0x5493b5)(0x798540, enabled); }
+./game_functions.cpp:605:  auto command_list = reinterpret_cast<const Zeal::GameStructures::GameCommand *>(0x00609af8);
+./game_functions.cpp:622:  auto command_list = reinterpret_cast<const Zeal::GameStructures::GameCommand *>(0x00609af8);
+./game_functions.cpp:642:UINT get_game_time() { return reinterpret_cast<UINT(__cdecl *)()>(0x4f35c7)(); }
+./game_functions.cpp:644:int get_game_main() { return *(int *)0x7f9574; }
+./game_functions.cpp:649:    reinterpret_cast<void(__thiscall *)(int *, int, bool)>(0x4d54c1)(get_sound_manager(), number, enabled);
+./game_functions.cpp:654:    reinterpret_cast<void(__thiscall *)(int *, int, int)>(0x004d518b)(get_sound_manager(), index, 0);
+./game_functions.cpp:659:      0x509E09)(get_self(), get_target(), dist);
+./game_functions.cpp:664:                                             Zeal::GameStructures::Entity * target)>(0x50A0F8)(get_self(), type, p2,
+./game_functions.cpp:672:    reinterpret_cast<void(__cdecl *)(Zeal::GameStructures::Entity * player, char *arguments)>(0x004f491e)(get_self(),
+./game_functions.cpp:683:    reinterpret_cast<void(__thiscall *)(Zeal::GameStructures::Entity * player, const char *unused)>(0x004f3be5)(
+./game_functions.cpp:690:    reinterpret_cast<void(__thiscall *)(Zeal::GameStructures::Entity * player, const char *unused)>(0x004f3bc1)(
+./game_functions.cpp:720:  reinterpret_cast<void(__cdecl *)(int *connection, UINT opcode, int *buffer, UINT size, int unknown)>(0x54e51a)(
+./game_functions.cpp:721:      (int *)0x7952fc, opcode, buffer, size, unknown);
+./game_functions.cpp:888:  const DWORD kDefaultWhite = 0xffffffff;
+./game_functions.cpp:948:  const Zeal::GameUI::ARGBCOLOR kDefaultColor = Zeal::GameUI::ARGBCOLOR(0xfff0f0f0);
+./game_functions.cpp:1001:bool is_in_character_select() { return *(int *)0x63d5d8 != 0; }
+./game_functions.cpp:1006:  auto t3dGetRegionNumberFromWorldAndXYZ = reinterpret_cast<int(__cdecl *)(int *, Vec3 *)>(*(int **)(0x007f9a30));
+./game_functions.cpp:1660:    return (entity->ActorInfo->ViewActor_->Flags & 0x40000000) != 0;
+./game_functions.cpp:1669:  auto t3dGetCameraLocation = reinterpret_cast<int(__cdecl *)(float *, float *)>(*(int **)(0x007f99d4));
+./game_functions.cpp:1680:                                      Zeal::GameStructures::Display::ReferenceList *list)>(*(int **)(0x007f9850));
+./game_functions.cpp:1786:  auto do_consent_fn = reinterpret_cast<void(__cdecl *)(Zeal::GameStructures::Entity *, const char *)>(0x004fb39e);
+./game_functions.cpp:1792:  if (hide_local) mem::set(0x538672, 0x90, 13, orig);
+./game_functions.cpp:1804:    mem::copy(0x538672, orig, 13);
+./game_functions.cpp:1810:  if (hide_local) mem::set(0x538672, 0x90, 13, orig);
+./game_functions.cpp:1815:    mem::copy(0x538672, orig, 13);
+./game_functions.cpp:1907:  reinterpret_cast<void(__fastcall *)(Zeal::GameUI::SidlWnd *, int unused_edx)>(0x00421637)(inventory_wnd, 0);
+./game_functions.cpp:1915:GameStructures::GameClass *get_game() { return *reinterpret_cast<GameStructures::GameClass **>(0x00809478); }
+./game_functions.cpp:1917:GameStructures::Display *get_display() { return *reinterpret_cast<GameStructures::Display **>(0x007F9510); }
+./game_functions.cpp:1919:const char *get_ui_skin() { return reinterpret_cast<const char *>(0x0063D3C0); }
+./game_functions.cpp:1923:  const char *ui_ini_file = reinterpret_cast<const char *(__cdecl *)(void)>(0x00437481)();
+./game_functions.cpp:1936:  const char *ui_ini_file = reinterpret_cast<const char *(__cdecl *)(void)>(0x00437481)();
+./game_functions.cpp:1970:  return reinterpret_cast<int(__fastcall *)(void *ChannelServerApi, int unused_edx, const char *name)>(0x0049cdaf)(
+./game_functions.cpp:1975:  reinterpret_cast<void(__cdecl *)(Zeal::GameStructures::Entity *, const char *)>(0x00500106)(player, name);
+./game_functions.cpp:1979:  reinterpret_cast<void(__cdecl *)(int, const char *)>(0x00500266)(chat_channel_zero_based + 1, message);
+./game_functions.cpp:1987:  reinterpret_cast<void(__cdecl *)(UINT, int, int)>(0x54050c)(cmd, isdown, unk2);
+./game_functions.cpp:2296:bool is_autoattacking() { return *reinterpret_cast<BYTE *>(0x007f6ffe); }
+./game_functions.cpp:2314:void do_target(const char *name) { reinterpret_cast<void(__cdecl *)(int, const char *)>(0x4FD9A7)(0, name); }
+./game_functions.cpp:2317:  reinterpret_cast<void(__cdecl *)(Zeal::GameStructures::Entity *, const char *)>(0x004f6364)(entity, str);
+./game_functions.cpp:2328:  long _param_1 = reinterpret_cast<long(__cdecl *)(int)>(0x4AA2C1)(index);
+./game_functions.cpp:2329:  if (_param_1 == 0) return 0xFFFFFFFF;
+./game_functions.cpp:2330:  return (_param_1 & 0xff00 | _param_1 >> 0x10 & 0xff | (_param_1 | 0xffffff00) << 0x10);
+./game_functions.cpp:2347:Zeal::GameStructures::SPELLMGR *get_spell_mgr() { return *(Zeal::GameStructures::SPELLMGR **)0x805CB0; }
+./game_functions.cpp:2766:  return *reinterpret_cast<int32_t *>(0x007d01e4);
+./game_functions.cpp:2772:  return *reinterpret_cast<int *>(0x0063D6C8);
+./game_functions.cpp:2778:  return *reinterpret_cast<int *>(0x0063D6CC);
+./game_functions.cpp:2782:  const int fn_GetFullZoneName = 0x00523e49;
+./game_functions.cpp:2783:  void *pWorld = *reinterpret_cast<void **>(0x007F9494);
+./game_functions.cpp:2792:  const int fn_GetZoneNameFromIndex = 0x00523f73;
+./game_functions.cpp:2793:  void *pWorld = *reinterpret_cast<void **>(0x007F9494);
+./game_functions.cpp:2802:  const int fn_GetIndexFromZoneName = 0x00523fa4;  // Returns 0 if not found.
+./game_functions.cpp:2803:  void *pWorld = *reinterpret_cast<void **>(0x007F9494);
+./game_functions.cpp:2817:  const int fn_GetPlayerGuildName = 0x0054c7e1;
+./game_functions.cpp:2826:bool is_new_ui() { return *(BYTE *)0x8092D8; }
+./game_functions.cpp:2874:bool IsValidSpellIndex(int spellid) { return reinterpret_cast<bool(__cdecl *)(int)>(0x004D79EA)(spellid); }
+./game_functions.cpp:2894:        *(DWORD *)((DWORD)dx8 + (0x3CD1C4 + offset)) != ULONG_MAX;  // weird offset edge case (view hotkey not included)
+./game_functions.cpp:2898:    return *(DWORD *)((DWORD)dx8 + (0x3CD1C4 + offset)) == ULONG_MAX;
+./game_functions.cpp:2961:  return reinterpret_cast<short(__thiscall *)(Zeal::GameStructures::GAMECHARINFO *, BYTE, BYTE, int *)>(0x4C6B6D)(
+./game_functions.cpp:2980:  reinterpret_cast<void(__cdecl *)(int)>(0x004ff5a6)(1);  // do_dismount(1).
+./game_functions.cpp:2997:  // PatchT(0x423191 + 2, (BYTE)MAX_BANK_SLOTS); // CInvSlotMgr::UpdateSlots_423089
+./game_functions.cpp:3012:  // PatchT(0x4CE982 + 3, (int)TotalBagSlotsAtEndOfPlayerProfile); // GameCharInfo Destructor
+./game_functions.cpp:3013:  int total_number = *reinterpret_cast<int *>(0x4ce985);
+./game_functions.cpp:3016:  // PatchT(0x40B036 + 1, (int)new_charinfo_size); // CCharacterCreation::CCharacterCreation_40AB77
+./game_functions.cpp:3017:  int char_info_size = *reinterpret_cast<int *>(0x40b037);
+./game_functions.cpp:3099:  // if (*reinterpret_cast<DWORD*>(0x007cf1e8))  // gKunarkEnabled_007cf1e8
+./game_functions.cpp:3101:  // if (*reinterpret_cast<DWORD*>(0x007cf1ec))  // gVeliousEnabled_007cf1ec
+./game_functions.cpp:3103:  // if (*reinterpret_cast<DWORD*>(0x007cf1f0))  // gLuclinEnabled_007cf1f0
+./game_functions.cpp:3105:  // if (*reinterpret_cast<DWORD*>(0x007cf1f4))  // gPlanesOfPowerEnabled_007cf1f4
+./game_functions.cpp:3219:  // Equivalent to game Main::CalcDefense() at 0x004712bc and is just here for reference.
+./chat.cpp:207:  // No match, return 0 (0x00000000)
+./chat.cpp:258:        std::string replacement_name = std::format("<c \"#{:06x}\">{}</c>", class_color & 0x00ffffff, possible_name);
+./chat.cpp:324:      return 0xffffffff;  // Just hard-code to white.
+./chat.cpp:462:  const char(*tell_list)[64] = reinterpret_cast<const char(*)[64]>(0x007CE45C);
+./chat.cpp:1231:  // zeal->hooks->Add("StripName", 0x529A8b, StripName, hook_type_replace_call);
+./chat.cpp:1232:  // zeal->hooks->Add("StripName1", 0x529B1D, StripName, hook_type_replace_call);
+./chat.cpp:1233:  // zeal->hooks->Add("StripName2", 0x529b6d, StripName, hook_type_replace_call);
+./chat.cpp:1234:  // zeal->hooks->Add("StripName3", 0x529b89, StripName, hook_type_replace_call);
+./chat.cpp:1235:  // zeal->hooks->Add("StripName4", 0x529A55, StripName, hook_type_replace_call);
+./chat.cpp:1236:  // zeal->hooks->Add("StripName5", 0x4EDBE5, StripName, hook_type_replace_call); //killed msg
+./chat.cpp:1237:  // zeal->hooks->Add("StripName6", 0x4EDBDA, StripName, hook_type_replace_call);//killed msg
+./chat.cpp:1238:  // zeal->hooks->Add("StripName7", 0x529371, StripName, hook_type_replace_call);//killed msg
+./chat.cpp:1239:  // zeal->hooks->Add("StripName8", 0x52933D, StripName, hook_type_replace_call);//killed msg
+./chat.cpp:1240:  // zeal->hooks->Add("StripName9", 0x5293EB, StripName, hook_type_replace_call);//killed msg
+./chat.cpp:1241:  // zeal->hooks->Add("StripName10", 0x529407, StripName, hook_type_replace_call);//killed msg
+./chat.cpp:1242:  // zeal->hooks->Add("StripName11", 0x529423, StripName, hook_type_replace_call);//killed msg
+./chat.cpp:1243:  // zeal->hooks->Add("StripName12", 0x5293CF, StripName, hook_type_replace_call);//killed msg
+./chat.cpp:1244:  // zeal->hooks->Add("StripName13", 0x5293B3, StripName, hook_type_replace_call);//killed msg
+./chat.cpp:1245:  // zeal->hooks->Add("StripName14", 0x5293A6, StripName, hook_type_replace_call);//killed msg
+./chat.cpp:1246:  zeal->hooks->Add("DoPercentConvert", 0x538110, DoPercentConvert,
+./chat.cpp:1248:  zeal->hooks->Add("PrintChat", 0x537f99, PrintChat, hook_type_detour);  // add extra prints for new loot types
+./chat.cpp:1249:  zeal->hooks->Add("EditWndHandleKey", 0x5A3010, EditWndHandleKey,
+./chat.cpp:1251:  zeal->hooks->Add("RezConfirmationDialogActivate", 0x004e206a, RezConfirmationDialogActivate,
+./chat.cpp:1256:  zeal->hooks->Add("GetRGBAFromIndex", 0x406b02, GetRGBAFromIndex,
+./chat.cpp:1258:  zeal->hooks->Add("GetRGBAFromIndex1", 0x406b12, GetRGBAFromIndex, hook_type_replace_call);
+./chat.cpp:1259:  zeal->hooks->Add("GetRGBAFromIndex2", 0x406cdf, GetRGBAFromIndex, hook_type_replace_call);
+./chat.cpp:1260:  zeal->hooks->Add("GetRGBAFromIndex3", 0x407d90, GetRGBAFromIndex, hook_type_replace_call);
+./chat.cpp:1261:  zeal->hooks->Add("GetRGBAFromIndex4", 0x407da2, GetRGBAFromIndex, hook_type_replace_call);
+./chat.cpp:1262:  zeal->hooks->Add("GetRGBAFromIndex5", 0x4139eb, GetRGBAFromIndex, hook_type_replace_call);
+./chat.cpp:1263:  zeal->hooks->Add("GetRGBAFromIndex6", 0x438719, GetRGBAFromIndex, hook_type_replace_call);
+./chat.cpp:1267:  zeal->hooks->Add("MsgNewText", 0x004e25a1, msg_new_text, hook_type_detour);
+./chat.cpp:1268:  zeal->hooks->Add("chatPrintChat", 0x00524ca2, chatPrintChat, hook_type_replace_call);
+./chat.cpp:1284:    mem::write<BYTE>(0x4bc090, 66);  // this just changes the if statement to check if the player is > 65 rather than
+./chat.cpp:1287:    mem::write<BYTE>(0x4bc090, 51);
+./zeal_settings.cpp:61:  // StartNetworkGame() does to set g_next_player at 0x00795274.
+./zeal_settings.cpp:73:      int old_char_select = *reinterpret_cast<int *>(0x007f959c);
+./zeal_settings.cpp:77:      name = index * 0x40 + 0x38e54 + reinterpret_cast<const char *>(Zeal::Game::get_game());
+./named_pipe.cpp:307:      player_data["autoattack"] = (bool)(*(BYTE *)0x7f6ffe);
+./named_pipe.cpp:344:      // (bool)(*(BYTE*)0x7f6ffe)} };
+./named_pipe.cpp:517:  // zeal->hooks->Add("logtextfile", 0x5240dc, log_hook, hook_type_detour); //receiving this via print chat so we can
+./ui_manager.cpp:34:  // The SidlScreenWndDestructor call below also appears to release all children resources (at 0x005711e0),
+./ui_manager.cpp:496:                                     int param_3)>(0x00432943)(wnd, src_wnd, param_2, param_3);
+./ui_manager.cpp:643:  // zeal->hooks->Add("InitCharSelectSettings", 0x53c234, InitCharSelectSettings, hook_type_replace_call);
+./ui_manager.cpp:644:  zeal->hooks->Add("ButtonClick", 0x5951E0, ButtonClick_hook, hook_type_detour);
+./ui_manager.cpp:645:  zeal->hooks->Add("CheckboxClick", 0x5c3480, CheckboxClick_hook, hook_type_detour);
+./ui_manager.cpp:646:  zeal->hooks->Add("SetSliderValue", 0x5a6c70, SetSliderValue_hook, hook_type_detour);
+./ui_manager.cpp:647:  zeal->hooks->Add("SetComboValue", 0x579af0, SetComboValue_hook, hook_type_detour);
+./ui_manager.cpp:648:  zeal->hooks->Add("LoadSidl", 0x5992c0, LoadSidlHk, hook_type_detour);
+./ui_manager.cpp:649:  zeal->hooks->Add("SidlManager__GetParsingErrorMsg", 0x0058e300, SidlManager__GetParsingErrorMsg, hook_type_detour);
+./ui_manager.cpp:650:  zeal->hooks->Add("LogUIError", 0x00435eae, LogUIError, hook_type_detour);
+./ui_manager.cpp:651:  zeal->hooks->Add("XMLRead", 0x58D640, XMLRead, hook_type_detour);
+./ui_manager.cpp:652:  zeal->hooks->Add("XMLReadNoValidate", 0x58DA10, XMLReadNoValidate, hook_type_detour);
+./ui_manager.cpp:653:  zeal->hooks->Add("BazaarFacePlayer", 0x004067bb, BazaarFacePlayer, hook_type_replace_call);
+./ui_manager.cpp:654:  zeal->hooks->Add("InvSlot_HandleLButtonUp", 0x00421e48, InvSlot_HandleLButtonUp, hook_type_detour);
+./ui_manager.cpp:657:  auto vtable = reinterpret_cast<Zeal::GameUI::SidlScreenWndVTable *>(0x005e6b3c);
+./npc_give.cpp:202:    auto trade_target = *reinterpret_cast<Zeal::GameStructures::Entity **>(0x007f94c8);
+./npc_give.cpp:252:  zeal->hooks->Add("QtyPickupItem", 0x42F65A, QtyPickupItem, hook_type_detour);
+./npc_give.cpp:253:  zeal->hooks->Add("CEverquestMoveMoney", 0x00530fd3, CEverquestMoveMoney, hook_type_detour);
+./npc_give.cpp:254:  zeal->hooks->Add("CInvSlotMgrMoveItem", 0x00422b1c, CInvSlotMgrMoveItem, hook_type_detour);
+./outputfile.cpp:494:  zeal->hooks->Add("GameCamp", 0x00530c7b, GameCamp, hook_type_detour);
+./item_display.cpp:825:  zeal->hooks->Add("SetItem", 0x423640, SetItem, hook_type_detour);    // CItemDisplayWnd::SetItem
+./item_display.cpp:826:  zeal->hooks->Add("SetSpell", 0x425957, SetSpell, hook_type_detour);  // CItemDisplayWnd::SetSpell
+./item_display.cpp:827:  zeal->hooks->Add("msg_request_inspect_item", 0x004e81c6, msg_request_inspect_item, hook_type_detour);
+./item_display.cpp:869:// mem::write<BYTE>(0x4090AB, 0xEB);
+./item_display.cpp:870:// mem::write<BYTE>(0x40a4c4, 0xEB);
+./item_display.cpp:875:// mem::set(0x421EBF, 0x90, 14); // Disables in CInvSlotWnd::HandleLButtonUp.
+./item_display.cpp:876:// mem::set(0x4229BE, 0x90, 14); // Disables in CInvSlot::HandleRButtonHeld().
+./item_display.cpp:877:// mem::set(0x4e81e0, 0x90, 14); // Disables in OP_ItemLinkResponse message from the server.
+./helm_manager.cpp:587:  zeal->hooks->Add(SwapHeadHook, 0x004a1735, SwapHead_hk, hook_type_detour);
+./helm_manager.cpp:588:  zeal->hooks->Add("EntityChangeForm", 0x005074FA, EntityChangeForm_hk, hook_type_detour);
+./helm_manager.cpp:589:  zeal->hooks->Add("WearChangeArmor", 0x004A2A7A, WearChangeArmor_hk, hook_type_detour);
+./ui_group.cpp:136:  zeal->hooks->Add("CRaidWnd_SetClassColor", 0x00431af5, CRaidWnd_SetClassColor, hook_type_detour);
+./looting.cpp:148:    corpse->ActorInfo->ViewActor_->Flags |= 0x40000000;  // t3dSetActorInvisible(true).
+./looting.cpp:448:  auto trade_target = *reinterpret_cast<Zeal::GameStructures::Entity **>(0x007f94c8);
+./looting.cpp:663:  zeal->hooks->Add("ReleaseLoot", 0x426576, release_loot, hook_type_detour);
+./looting.cpp:664:  zeal->hooks->Add("CLootWndDeactivate", 0x426559, CLootWndDeactivate, hook_type_detour);
+./looting.cpp:668:  zeal->hooks->Add("DestroyHeldItemOrMoney", 0x004d0d88, DestroyHeldItemOrMoney, hook_type_detour);
+./looting.cpp:669:  zeal->hooks->Add("DropHeldItemOnGround", 0x00530d7e, DropHeldItemOnGround, hook_type_detour);
+./looting.cpp:670:  zeal->hooks->Add("DropHeldMoneyOnGround", 0x005313b3, DropHeldMoneyOnGround, hook_type_detour);
+./looting.cpp:671:  zeal->hooks->Add("ClickedTradeButton", 0x0043964e, ClickedTradeButton,
+./looting.cpp:673:  zeal->hooks->Add("RequestSellItem", 0x00427c83, RequestSellItem, hook_type_detour);  // CMerchantWnd::RequestSellItem
+./looting.cpp:674:  // Old UI path: zeal->hooks->Add("SellItem", 0x0047e0af, SellItem, hook_type_detour);  // game _Main::SellItem
+./looting.cpp:676:  zeal->hooks->Add("RightClickedOnPlayerLootCorpse", 0x00532981, RightClickedOnPlayerLootCorpse,
+./looting.cpp:678:  // Old UI path: zeal->hooks->Add("RightClickedOnPlayerLootCorpse", 0x0043cd58, RightClickedOnPlayerLootCorpse,
+./miniz.h:115:     (i.e. 32-bit stat() fails for me on files > 0x7FFFFFFF bytes).
+./miniz.h:643:#define MZ_UINT32_MAX (0xFFFFFFFFU)
+./miniz.h:680:  TDEFL_WRITE_ZLIB_HEADER = 0x01000,
+./miniz.h:681:  TDEFL_COMPUTE_ADLER32 = 0x02000,
+./miniz.h:682:  TDEFL_GREEDY_PARSING_FLAG = 0x04000,
+./miniz.h:683:  TDEFL_NONDETERMINISTIC_PARSING_FLAG = 0x08000,
+./miniz.h:684:  TDEFL_RLE_MATCHES = 0x10000,
+./miniz.h:685:  TDEFL_FILTER_MATCHES = 0x20000,
+./miniz.h:686:  TDEFL_FORCE_ALL_STATIC_BLOCKS = 0x40000,
+./miniz.h:687:  TDEFL_FORCE_ALL_RAW_BLOCKS = 0x80000
+./miniz.h:1122:  MZ_ZIP_FLAG_ASCII_FILENAME = 0x10000,
+./miniz.h:1125:  MZ_ZIP_FLAG_WRITE_HEADER_SET_SIZE = 0x20000
+./dllmain.cpp:8:  // The patch performs: mem::set(0x4C3F93, 0x90, 7);
+./dllmain.cpp:9:  const uint8_t *ptr = reinterpret_cast<uint8_t *>(0x004C3F93);
+./dllmain.cpp:20:static const int load_options_call_addr = 0x005282f8;
+./dllmain.cpp:22:static const int load_options_call_addr_jump_value_unpatched = 0x0000e9e3;
+./dllmain.cpp:40:  reinterpret_cast<void(_fastcall *)(void *, int)>(0x00536ce0)(this_game, unused_edx);
+./game_str.cpp:29:  zeal->hooks->Add("GetString", 0x550EFE, GetString, hook_type_detour);  // add extra prints for new loot types
+./raid.cpp:54:  mem::write<BYTE>(0x49E182, 4);  // allow for 4 types in setloottype
+./raid.cpp:55:  mem::write<BYTE>(0x42FAB3, 4);  // allow for 4 types being set from the options window
+./raid.cpp:56:  zeal->hooks->Add("SetLootTypeResponse", 0x49dbc1, SetLootTypeResponse,
+./patches.cpp:60:    mem::write<BYTE>(0x49f297, 0xEB);
+./patches.cpp:62:    mem::write<BYTE>(0x49f297, 0x75);
+./patches.cpp:69:  const int kDoSpriteEffectAddr = 0x0052cbb1;
+./patches.cpp:170:  mem::write(0x42d14d, sit_stand_patch);  // fix pet sit shortcut crash (makes default return of function the sit/stand
+./patches.cpp:174:  // mem::set(0x4b9141, 0x90, 6);
+./patches.cpp:178:  mem::write<BYTE>(0x004c1d97 + 2, 0x2d);  // 004c1d97 80 f9 0d
+./patches.cpp:182:  const int h2h_addr = 0x004c1dad;  // 10-byte long (7-byte + 3-byte opcodes) load to EAX sequence.
+./patches.cpp:188:  mem::set(0x4C3F93, 0x90, 7);
+./patches.cpp:189:  mem::set(0x4C7642, 0x90, 7);
+./patches.cpp:192:  mem::set(0x4C28B5, 0x90, 9);
+./patches.cpp:193:  mem::set(0x4C28EF, 0x90, 1);
+./patches.cpp:194:  mem::set(0x4C28EF + 1, 0xE9, 1);
+./patches.cpp:195:  mem::set(0x4C298B, 0x90, 2);
+./patches.cpp:196:  mem::set(0x4C2991, 0x90, 5);
+./patches.cpp:197:  mem::set(0x4C2BB4, 0x90, 9);
+./patches.cpp:199:  mem::write<BYTE>(0x40f07a, 0);     // disable character select rotation by default
+./patches.cpp:200:  mem::write<BYTE>(0x40f07d, 0xEB);  // uncheck rotate button defaultly
+./patches.cpp:204:  mem::write<char[27]>(0x005ff96c, zeal_patch);
+./patches.cpp:207:  // mem::write<BYTE>(0x4A594B, 15); //load font sizes 1 to 14 (default is 6)
+./patches.cpp:210:  mem::write<BYTE>(0x4A14CF,
+./patches.cpp:214:  ZealService::get_instance()->hooks->Add("GetZoneInfoFromNetwork", 0x53D026, GetZoneInfoFromNetwork, hook_type_detour);
+./patches.cpp:216:  ZealService::get_instance()->hooks->Add("ProcessDeath", 0x00528E16, ProcessDeath, hook_type_detour);
+./patches.cpp:217:  ZealService::get_instance()->hooks->Add("CanIBreathe", 0x004C0DAB, CanIBreathe, hook_type_detour);
+./camera_mods.cpp:21:static int *const kKeyDownStates = reinterpret_cast<int *>(0x007ce04c);
+./camera_mods.cpp:155:  Zeal::GameStructures::MouseDelta *delta = (Zeal::GameStructures::MouseDelta *)0x798586;
+./camera_mods.cpp:172:  if (*(BYTE *)0x7985E8)  // invert
+./camera_mods.cpp:238:  const int draw_cursor_jump_addr = 0x0053edef;
+./camera_mods.cpp:240:  if (*(BYTE *)draw_cursor_jump_addr != opcode) mem::write<BYTE>(0x53edef, opcode);
+./camera_mods.cpp:274:  long *const g_mouse_screen_res_x = (long *)0x00798564;  // Use full resolution for scaling.
+./camera_mods.cpp:275:  long *const g_mouse_screen_res_y = (long *)0x00798568;
+./camera_mods.cpp:420:  float current_sens = (float)(*(BYTE *)0x798b0c);
+./camera_mods.cpp:577:// Note: The camera info array starts at 0x00799688 with [6] entries of 0x1C each.
+./camera_mods.cpp:691:  mem::write<BYTE>(0x4db8d9, 0xEB);  // Unconditional jump to skip an optional bad camera position debug message.
+./camera_mods.cpp:714:  zeal->hooks->Add("ProcessMouseAndGetKey", 0x0052437f, ProcessMouseAndGetKey, hook_type_detour);
+./camera_mods.cpp:715:  zeal->hooks->Add("HandleMouseWheel", 0x55B2E0, HandleMouseWheel, hook_type_detour);
+./camera_mods.cpp:716:  zeal->hooks->Add("procMouse", 0x537707, procMouse, hook_type_detour);
+./camera_mods.cpp:717:  zeal->hooks->Add("RMouseDown", 0x54699d, RMouseDown, hook_type_detour);
+./camera_mods.cpp:718:  zeal->hooks->Add("DoCamAI", 0x4db384, DoCamAI, hook_type_detour);
+./camera_mods.cpp:719:  zeal->hooks->Add("GetClickedActor", 0x004b008a, GetClickedActor, hook_type_detour);
+./camera_mods.cpp:720:  zeal->hooks->Add("EQ3DView_MouseUp", 0x0043c8af, EQ3DView_MouseUp, hook_type_detour);
+./camera_mods.cpp:721:  zeal->hooks->Add("LeftClickedOnPlayer", 0x0053271e, LeftClickedOnPlayer, hook_type_detour);
+./camera_mods.cpp:722:  zeal->hooks->Add("MountEQPlayer", 0x0051fd83, MountEQPlayer, hook_type_detour);
+./ui_zoneselect.cpp:123:    Zeal::GameStructures::GameWorldData *world = (Zeal::GameStructures::GameWorldData *)(*(DWORD *)0x7F9494);
+./binds.cpp:60:  BYTE *const g_mouse_y_invert = reinterpret_cast<BYTE *>(0x007985e8);
+./binds.cpp:61:  DWORD *const g_mouse_sensitivity = reinterpret_cast<DWORD *>(0x0079858a);
+./binds.cpp:64:  const int kDefaultKeyBindingsAddr = 0x0055a83b;
+./binds.cpp:158:  char **const kOriginalShortNames = reinterpret_cast<char **const>(0x611220);
+./binds.cpp:161:  mem::write(0x52507A, (int)KeyMapNames);        // write ini keymap
+./binds.cpp:162:  mem::write(0x525477, (int)&ini_section_name);  // write ini section name
+./binds.cpp:163:  mem::write(0x5254D9, (int)KeyMapNames);        // clear ini keymap
+./binds.cpp:164:  mem::write(0x525514, (int)&ini_section_name);  // clear ini section name
+./binds.cpp:165:  mem::write(0x525544, (int)KeyMapNames);        // read ini keymap
+./binds.cpp:166:  mem::write(0x525596, (int)&ini_section_name);  // read ini section name
+./binds.cpp:167:  mem::write(0x42C52F, (BYTE)0xEB);              // remove the check for max index of 116 being stored in client ini
+./binds.cpp:168:  mem::write(0x52485A, (int)kNumBinds);          // increase this for loop to look through all 256
+./binds.cpp:169:  mem::write(0x52591C, (int)(&Zeal::Game::ptr_AlternateKeyMap[kNumBinds]));  // also loop through 256
+./miniz.c:66:        static const mz_uint32 s_crc32[16] = { 0, 0x1db71064, 0x3b6e20c8, 0x26d930ac, 0x76dc4190, 0x6b6b51f4, 0x4db26158, 0x5005713c,
+./miniz.c:67:                                               0xedb88320, 0xf00f9344, 0xd6d6a3e8, 0xcb61b38c, 0x9b64c2b0, 0x86d3d2d4, 0xa00ae278, 0xbdbdf21c };
+./miniz.c:91:      0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3, 0x0EDB8832,
+./miniz.c:92:      0x79DCB8A4, 0xE0D5E91E, 0x97D2D988, 0x09B64C2B, 0x7EB17CBD, 0xE7B82D07, 0x90BF1D91, 0x1DB71064, 0x6AB020F2,
+./miniz.c:93:      0xF3B97148, 0x84BE41DE, 0x1ADAD47D, 0x6DDDE4EB, 0xF4D4B551, 0x83D385C7, 0x136C9856, 0x646BA8C0, 0xFD62F97A,
+./miniz.c:94:      0x8A65C9EC, 0x14015C4F, 0x63066CD9, 0xFA0F3D63, 0x8D080DF5, 0x3B6E20C8, 0x4C69105E, 0xD56041E4, 0xA2677172,
+./miniz.c:95:      0x3C03E4D1, 0x4B04D447, 0xD20D85FD, 0xA50AB56B, 0x35B5A8FA, 0x42B2986C, 0xDBBBC9D6, 0xACBCF940, 0x32D86CE3,
+./miniz.c:96:      0x45DF5C75, 0xDCD60DCF, 0xABD13D59, 0x26D930AC, 0x51DE003A, 0xC8D75180, 0xBFD06116, 0x21B4F4B5, 0x56B3C423,
+./miniz.c:97:      0xCFBA9599, 0xB8BDA50F, 0x2802B89E, 0x5F058808, 0xC60CD9B2, 0xB10BE924, 0x2F6F7C87, 0x58684C11, 0xC1611DAB,
+./miniz.c:98:      0xB6662D3D, 0x76DC4190, 0x01DB7106, 0x98D220BC, 0xEFD5102A, 0x71B18589, 0x06B6B51F, 0x9FBFE4A5, 0xE8B8D433,
+./miniz.c:99:      0x7807C9A2, 0x0F00F934, 0x9609A88E, 0xE10E9818, 0x7F6A0DBB, 0x086D3D2D, 0x91646C97, 0xE6635C01, 0x6B6B51F4,
+./miniz.c:100:      0x1C6C6162, 0x856530D8, 0xF262004E, 0x6C0695ED, 0x1B01A57B, 0x8208F4C1, 0xF50FC457, 0x65B0D9C6, 0x12B7E950,
+./miniz.c:101:      0x8BBEB8EA, 0xFCB9887C, 0x62DD1DDF, 0x15DA2D49, 0x8CD37CF3, 0xFBD44C65, 0x4DB26158, 0x3AB551CE, 0xA3BC0074,
+./miniz.c:102:      0xD4BB30E2, 0x4ADFA541, 0x3DD895D7, 0xA4D1C46D, 0xD3D6F4FB, 0x4369E96A, 0x346ED9FC, 0xAD678846, 0xDA60B8D0,
+./miniz.c:103:      0x44042D73, 0x33031DE5, 0xAA0A4C5F, 0xDD0D7CC9, 0x5005713C, 0x270241AA, 0xBE0B1010, 0xC90C2086, 0x5768B525,
+./miniz.c:104:      0x206F85B3, 0xB966D409, 0xCE61E49F, 0x5EDEF90E, 0x29D9C998, 0xB0D09822, 0xC7D7A8B4, 0x59B33D17, 0x2EB40D81,
+./miniz.c:105:      0xB7BD5C3B, 0xC0BA6CAD, 0xEDB88320, 0x9ABFB3B6, 0x03B6E20C, 0x74B1D29A, 0xEAD54739, 0x9DD277AF, 0x04DB2615,
+./miniz.c:106:      0x73DC1683, 0xE3630B12, 0x94643B84, 0x0D6D6A3E, 0x7A6A5AA8, 0xE40ECF0B, 0x9309FF9D, 0x0A00AE27, 0x7D079EB1,
+./miniz.c:107:      0xF00F9344, 0x8708A3D2, 0x1E01F268, 0x6906C2FE, 0xF762575D, 0x806567CB, 0x196C3671, 0x6E6B06E7, 0xFED41B76,
+./miniz.c:108:      0x89D32BE0, 0x10DA7A5A, 0x67DD4ACC, 0xF9B9DF6F, 0x8EBEEFF9, 0x17B7BE43, 0x60B08ED5, 0xD6D6A3E8, 0xA1D1937E,
+./miniz.c:109:      0x38D8C2C4, 0x4FDFF252, 0xD1BB67F1, 0xA6BC5767, 0x3FB506DD, 0x48B2364B, 0xD80D2BDA, 0xAF0A1B4C, 0x36034AF6,
+./miniz.c:110:      0x41047A60, 0xDF60EFC3, 0xA867DF55, 0x316E8EEF, 0x4669BE79, 0xCB61B38C, 0xBC66831A, 0x256FD2A0, 0x5268E236,
+./miniz.c:111:      0xCC0C7795, 0xBB0B4703, 0x220216B9, 0x5505262F, 0xC5BA3BBE, 0xB2BD0B28, 0x2BB45A92, 0x5CB36A04, 0xC2D7FFA7,
+./miniz.c:112:      0xB5D0CF31, 0x2CD99E8B, 0x5BDEAE1D, 0x9B64C2B0, 0xEC63F226, 0x756AA39C, 0x026D930A, 0x9C0906A9, 0xEB0E363F,
+./miniz.c:113:      0x72076785, 0x05005713, 0x95BF4A82, 0xE2B87A14, 0x7BB12BAE, 0x0CB61B38, 0x92D28E9B, 0xE5D5BE0D, 0x7CDCEFB7,
+./miniz.c:114:      0x0BDBDF21, 0x86D3D2D4, 0xF1D4E242, 0x68DDB3F8, 0x1FDA836E, 0x81BE16CD, 0xF6B9265B, 0x6FB077E1, 0x18B74777,
+./miniz.c:115:      0x88085AE6, 0xFF0F6A70, 0x66063BCA, 0x11010B5C, 0x8F659EFF, 0xF862AE69, 0x616BFFD3, 0x166CCF45, 0xA00AE278,
+./miniz.c:116:      0xD70DD2EE, 0x4E048354, 0x3903B3C2, 0xA7672661, 0xD06016F7, 0x4969474D, 0x3E6E77DB, 0xAED16A4A, 0xD9D65ADC,
+./miniz.c:117:      0x40DF0B66, 0x37D83BF0, 0xA9BCAE53, 0xDEBB9EC5, 0x47B2CF7F, 0x30B5FFE9, 0xBDBDF21C, 0xCABAC28A, 0x53B39330,
+./miniz.c:118:      0x24B4A3A6, 0xBAD03605, 0xCDD70693, 0x54DE5729, 0x23D967BF, 0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94,
+./miniz.c:119:      0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D};
+./miniz.c:121:  mz_uint32 crc32 = (mz_uint32)crc ^ 0xFFFFFFFF;
+./miniz.c:280:  if ((mz_uint64)(source_len | *pDest_len) > 0xFFFFFFFFU) return MZ_PARAM_ERROR;
+./miniz.c:492:  if ((mz_uint64)(*pSource_len | *pDest_len) > 0xFFFFFFFFU) return MZ_PARAM_ERROR;
+./miniz.c:1377:      mz_uint first_trigram = TDEFL_READ_UNALIGNED_WORD32(pCur_dict) & 0xFFFFFF;
+./miniz.c:1383:          ((TDEFL_READ_UNALIGNED_WORD32(d->m_dict + (probe_pos &= TDEFL_LZ_DICT_SIZE_MASK)) & 0xFFFFFF) ==
+./miniz.c:2838:  MZ_ZIP_END_OF_CENTRAL_DIR_HEADER_SIG = 0x06054b50,
+./miniz.c:2839:  MZ_ZIP_CENTRAL_DIR_HEADER_SIG = 0x02014b50,
+./miniz.c:2840:  MZ_ZIP_LOCAL_DIR_HEADER_SIG = 0x04034b50,
+./miniz.c:2846:  MZ_ZIP64_END_OF_CENTRAL_DIR_HEADER_SIG = 0x06064b50,
+./miniz.c:2847:  MZ_ZIP64_END_OF_CENTRAL_DIR_LOCATOR_SIG = 0x07064b50,
+./miniz.c:2851:  MZ_ZIP_DATA_DESCRIPTOR_ID = 0x08074b50,
+./miniz.c:3064:  /* On Linux with x86 glibc, this call will fail on large files (I think >= 0x80000000 bytes) unless you compiled
+./miniz.c:4072:    if (((sizeof(size_t) == sizeof(mz_uint32))) && (read_buf_size > 0x7FFFFFFF))
+./miniz.c:4160:  if (((sizeof(size_t) == sizeof(mz_uint32))) && (alloc_size > 0x7FFFFFFF)) {
+./miniz.c:4845:  /* TODO: parse local header extra data when local_header_comp_size is 0xFFFFFFFF! (big_descriptor.zip) */
+./miniz.c:5049:  if ((sizeof(size_t) == sizeof(mz_uint32)) && (new_size > 0x7FFFFFFF)) {
+./miniz.c:5460:    if (local_header_ofs > 0xFFFFFFFF) return mz_zip_set_error(pZip, MZ_ZIP_FILE_TOO_LARGE);
+./miniz.c:5568:    if (((mz_uint64)buf_size > 0xFFFFFFFF) || (uncomp_size > 0xFFFFFFFF)) {
+./miniz.c:5613:         MZ_ZIP_DATA_DESCRIPTER_SIZE32) > 0xFFFFFFFF) {
+./miniz.c:5861:         user_extra_data_central_len) > 0xFFFFFFFF) {
+./player_movement.cpp:21:  if (*reinterpret_cast<const BYTE *>(0x53fb60) == target_value) return;
+./player_movement.cpp:24:  size_t size = 0x53fb66 - 0x53fb43 + 1;  // Unprotect the full modification range.
+./player_movement.cpp:25:  VirtualProtect(reinterpret_cast<PVOID *>(0x53fb43), size, PAGE_EXECUTE_READWRITE, &oldprotect);
+./player_movement.cpp:26:  *reinterpret_cast<BYTE *>(0x53fb43) = slow_mode ? 4 : 8;  // Reduce mounted turn_right_speed clamp.
+./player_movement.cpp:27:  *reinterpret_cast<BYTE *>(0x53fb49) = slow_mode ? 4 : 8;
+./player_movement.cpp:28:  *reinterpret_cast<BYTE *>(0x53fb60) = slow_mode ? 4 : 12;  // Reduce turn_right_speed clamp.
+./player_movement.cpp:29:  *reinterpret_cast<BYTE *>(0x53fb66) = slow_mode ? 4 : 12;
+./player_movement.cpp:30:  VirtualProtect(reinterpret_cast<PVOID *>(0x53fb43), size, oldprotect, &oldprotect);
+./player_movement.cpp:31:  FlushInstructionCache(GetCurrentProcess(), reinterpret_cast<PVOID *>(0x53fb43), size);
+./player_movement.cpp:36:  if (*reinterpret_cast<const BYTE *>(0x53f758) == target_value) return;
+./player_movement.cpp:39:  size_t size = 0x53f75E - 0x53f73b + 1;  // Unprotect the full modification range.
+./player_movement.cpp:40:  VirtualProtect(reinterpret_cast<PVOID *>(0x53f73b), size, PAGE_EXECUTE_READWRITE, &oldprotect);
+./player_movement.cpp:41:  *reinterpret_cast<BYTE *>(0x53f73b) = slow_mode ? 4 : 8;  // Reduce mounted turn_left_speed clamp.
+./player_movement.cpp:42:  *reinterpret_cast<BYTE *>(0x53f741) = slow_mode ? 4 : 8;
+./player_movement.cpp:43:  *reinterpret_cast<BYTE *>(0x53f758) = slow_mode ? 4 : 12;  // Reduce turn left_speed clamp.
+./player_movement.cpp:44:  *reinterpret_cast<BYTE *>(0x53f75E) = slow_mode ? 4 : 12;
+./player_movement.cpp:45:  VirtualProtect(reinterpret_cast<PVOID *>(0x53f73b), size, oldprotect, &oldprotect);
+./player_movement.cpp:46:  FlushInstructionCache(GetCurrentProcess(), reinterpret_cast<PVOID *>(0x53f73b), size);
+./player_movement.cpp:148:  unsigned int key = dinput_code & 0xd00000ff;  // 0xd mask ignores ctrl key state.
+./player_movement.cpp:150:  const unsigned int *numpad_8_up = (unsigned int *)0x007cd858;
+./player_movement.cpp:151:  const unsigned int *numpad_2_down = (unsigned int *)0x007cd85c;
+./player_movement.cpp:152:  const unsigned int *key_up = (unsigned int *)0x007cdc58;
+./player_movement.cpp:153:  const unsigned int *key_down = (unsigned int *)0x007cdc5c;
+./player_movement.cpp:168:    if (orig_reset_strafe[0] != 0) mem::copy(0x53f424, orig_reset_strafe, 7);
+./player_movement.cpp:171:      mem::set(0x53f424, 0x90, 7, orig_reset_strafe);
+./player_movement.cpp:172:    else if (*(BYTE *)0x53f424 != 0x90)
+./player_movement.cpp:173:      mem::set(0x53f424, 0x90, 7);
+./player_movement.cpp:194:  const DWORD follow_distance_address = (0x00507D92 + 2);                              // FADD dword ptr[addr]
+./player_movement.cpp:195:  const float *follow_distance_default = reinterpret_cast<const float *>(0x005e44d4);  // 15.0.
+./player_movement.cpp:199:  const DWORD run_mode_address = 0x00507DB0;                    // FLD dword ptr[EBP + local_8]
+./player_movement.cpp:205:  const DWORD turn_smoothing_address = 0x00507CB1;       // JNC LAB_00507cc1
+./player_movement.cpp:293:  zeal->hooks->Add("CastSpell", 0x004C483B, CastSpell, hook_type_detour);
+./player_movement.cpp:294:  zeal->hooks->Add("ProcessMovementKeys", 0x005257fa, ProcessMovementKeys, hook_type_detour);
+./player_movement.cpp:302:    bool auto_run_active = *reinterpret_cast<int *>(0x00798600) != 0;
+./player_movement.cpp:303:    bool forwards_key_down = *reinterpret_cast<int *>(0x007ce058) != 0;
+./autofire.cpp:28:    if (*(BYTE *)0x7cd844) {
+./autofire.cpp:51:        *(BYTE *)0x7cd844 = 0;
+./autofire.cpp:81:    if (!(*(bool *)0x61d25c))  // combat music disabled flag
+./autofire.cpp:89:  //  zeal->hooks->Add("DoAttack", 0x50A0F8, DoAttack, hook_type_detour);
+./raid_bars.cpp:44:  zeal->hooks->Add("LMouseUp", 0x00531614, LMouseUp, hook_type_detour);
+./raid_bars.cpp:512:  if (*reinterpret_cast<int *>(0x007d0254) != 0) return false;   // Waiting for server ack to unfreeze UI.
+./raid_bars.cpp:513:  if (*reinterpret_cast<BYTE *>(0x007985ea) != 0) return false;  // RMB held down.
+./experience.cpp:215:      reinterpret_cast<void(__fastcall *)(const Zeal::GameUI::SidlWnd *, int unused_edx)>(0x004020d2);
+./labels.cpp:17:  *color = 0xffc0c0c0;
+./labels.cpp:31:        char *global_target_buffer = reinterpret_cast<char *>(0x00630884);  // Hard-coded 0x100 global buffer.
+./labels.cpp:42:        *reinterpret_cast<int *>(0x00630984) = 0;  // Value is written to a global.
+./labels.cpp:80:      *color = (num_empty <= 0) ? 0xffff0000 : ((num_empty == 1) ? 0xffffff00 : 0xffc0c0c0);
+./labels.cpp:93:      *color = (num_empty <= 0) ? 0xffff0000 : ((num_empty == 1) ? 0xffffff00 : 0xffc0c0c0);
+./labels.cpp:169:  // Logic for the attack recovery timer was copied from DoProcessTime() which sets 0x007cd844.
+./labels.cpp:173:  bool ready_to_attack = *reinterpret_cast<bool *>(0x007cd844);  // 0 = attacking, 1 = ready.
+./labels.cpp:188:        range_delay = reinterpret_cast<UINT **>(0x007f7aec)[range_item->Common.AttackDelay][1];
+./labels.cpp:201:      attack_delay = reinterpret_cast<UINT **>(0x007f7aec)[primary_item->Common.AttackDelay][1];
+./physics.cpp:30:    *(float *)0x7D01DC = (float)time_diff * 0.02f;
+./physics.cpp:64:  zeal->hooks->Add("ProcessPhysics", 0x54D964, ProcessPhysics, hook_type_detour);
+./physics.cpp:65:  zeal->hooks->Add("MovePlayer", 0x504765, MovePlayer, hook_type_detour);
+./physics.cpp:66:  mem::write<int>(0x54E132,
+./physics.cpp:69:  // zeal->hooks->Add("GetTime", 0x54dbad, GetTime, hook_type_replace_call);
+./physics.cpp:70:  // 0x5e44d4 How high off the ground you stop dropping during levitate
+./game_structures.h:693:  /* 0x000C */ DWORD Flags;  // Bit 0x40000000 = invisible
+./game_structures.h:774:  //	return reinterpret_cast<UINT(__thiscall*)(ActorInfo*, UINT, INT)>(0x50A039)(this, );
+./game_structures.h:803:  /* 0x0094 */ PVOID Unknown0094;  // pointer, static address 0x006EC6E8 has same value
+./game_structures.h:804:  /* 0x0098 */ PVOID Unknown0098;  // pointer, static address 0x006EC6E8 has same value
+./game_structures.h:805:  /* 0x009C */ PVOID Unknown009C;  // pointer, static address 0x006EC6E8 has same value
+./game_structures.h:911:                       // 0x00798784.
+./game_structures.h:955:    return reinterpret_cast<int(__thiscall *)(Zeal::GameStructures::GAMECHARINFO *, int)>(0x4C3FB0)(this, aa_id);
+./game_structures.h:965:  float encum_factor() { return reinterpret_cast<float(__thiscall *)(GAMECHARINFO *)>(0x4bb9c7)(this); }
+./game_structures.h:967:  short max_mana() { return reinterpret_cast<short(__thiscall *)(GAMECHARINFO *)>(0x4B9483)(this); }
+./game_structures.h:969:  short mana() { return reinterpret_cast<short(__thiscall *)(GAMECHARINFO *)>(0x4b9450)(this); }
+./game_structures.h:971:  short str() { return reinterpret_cast<short(__thiscall *)(GAMECHARINFO *)>(0x004bafcb)(this); }
+./game_structures.h:973:  short dex() { return reinterpret_cast<short(__thiscall *)(GAMECHARINFO *)>(0x004bb34e)(this); }
+./game_structures.h:976:    return reinterpret_cast<short(__thiscall *)(GAMECHARINFO *, char)>(0x004b9b96)(this, skill_type);
+./game_structures.h:981:    return reinterpret_cast<short(__thiscall *)(GAMECHARINFO *, char)>(0x004b9dda)(this, skill_type);
+./game_structures.h:985:    return reinterpret_cast<short(__thiscall *)(GAMECHARINFO *, char)>(0x004bfff5)(this, skill_type);
+./game_structures.h:989:    return reinterpret_cast<short(__thiscall *)(GAMECHARINFO *, char)>(0x004b8efd)(this, skill_type);
+./game_structures.h:993:    return reinterpret_cast<short(__thiscall *)(GAMECHARINFO *, bool)>(0x004b9b8a)(this, apply_cap);
+./game_structures.h:996:  int compute_defense() { return reinterpret_cast<int(__thiscall *)(GAMECHARINFO *)>(0x004b9d19)(this); }
+./game_structures.h:999:    return reinterpret_cast<short(__thiscall *)(GAMECHARINFO *, int, bool, short *)>(0x004c6b6d)(this, category,
+./game_structures.h:1004:    return reinterpret_cast<short(__thiscall *)(GAMECHARINFO *, int)>(0x004c1235)(this, category);
+./game_structures.h:1008:    return reinterpret_cast<short(__thiscall *)(GAMECHARINFO *, short)>(0x004c70e7)(this, spell_id);
+./game_structures.h:1012:    return reinterpret_cast<int(__thiscall *)(GAMECHARINFO *, UINT, WORD, int *, short)>(0x4c483b)(this, gem, spell_id,
+./game_structures.h:1017:    return reinterpret_cast<void(__thiscall *)(GAMECHARINFO *, UINT, WORD)>(0x4cb510)(this, reason, spell_id);
+./game_structures.h:1022:    return reinterpret_cast<bool(__thiscall *)(GAMECHARINFO *)>(0x004c0d02)(this);
+./game_structures.h:1026:    return reinterpret_cast<_GAMEBUFFINFO *(__thiscall *)(GAMECHARINFO *, WORD)>(0x004C465A)(this, buff_slot);
+./game_structures.h:1029:  int GetMaxBuffs() { return reinterpret_cast<BYTE(__thiscall *)(GAMECHARINFO *)>(0x004C4637)(this); }
+./game_structures.h:1032:    return reinterpret_cast<int *(__thiscall *)(GAMECHARINFO *, int)>(0x004d0337)(this, buff_slot);
+./game_structures.h:1174:  void Invite() { reinterpret_cast<void(__thiscall *)(GameClass *)>(0x005302c1)(this); }
+./game_structures.h:1176:  void Follow() { reinterpret_cast<void(__thiscall *)(GameClass *)>(0x0053069c)(this); }
+./game_structures.h:1178:  void Disband() { reinterpret_cast<void(__thiscall *)(GameClass *)>(0x00530829)(this); }
+./game_structures.h:1180:  BYTE IsOkToTransact() { return reinterpret_cast<BYTE(__thiscall *)(GameClass *)>(0x54825C)(this); }
+./game_structures.h:1182:  void SetupCharSelectCamera() { reinterpret_cast<void(__thiscall *)(GameClass *)>(0x0053c7cd)(this); }
+./game_structures.h:1185:    reinterpret_cast<void(__thiscall *)(GameClass *, Zeal::GameStructures::Entity *)>(0x54390E)(this, player);
+./game_structures.h:1189:    reinterpret_cast<void(__thiscall *)(GameClass *, const char *, int)>(0x00538110)(this, buffer, unk_flag);
+./game_structures.h:1193:    reinterpret_cast<void(__thiscall *)(GameClass *, char *, short, bool)>(0x00537f99)(this, data, color, un);
+./game_structures.h:1197:    return reinterpret_cast<const char *(__thiscall *)(GameClass *, int)>(0x0052d5f1)(this, class_id);
+./game_structures.h:1201:    return reinterpret_cast<const char *(__thiscall *)(GameClass *, int, int, int)>(0x0052eb69)(this, class_id, aa_rank,
+./game_structures.h:1206:    reinterpret_cast<void(__thiscall *)(GameClass *, int, short)>(0x00547749)(this, command, spawn_id);
+./game_structures.h:1210:    return reinterpret_cast<char *(__thiscall *)(GameClass *, const char *)>(0x00537E4B)(this, spawn_name);
+./game_structures.h:1214:    return reinterpret_cast<char *(__thiscall *)(GameClass *, const char *)>(0x00537D39)(this, spawn_name);
+./game_structures.h:1224:  void SetDayPeriod(int period) { reinterpret_cast<void(__thiscall *)(Display *, int)>(0x004b177f)(this, period); }
+./game_structures.h:1227:    reinterpret_cast<void(__thiscall *)(Display *, int, float, float, char, char, char)>(0x004add26)(
+./game_structures.h:1232:    return reinterpret_cast<bool(__thiscall *)(Display *, Entity *)>(0x004af76e)(this, actor);
+./game_structures.h:1235:  void SetSunLight() { reinterpret_cast<void(__thiscall *)(Display *)>(0x004b18b1)(this); }
+./game_structures.h:1237:  void SetYon(float clip) { reinterpret_cast<void(__thiscall *)(Display *, float)>(0x004aca7f)(this, clip); }
+./game_structures.h:1243:                                               float *, char)>(0x004b3c45)(
+./game_structures.h:1247:  void KeyMapUpdated() { reinterpret_cast<void(__thiscall *)(Display *)>(0x004a7ca5)(this); }
+./game_structures.h:1253:        0x004a28b0)(this, char_info, slot_id, new_item, old_item);
+./game_structures.h:1257:    reinterpret_cast<void(__thiscall *)(Display *, Zeal::GameStructures::Entity *, int)>(0x004a9c8a)(this, self,
+./game_structures.h:1287:      reinterpret_cast<void(__thiscall *)(Entity *, unsigned char)>(0x50be3c)(this, new_stance);
+./game_structures.h:1291:    return reinterpret_cast<UINT(__thiscall *)(void *player, UINT raw_delay, UINT is_bow)>(0x0050a039)(this, raw_delay,
+./game_structures.h:1399:struct RaidMember  // starts at 0x791518, size 0x00D0
+./game_structures.h:1401:  static constexpr int kRaidUngrouped = 0xffffffff;
+./game_structures.h:1426:  /* 0x3b58 */ DWORD Unknown3B58;                      // Set to 0xffffffff at reset.
+./game_structures.h:1534:                                                BYTE, BYTE)>(0x4ca746)(char_info, this, caster_level, 0);
+./game_structures.h:1547:                                                BYTE, BYTE, Zeal::GameStructures::_GAMEBUFFINFO *)>(0x4c657d)(
+./game_structures.h:1664:  /*0x00*/ DWORD ShortLabel1Id;  // Set to 0xffffffff or to string table ID.
+./game_structures.h:1665:  /*0x04*/ DWORD ShortLabel2Id;  // Set to 0xffffffff or to string table ID.
+./game_structures.h:1693:  static AltAdvManager *get_manager() { return *reinterpret_cast<AltAdvManager **>(0x0063d724); }
+./game_structures.h:1696:    return reinterpret_cast<int(__thiscall *)(AltAdvManager *, GAMECHARINFO *, int)>(0x004b7b48)(this, char_info,
+./floating_damage.cpp:134:  rgba = (rgba & 0x00FFFFFF) | (alpha << 24);
+./floating_damage.cpp:232:  if (!get_color_callback) return 0xffffffff;  // Defaults to white.
+./floating_damage.cpp:436:  // mem::write<BYTE>(0x4A594B, 0x14);
+./music.cpp:117:  // zeal->hooks->Add("MusicManager_WavPlay", 0x4D518B, MusicManager_Play, hook_type_detour); //this is commented out in
+./music.cpp:119:  zeal->hooks->Add("MusicManager_Play", 0x4D54C1, MusicManager_Play, hook_type_detour);
+./music.cpp:120:  zeal->hooks->Add("MusicManager_Set", 0x550AF8, MusicManager_Set, hook_type_detour);
+./crash_handler.cpp:21:    DBG_PRINTEXCEPTION_C,          // 0x40010006, OutputDebugString exception for ASCII strings
+./crash_handler.cpp:22:    DBG_COMMAND_EXCEPTION,         // 0x40010009, Used for internal command execution during debugging
+./crash_handler.cpp:23:    DBG_PRINTEXCEPTION_WIDE_C,     // 0x4001000A, OutputDebugString exception for wide-character strings
+./crash_handler.cpp:24:    DBG_CONTROL_C,                 // 0x40010005, Control-C exception for console applications
+./crash_handler.cpp:25:    EXCEPTION_BREAKPOINT,          // 0x80000003, Used by debuggers to temporarily suspend execution
+./crash_handler.cpp:26:    EXCEPTION_SINGLE_STEP,         // 0x80000004, Used by debuggers for single-step tracing
+./crash_handler.cpp:27:    STATUS_GUARD_PAGE_VIOLATION,   // 0x80000001, Occurs on a stack overflow guard page hit
+./crash_handler.cpp:28:    STATUS_DATATYPE_MISALIGNMENT,  // 0x80000002, Memory access is misaligned
+./crash_handler.cpp:29:    STATUS_STACK_OVERFLOW,         // 0xC00000FD, Stack overflow occurred but might be recoverable
+./crash_handler.cpp:30:    0x406D1388,                    // Exception used to set thread names for debugging
+./crash_handler.cpp:31:    0x80000007,                    // Used to wake up the system debugger
+./crash_handler.cpp:32:    0xe06d7363,                    // C++ exception, funny enough in ascii this code is 'MSC'
+./crash_handler.cpp:33:    0x000006ef,                    // Generated in the midi system after Windows update KB101650.
+./crash_handler.cpp:215:    int show_spell_effects = *reinterpret_cast<unsigned int *>(0x007cf290);
+./crash_handler.cpp:217:    const int kDoSpriteEffectAddr = 0x0052cbb1;
+./netstat.cpp:8:static BYTE *netstat_flag = (BYTE *)0x7985EC;
+./netstat.cpp:24:  mem::write<BYTE>(0x7985EC, (int)is_visible.get());
+./netstat.cpp:31:    mem::write<BYTE>(0x7985EC, 0);
+./netstat.cpp:36:void Netstat::update_netstat_state() { mem::write<BYTE>(0x7985EC, (int)is_visible.get()); }
+./equip_item.cpp:224:  ZealService::get_instance()->hooks->Add("CInvSlot_HandleRButtonUp", 0x422804, CInvSlot_HandleRButtonUp,
+./nameplate.cpp:54:                                     const char *text)>(0x4B0AA8)(*(void **)0x7F9510, dag, fontTexture, str);
+./nameplate.cpp:179:  reinterpret_cast<void(__cdecl *)(char, const BYTE *)>(0x4ff84f)(0, (const BYTE *)args[1].c_str());
+./nameplate.cpp:186:  *reinterpret_cast<int32_t *>(0x007d01e4) = value;
+./nameplate.cpp:187:  *reinterpret_cast<int *>(0x00798af4) = value != 0;
+./nameplate.cpp:219:  // mem::write<byte>(0x4B0B3D, 0); //arg 2 for SetStringSpriteYonClip (extended nameplate)
+./nameplate.cpp:221:  zeal->hooks->Add("SetNameSpriteState", 0x4B0BD9, SetNameSpriteState, hook_type_detour);
+./nameplate.cpp:222:  zeal->hooks->Add("SetNameSpriteTint", 0x4B114D, SetNameSpriteTint, hook_type_detour);
+./nameplate.cpp:223:  zeal->hooks->Add("TargetWnd_PostDraw", 0x005e6f78, TargetWnd_PostDraw, hook_type_vtable);
+./nameplate.cpp:226:  zeal->hooks->Add("SetNameSpriteState_Destructor", 0x0050724c, SetNameSpriteState_Destructor, hook_type_replace_call);
+./nameplate.cpp:231:  zeal->hooks->Add("SetNameSpriteTint_UpdateState", 0x004aaff5, SetNameSpriteTint_UpdateState,
+./nameplate.cpp:233:  zeal->hooks->Add("SetNameSpriteTint_UpdateState", 0x004aafa5, SetNameSpriteTint_UpdateState,
+./nameplate.cpp:235:  zeal->hooks->Add("SetNameSpriteTint_UpdateState", 0x004aafba, SetNameSpriteTint_UpdateState,
+./nameplate.cpp:463:        ((entity->ActorInfo->ViewActor_->Flags & 0x20000000)  // Empirically found flag for incomplete actor.
+./nameplate.cpp:498:    auto nameplate_color = info.color | 0xff000000;
+./nameplate.cpp:1427:  int *const kDisableBadWordFilter = reinterpret_cast<int *>(0x00798b24);
+./character_select.cpp:47:  reinterpret_cast<void (*)()>(0x004B459C)();  // Call MovePlayerLocalSafeCoords().
+./character_select.cpp:61:  unsigned int *StartWorldDisplayZoneIndex = reinterpret_cast<unsigned int *>(0x007b9648);
+./character_select.cpp:155:  zeal->hooks->Add("StartWorldDisplay", 0x4A849E, StartWorldDisplay, hook_type_detour);
+./character_select.cpp:156:  zeal->hooks->Add("SelectCharacter", 0x40F56D, SelectCharacter, hook_type_detour);
+./character_select.cpp:158:  mem::set(0x55B4A1, 0x90, 2);  // ignore connection state for mouse wheel
+./character_select.cpp:161:  mem::set(0x525ab1, 0x90, 2);  // enter key down while exploring
+./character_select.cpp:162:  mem::set(0x525aaa, 0x90, 2);  // enter key up while exploring
+./zone_map.cpp:916:  mem::write<byte>(0x53edef, 0xEB);
+./zone_map.cpp:923:    mem::write<byte>(0x53edef, 0x75);
+./zone_map.cpp:1170:      color = color & 0x80ffffff;  // Set alpha to 50% to fade for z.
+./zone_map.cpp:1350:    D3DCOLOR color = (entity == target) ? get_target_color() : (Zeal::Game::GetLevelCon(entity) | 0xff000000);
+./zone_map.cpp:1352:      color = color & 0x80ffffff;  // Set alpha to 50% to fade for z.
+./zone_map.cpp:3457:  if (GetKeyState(VK_SHIFT) & 0x8000) key_code = key_code | 0x10000000;
+./zone_map.cpp:3458:  if (GetKeyState(VK_CONTROL) & 0x8000) key_code = key_code | 0x20000000;
+./zone_map.cpp:3459:  if (GetKeyState(VK_MENU) & 0x8000) key_code = key_code | 0x40000000;
+./zone_map.cpp:3491:      if ((lParam & 0x40000000) == 0)  // Only send if this is a transition.
+./ui_guild.cpp:25:  guild->vtbl = (Zeal::GameUI::BaseVTable *)0x5e60f0;
+./ui_guild.cpp:28:                                       int, int)>(0x56e1e0)(guild, 0, name_cxstr, -1, 0);
+./callbacks.cpp:186:  // if (!Zeal::Game::get_self() && opcode == 0x4107) //a fix for a crash reported by Ecliptor at 0x004E2803
+./callbacks.cpp:303:  zeal->hooks->Add("DrawWindows", 0x59E000, DrawWindows,
+./callbacks.cpp:305:  zeal->hooks->Add("ExecuteCmd", 0x54050c, executecmd_hk, hook_type_detour);
+./callbacks.cpp:306:  zeal->hooks->Add("MainLoop", 0x5473c3, main_loop_hk, hook_type_detour);
+./callbacks.cpp:307:  zeal->hooks->Add("CDisplayRender_MinWorld", 0x004abe54, CDisplayRender_MinWorld_hk, hook_type_detour);
+./callbacks.cpp:308:  zeal->hooks->Add("Render", 0x4AA8BC, render_hk, hook_type_detour);
+./callbacks.cpp:310:  if (gfx_dx8) zeal->hooks->Add("RenderUI", (DWORD)gfx_dx8 + 0x6b7f0, render_ui, hook_type_detour);
+./callbacks.cpp:312:  zeal->hooks->Add("EnterZone", 0x53D2C4, enterzone_hk, hook_type_detour);
+./callbacks.cpp:313:  zeal->hooks->Add("CDisplayCleanGameUI", 0x4A6EBC, CDisplayCleanGameUI, hook_type_detour);  // Also char select.
+./callbacks.cpp:314:  zeal->hooks->Add("DoCharacterSelection", 0x53b9cf, charselect_hk, hook_type_detour);
+./callbacks.cpp:315:  zeal->hooks->Add("InitGameUI", 0x4a60b5, initgameui_hk, hook_type_detour);
+./callbacks.cpp:316:  zeal->hooks->Add("InitCharSelectUI", 0x4a5f85, initcharselectui_hk, hook_type_detour);
+./callbacks.cpp:317:  zeal->hooks->Add("HandleWorldMessage", 0x4e829f, handleworldmessage_hk, hook_type_detour);
+./callbacks.cpp:318:  zeal->hooks->Add("SendMessage", 0x54e51a, send_message_hk, hook_type_detour);
+./callbacks.cpp:319:  zeal->hooks->Add("GamePlayer", 0x506802, GamePlayer, hook_type_detour);
+./callbacks.cpp:320:  zeal->hooks->Add("GamePlayerDeconstruct", 0x50723D, GamePlayerDeconstruct, hook_type_detour);
+./callbacks.cpp:321:  zeal->hooks->Add("AddOutputText", 0x4139A2, OutputText, hook_type_detour);
+./callbacks.cpp:322:  zeal->hooks->Add("ReportSuccessfulHit", 0x5297D2, ReportSuccessfulHit, hook_type_detour);
+./callbacks.cpp:323:  zeal->hooks->Add("DeactivateMainUI", 0x4A7705, DeactivateMainUI, hook_type_detour);
+./ui_skin.cpp:105:      reinterpret_cast<int(__cdecl *)(int, int, int, int, int, int, int, int, int)>(0x00574380);
+./ui_skin.cpp:155:    const int CreateFontIndirectA_offset = 0x000C7034;
+./ui_skin.cpp:160:  zeal->hooks->Add("CSidlScreenWnd__ConvertToRes_hook", 0x005702A0, CSidlScreenWnd__ConvertToRes_hook,
+./ui_skin.cpp:163:  zeal->hooks->Add("CXWnd__GetHitTestRect_hook", 0x00571540, CXWnd__GetHitTestRect_hook, hook_type_detour);
+./ui_skin.cpp:166:  zeal->hooks->Add("InvSlotBrLabel", 0x005A79D1, CXWnd__DrawColoredRect_hook, hook_type_replace_call);
+./ui_skin.cpp:167:  zeal->hooks->Add("InvSlotBrFont", 0x005A7A30, CTextureFont__DrawWrappedText_hook, hook_type_replace_call);
+./ui_skin.cpp:170:  zeal->hooks->Add("CursorAttachBrLabel", 0x0041934B, CXWnd__DrawColoredRect_hook, hook_type_replace_call);
+./ui_skin.cpp:171:  zeal->hooks->Add("CursorAttachBrFont", 0x0041938C, CTextureFont__DrawWrappedText_hook, hook_type_replace_call);
+./ui_skin.cpp:174:  mem::set(0x00432804, 0x90, 10);  // SkillsWindow
+./ui_skin.cpp:175:  mem::set(0x004323AA, 0x90, 10);  // SkillsSelectWindow
+./ui_skin.cpp:179:  mem::write<char>(0x005935F6, tabHeight);
+./ui_skin.cpp:183:  mem::write<char>(0x00572BD6, titleTextOffset);
+./ui_skin.cpp:188:  mem::write<char>(0x0041763B, containerHeightPadding);
+./ui_skin.cpp:191:  mem::write<char>(0x0041763E, containerWidthPadding);
+./ui_skin.cpp:195:  mem::write<char>(0x00416D80, val);  // CContainerWnd::PostDraw
+./ui_skin.cpp:196:  mem::write<char>(0x004076CC, val);  // CBazaarWnd::PostDraw
+./ui_skin.cpp:197:  mem::write<char>(0x004049DC, val);  // CBankWnd::PostDraw
+./ui_skin.cpp:198:  mem::write<char>(0x0041ED59, val);  // CGiveWnd::PostDraw
+./ui_skin.cpp:199:  mem::write<char>(0x004266DC, val);  // CLootWnd::PostDraw
+./ui_skin.cpp:200:  mem::write<char>(0x00427193, val);  // CMerchantWnd::PostDraw
+./ui_skin.cpp:201:  mem::write<char>(0x0043950E, val);  // CTradeWnd::PostDraw
+./ui_skin.cpp:204:  mem::write<char>(0x004096FA, val);  // CBuffWindow::PostDraw
+./ui_skin.cpp:211:  mem::write<int>(0x0056E441, width);
+./ui_skin.cpp:212:  mem::write<int>(0x0056E451, height);
+./ui_skin.cpp:213:  mem::write<int>(0x0056E5D2, width);
+./ui_skin.cpp:214:  mem::write<int>(0x0056E5DC, height);
+./ui_skin.cpp:302:  zeal->hooks->Add("do_loadskin_hook", 0x004f8655, do_loadskin_hook, hook_type_detour);
+./target_ring.cpp:18:  return 0xFFFFFFFF;  // Default to solid white.
+./target_ring.cpp:277:  DWORD newColor = (color & 0x00FFFFFF) | (alpha << 24);  // Apply alpha
+./assist_target.cpp:67:  zeal->hooks->Add("AssistTargetLMouseUp", 0x00531614, LMouseUp, hook_type_detour);
+./assist_target.cpp:141:  auto do_assist_fn = reinterpret_cast<void (*)(Zeal::GameStructures::Entity *, const char *)>(0x004fd7dc);
+./assist_target.cpp:373:  if (*reinterpret_cast<int *>(0x007d0254) != 0) return false;   // Waiting for server ack to unfreeze UI.
+./assist_target.cpp:374:  if (*reinterpret_cast<BYTE *>(0x007985ea) != 0) return false;  // RMB held down.
+./melody.cpp:176:  *(int16_t *)(0x007ce45a) = -1;  // Some sort of casting SPELL.SpellType cache.
+./melody.cpp:415:  zeal->hooks->Add("StopCast", 0x4cb510, StopCast, hook_type_detour);  // Hook in to end melody as well.
+./melody.cpp:454:  //   - Client is wiping the casting state and bailing out without sending a message at 0x004cb5bc for bards.
+./tick.cpp:63:  zeal->hooks->Add("Handle_OP_Stamina", 0x4E47A2, Handle_OP_Stamina, hook_type_detour);
+./chatfilter.cpp:57:    int index = filter - (0x10000 - FILTER_OFFSET);
+./chatfilter.cpp:70:    int index = filter - (0x10000 - FILTER_OFFSET);
+./chatfilter.cpp:82:    int index = filter - (0x10000 - FILTER_OFFSET);
+./chatfilter.cpp:445:  if (*reinterpret_cast<BYTE *>(0x0052a07e) == filter_level) return;
+./chatfilter.cpp:447:  mem::write<BYTE>(0x0052a07e, filter_level);
+./chatfilter.cpp:495:      "Random", 0x10000, [this](short &color, const std::string &data) { return color == USERCOLOR_RANDOM; }));
+./chatfilter.cpp:497:      CustomFilter("Loot", 0x10001, [this](short &color, const std::string &data) { return color == USERCOLOR_LOOT; }));
+./chatfilter.cpp:498:  Extended_ChannelMaps.push_back(CustomFilter("Money", 0x10002, [this](short &color, const std::string &data) {
+./chatfilter.cpp:502:      CustomFilter("My Pet Say", 0x10003,
+./chatfilter.cpp:505:      CustomFilter("My Pet Damage", 0x10004, [this, zeal](short &color, const std::string &data) {
+./chatfilter.cpp:519:      CustomFilter("Other Pet Say", 0x10005,
+./chatfilter.cpp:522:      CustomFilter("Other Pet Damage", 0x10006, [this, zeal](short &color, const std::string &data) {
+./chatfilter.cpp:537:      "/who", 0x10007, [this, zeal](short &color, const std::string &data) { return color == USERCOLOR_WHO; }));
+./chatfilter.cpp:539:      CustomFilter("My Melee Special", 0x10008,
+./chatfilter.cpp:542:      CustomFilter("Other Melee Special", 0x10009,
+./chatfilter.cpp:545:      "/mystats", 0x1000A, [this, zeal](short &color, const std::string &data) { return color == CHANNEL_MYSTATS; }));
+./chatfilter.cpp:547:      CustomFilter("Item Speech", 0x1000B,
+./chatfilter.cpp:550:      CustomFilter("Other Melee Critical", 0x1000C,
+./chatfilter.cpp:553:      "Other Damage Shield", 0x1000D,
+./chatfilter.cpp:556:      "Zeal Spam", 0x1000E, [this](short &color, std::string &data) { return HandleZealSpamCallbacks(color, data); }));
+./chatfilter.cpp:557:  // Keep new entries at the end: the ids must stay contiguous (0x10000 + list index) and each
+./chatfilter.cpp:559:  Extended_ChannelMaps.push_back(CustomFilter("Bandolier", 0x1000F, [this](short &color, const std::string &data) {
+./chatfilter.cpp:570:  zeal->hooks->Add("CChatManager", 0x4100e2, CChatManager, hook_type_detour);
+./chatfilter.cpp:571:  zeal->hooks->Add("Deactivate", 0x410871, Deactivate, hook_type_detour);
+./chatfilter.cpp:572:  zeal->hooks->Add("AddMenu", 0x4120DD, AddMenu, hook_type_replace_call);
+./chatfilter.cpp:573:  zeal->hooks->Add("GetChannelMap", 0x41161D, GetChannelMap, hook_type_detour);
+./chatfilter.cpp:574:  zeal->hooks->Add("SetChannelMap", 0x4113F1, SetChannelMap, hook_type_detour);
+./chatfilter.cpp:575:  zeal->hooks->Add("ClearChannelMap", 0x41140C, ClearChannelMap, hook_type_detour);
+./chatfilter.cpp:576:  zeal->hooks->Add("ClearChannelMaps", 0x411638, ClearChannelMaps, hook_type_detour);
+./chatfilter.cpp:577:  zeal->hooks->Add("UpdateContextMenus", 0x412f9b, UpdateContextMenus, hook_type_detour);
+./chatfilter.cpp:578:  zeal->hooks->Add("HandleMyHitsMode", 0x500f86, HandleMyHitsMode, hook_type_detour);
+./chatfilter.cpp:579:  zeal->hooks->Add("HandleOtherHitsOtherMode", 0x501168, HandleOtherHitsOtherMode, hook_type_detour);
+./chatfilter.cpp:582:  zeal->hooks->Add("PrintSplit", 0x54755b, PrintSplit, hook_type_replace_call);          // fix up money split
+./chatfilter.cpp:583:  zeal->hooks->Add("PrintAutoSplit", 0x4FB477, PrintAutoSplit, hook_type_replace_call);  // fix up money split
+./chatfilter.cpp:584:  zeal->hooks->Add("serverGetString", 0x4EE6C9, serverGetString, hook_type_replace_call);
+./chatfilter.cpp:585:  zeal->hooks->Add("serverPrintChat", 0x4ee727, serverPrintChat, hook_type_replace_call);
+./chatfilter.cpp:586:  zeal->hooks->Add("whoGlobalPrintChat1", 0x4e4d6f, whoGlobalPrintChat_wrapped, hook_type_replace_call);
+./chatfilter.cpp:587:  zeal->hooks->Add("whoGlobalPrintChat2", 0x4e4d7e, whoGlobalPrintChat_wrapped, hook_type_replace_call);
+./chatfilter.cpp:588:  zeal->hooks->Add("whoGlobalPrintChat3", 0x4e523a, whoGlobalPrintChat_full, hook_type_replace_call);
+./chatfilter.cpp:589:  zeal->hooks->Add("whoGlobalPrintChat4", 0x4e53b1, whoGlobalPrintChat_wrapped, hook_type_replace_call);
+./chatfilter.cpp:592:  mem::write<BYTE[2]>(0x414117, {0x8d, 0x05});  // lea eax
+./chatfilter.cpp:593:  mem::write<int>(0x414119, (int)FilterConditional);
+./chatfilter.cpp:594:  mem::write<BYTE[2]>(0x41411D, {0xFF, 0xE0});  // jmp eax
+./chatfilter.cpp:595:  mem::write<BYTE[4]>(0x41411F, {0x90, 0x90, 0x90, 0x90});
+./ui_options.cpp:104:  bool names_enabled = *(int *)0x798af4 != 0;  // ShowPCNamesGUIButton
+./ui_options.cpp:111:  bool names_enabled = *(int *)0x798af4 != 0;  // ShowPCNamesGUIButton
+./ui_options.cpp:224:      ui->clicked_button->TextColor.ARGB = data | 0xff000000;  // Ensure alpha = 0xff.
+./ui_options.cpp:231:                                            int data)>(0x56e920)(wnd, sender, message, data);
+./ui_options.cpp:1578:  BYTE *const flags = reinterpret_cast<BYTE *>(0x0041590f);  // Sidl ini settings in constructor.
+./ui_options.cpp:1661:  zeal->hooks->Add("ContainerWndSetContainer", 0x0041717d, ContainerWndSetContainer, hook_type_detour);
+./ui_options.cpp:1662:  zeal->hooks->Add("SidlScreenWndHandleRButtonDown", 0x005703f0, SidlScreenWndHandleRButtonDown, hook_type_detour);
+./ui_options.cpp:1668:  zeal->hooks->Add("CConfirmationDialog_Center", 0x00415b57, CConfirmationDialog_Center, hook_type_replace_call);
+./ui_options.cpp:1669:  zeal->hooks->Add("CConfirmationDialog_PostDraw", 0x005e4828, CConfirmationDialog_PostDraw, hook_type_vtable);
+./ui_options.cpp:1670:  zeal->hooks->Add("CConfirmationDialog_StoreIniInfo", 0x005e4918, CConfirmationDialog_StoreIniInfo, hook_type_vtable);
+./ui_options.cpp:1672:  zeal->hooks->Add("RaidHandleCreateInviteRaid", 0x0049e54c, RaidHandleCreateInviteRaid, hook_type_detour);
+./ui_options.cpp:1673:  zeal->hooks->Add("RaidSendInviteResponse", 0x0049debd, RaidSendInviteResponse, hook_type_detour);
+./ui_options.cpp:1674:  zeal->hooks->Add("GamePlayerSetInvited", 0x0050c216, GamePlayerSetInvited, hook_type_detour);
+./ui_options.cpp:1700:  mem::write(0x0050009e, (int)&ini_autojoin_name);  // Point to our copy of the autojoin field name in the write ini.
+./ui_options.cpp:1701:  mem::write(0x00524919, (int)&ini_autojoin_name);  // Point to our copy of the autojoin field name in the read ini.
+./nameplate.h:76:                                                  [this](const bool &val) { mem::write<BYTE>(0x4B0B3D, val ? 0 : 1); }};
+./nameplate.h:85:                                                      mem::get(0x004ff8ff, 1, &current_val);
+./nameplate.h:87:                                                        mem::write<BYTE>(0x004ff8ff, target_val);
+./nameplate.h:89:                                                      mem::write<BYTE>(0x004ff8ff, 0x05);  // Restore original value
+./directx.cpp:71:  device = *(IDirect3DDevice8 **)((DWORD)gfx_dx8 + 0xa4f92c);
+./directx.cpp:91:  auto gfx_device = gfx_dx8 ? *(IDirect3DDevice8 **)((DWORD)gfx_dx8 + 0xa4f92c) : nullptr;
+./directx.cpp:161:  ZealService::get_instance()->hooks->Add("CDisplayInitDDraw", 0x004a5171, CDisplayInitDDraw, hook_type_detour);
+./directx.cpp:162:  ZealService::get_instance()->hooks->Add("CDisplayCleanUpDDraw", 0x004a954b, CDisplayCleanUpDDraw, hook_type_detour);
+./ui_buff.cpp:187:  zeal->hooks->Add("BuffWindow_PostDraw", 0x4095FE, BuffWindow_PostDraw, hook_type_detour);
+./ui_buff.cpp:188:  zeal->hooks->Add("BuffWindow_Refresh", 0x409334, BuffWindow_Refresh, hook_type_detour);
+./ui_buff.cpp:189:  zeal->hooks->Add("CastSpellWnd_PostDraw", 0x0040a2a4, CastSpellWnd_PostDraw, hook_type_detour);
+./ui_buff.cpp:190:  zeal->hooks->Add("BuffWindow_HandleLButtonDown", 0x005e3ed4, BuffWindow_HandleLButtonDown, hook_type_vtable);
+./ui_buff.cpp:191:  zeal->hooks->Add("BuffWindow_HandleLButtonUp", 0x005e3ed8, BuffWindow_HandleLButtonUp, hook_type_vtable);
+./ui_buff.cpp:192:  zeal->hooks->Add("BuffWindow_HitTest", 0x005e3f6c, BuffWindow_HitTest, hook_type_vtable);
+./ui_inputdialog.cpp:67:                                            int data)>(0x56e920)(wnd, sender, message, data);
+./game_ui.h:9:static HANDLE *Heap = (HANDLE *)0x0080b420;
+./game_ui.h:135:    reinterpret_cast<void(__thiscall *)(const CXSTR *, const char *)>(0x575F30)(this, data);
+./game_ui.h:139:    reinterpret_cast<void(__thiscall *)(const CXSTR *, const char *)>(0x575F30)(this, data.c_str());
+./game_ui.h:143:    reinterpret_cast<void(__thiscall *)(const CXSTR *, int, int)>(0x575A60)(this, length, encoding);
+./game_ui.h:147:    if (Data) reinterpret_cast<void(__thiscall *)(const CXSTR *, pCXSTR *)>(0x575DC0)(this, Data);
+./game_ui.h:151:  char *CastToCharPtr() const { return reinterpret_cast<char *(__thiscall *)(const CXSTR *)>(0x577E80)(this); }
+./game_ui.h:154:    reinterpret_cast<void(__thiscall *)(const CXSTR *, const char *)>(0x577310)(this, data.c_str());
+./game_ui.h:158:    reinterpret_cast<void(__thiscall *)(const CXSTR *, const char *)>(0x576190)(this, data.c_str());
+./game_ui.h:162:    reinterpret_cast<void(__thiscall *)(const CXSTR *, const char *)>(0x576190)(this, data);
+./game_ui.h:167:    reinterpret_cast<pCXSTR *(__thiscall *)(CXSTR *, const CXSTR *)>(0x576140)(this, &other);
+./game_ui.h:229:  void SetFocus() { reinterpret_cast<void(__thiscall *)(const BasicWnd *)>(0x572290)(this); }
+./game_ui.h:231:  void BringToFront() { reinterpret_cast<void(__thiscall *)(const BasicWnd *, int)>(0x573a80)(this, 1); }
+./game_ui.h:234:  // BaseVTable located at 0x005eaa94. The constructors of other BasicWnd derived classes
+./game_ui.h:246:    vtbl = original ? original : reinterpret_cast<BaseVTable *>(0x005eaa94);  // ~CXWnd().
+./game_ui.h:250:    reinterpret_cast<void(__thiscall *)(const BasicWnd *, int, bool)>(0x572310)(this, make_visible_flag, bring_to_top);
+./game_ui.h:256:    if (!log_error) mem::write<BYTE>(0x570378, 0xEB);  // jump passed the ui error logging
+./game_ui.h:257:    BasicWnd *wnd = reinterpret_cast<BasicWnd *(__thiscall *)(const BasicWnd *, CXSTR)>(0x570320)(this, name);
+./game_ui.h:258:    if (!log_error) mem::write<BYTE>(0x570378, 0x75);  // restore the ui error logging
+./game_ui.h:269:  void CreateChildren() { reinterpret_cast<BasicWnd *(__thiscall *)(const BasicWnd *)>(0x56f4f0)(this); }
+./game_ui.h:278:  CXRect GetScreenRect() { return reinterpret_cast<CXRect(__thiscall *)(const BasicWnd *)>(0x005751C0)(this); }
+./game_ui.h:281:    reinterpret_cast<void(__thiscall *)(const BasicWnd *, int, int)>(0x00574800)(this, left, top);
+./game_ui.h:391:  // SidlScreenWndVTable located at 0x005ea98c. The constructors of other derived classes
+./game_ui.h:398:    auto *sidl_default_vtbl = reinterpret_cast<SidlScreenWndVTable *>(0x005ea98c);
+./game_ui.h:460:  /*0x174*/ DWORD SelectIndex;       // Set to 0xffffffff (-1) at ActivateStart().
+./game_ui.h:488:  int GetPage() { return *(int *)0x7f69f6; }
+./game_ui.h:489:  void SetPage(int page) { *(int *)0x7f69f6 = page; }
+./game_ui.h:491:  BYTE GetType(int button_index) { return *(BYTE *)(0x7f6862 + (button_index + (GetPage() * 0xA))); }
+./game_ui.h:496:  void DeleteAll() { reinterpret_cast<int(__thiscall *)(const ComboWnd *)>(0x5a18e0)(this); }
+./game_ui.h:500:    reinterpret_cast<void(__thiscall *)(const ComboWnd *, CXSTR)>(0x5A1750)(this, data);
+./game_ui.h:503:  void SetChoice(int index) { reinterpret_cast<void(__thiscall *)(const ComboWnd *, int)>(0x5A1860)(this, index); }
+./game_ui.h:512:    return reinterpret_cast<int(__thiscall *)(const ListWnd *, CXSTR, UINT, UINT, UINT)>(0x5797A0)(this, str_cxstr,
+./game_ui.h:513:                                                                                                   0xffffffff, 0, 0);
+./game_ui.h:518:    reinterpret_cast<void(__thiscall *)(const ListWnd *, int, int, CXSTR)>(0x579DC0)(this, row, column, str_cxstr);
+./game_ui.h:523:    reinterpret_cast<void(__thiscall *)(const ListWnd *, int, int)>(0x579D70)(this, row, row);
+./game_ui.h:526:  void Sort(int col) { reinterpret_cast<void(__thiscall *)(const ListWnd *, int)>(0x57cb00)(this, col); }
+./game_ui.h:528:  void DeleteAll() { reinterpret_cast<void(__thiscall *)(const ListWnd *)>(0x579530)(this); }
+./game_ui.h:530:  int GetItemData(int row) { return reinterpret_cast<int(__thiscall *)(const ListWnd *, int)>(0x578E80)(this, row); }
+./game_ui.h:542:    return reinterpret_cast<ListWnd *(__thiscall *)(const ListWnd *, CXSTR *, int, int)>(0x578ed0)(this, buffer, row,
+./game_ui.h:557:  static constexpr uint32_t kDefaultVTableAddr = 0x005e5a98;
+./game_ui.h:563:    reinterpret_cast<void(__fastcall *)(ItemDisplayWnd *, int, BasicWnd *)>(0x00423331)(wnd, 0, parent_wnd);
+./game_ui.h:572:  // default ItemDisplayVTable located at 0x005e5a98. Copy that table over in order to modify it.
+./game_ui.h:603:  static constexpr BaseVTable *default_vtable = reinterpret_cast<BaseVTable *>(0x005eb774);
+./game_ui.h:606:    return reinterpret_cast<int(__thiscall *)(InvSlotWnd *, int, int, unsigned int)>(0x005a7b10)(this, mouse_x, mouse_y,
+./game_ui.h:611:    return reinterpret_cast<int(__thiscall *)(InvSlotWnd *, int, int, unsigned int)>(0x005a7e80)(this, mouse_x, mouse_y,
+./game_ui.h:629:    return reinterpret_cast<int(__thiscall *)(InvSlot *, int unused_x, int unused_y, BYTE flag)>(0x421E48)(this, 0, 0,
+./game_ui.h:692:    reinterpret_cast<void(__thiscall *)(const LootWnd *, UINT, bool)>(0x426b02)(this, slot, inventory);
+./game_ui.h:707:  //	reinterpret_cast<void(__thiscall*)(const EditWnd*, const char*, int)>(0x5a41b0)(this, data, length);
+./game_ui.h:711:    reinterpret_cast<void(__thiscall *)(const EditWnd *, CXSTR, int)>(0x5a3f00)(this, data_cxstr, filter_input);
+./game_ui.h:718:    reinterpret_cast<void(__thiscall *)(const EditWnd *, CXSTR)>(0x5a3d00)(this, data);
+./game_ui.h:722:    reinterpret_cast<void(__thiscall *)(const EditWnd *, int, const char *)>(0x5a2920)(this, item_id, name);
+./game_ui.h:771:    reinterpret_cast<void(__thiscall *)(ContainerMgr *, Zeal::GameStructures::GAMEITEMINFO *, int)>(0x004168bd)(
+./game_ui.h:776:    reinterpret_cast<void(__thiscall *)(ContainerMgr *, Zeal::GameStructures::GAMEITEMINFO *, bool)>(0x004169e5)(
+./game_ui.h:780:  int CloseAllContainers() { return reinterpret_cast<int(__thiscall *)(ContainerMgr *)>(0x00416a43)(this); }
+./game_ui.h:786:    return reinterpret_cast<InvSlot *(__thiscall *)(CInvSlotMgr *, int)>(0x423010)(this, slot_id);
+./game_ui.h:796:    reinterpret_cast<void(__thiscall *)(const ColorPickerWnd *, BasicWnd *, DWORD)>(0x414F2A)(this, wnd, color);
+./game_ui.h:800:    reinterpret_cast<void(__thiscall *)(const ColorPickerWnd *, DWORD)>(0x414F87)(this, color);
+./game_ui.h:816:                                              unsigned short, int)>(0x005a4a30)(this, str, rect1, rect2, color, unk1,
+./game_ui.h:827:  int GetHeight() { return reinterpret_cast<int(__thiscall *)(const CTextureFont *)>(0x5A4930)(this); }
+./game_ui.h:833:    return reinterpret_cast<CTextureFont *(__thiscall *)(const CXWndManager *, int)>(0x538EAA)(this, index);
+./game_ui.h:874:    wnd->vtbl = reinterpret_cast<BaseVTable *>(0x005e4a24);  // Set back to default ContextMenu::vtable.
+./game_ui.h:885:    reinterpret_cast<void(__fastcall *)(ContextMenu *, int, int, int, CXRect)>(0x417785)(menu, 0, cxwnd, a1, r);
+./game_ui.h:899:  void AddSeparator() const { reinterpret_cast<void(__thiscall *)(const ContextMenu *)>(0x417A41)(this); }
+./game_ui.h:902:    reinterpret_cast<void(__thiscall *)(const ContextMenu *, int, bool)>(0x417a93)(this, index, toggle);
+./game_ui.h:907:    reinterpret_cast<void(__thiscall *)(const ContextMenu *, int, bool)>(0x579f90)(this, index, toggle);
+./game_ui.h:912:    int result = reinterpret_cast<int(__thiscall *)(const ContextMenu *, CXSTR, int, bool)>(0x417910)(
+./game_ui.h:913:        this, data_cxstr, has_children ? index | 0x80000000 : index, disp_activated);
+./game_ui.h:918:    reinterpret_cast<void(__thiscall *)(const ContextMenu *, int, int, ARGBCOLOR)>(0x579eb0)(this, index, 0x1, color);
+./game_ui.h:919:    reinterpret_cast<void(__thiscall *)(const ContextMenu *, int, int, ARGBCOLOR)>(0x579eb0)(this, index, 0x2, color);
+./game_ui.h:922:  void RemoveAllMenuItems() { reinterpret_cast<void(__thiscall *)(const ContextMenu *)>(0x417a7f)(this); }
+./game_ui.h:925:    reinterpret_cast<void(__thiscall *)(const ContextMenu *, int, bool, bool)>(0x417ae8)(this, row, check,
+./game_ui.h:1057:    return reinterpret_cast<struct ChatWnd *(__thiscall *)(const CChatManager *)>(0x41114A)(this);
+./game_ui.h:1060:  void CreateChatWindow() const { reinterpret_cast<void(__thiscall *)(const CChatManager *)>(0x410C5A)(this); }
+./game_ui.h:1063:    reinterpret_cast<void(__thiscall *)(const CChatManager *, struct ChatWnd *)>(0x41110C)(this, wnd);
+./game_ui.h:1069:                                        int chat_channel, const char *tell_target, int font)>(0x410e84)(
+./game_ui.h:1090:    return reinterpret_cast<int(__thiscall *)(const CContextMenuManager *)>(0x4137C2)(this);
+./game_ui.h:1094:    return reinterpret_cast<int(__thiscall *)(const CContextMenuManager *, ContextMenu *)>(0x417ED4)(this,
+./game_ui.h:1099:    return reinterpret_cast<int(__thiscall *)(const CContextMenuManager *, int, CXPoint, ContextMenu *)>(0x41822D)(
+./game_ui.h:1104:    return reinterpret_cast<int(__thiscall *)(const CContextMenuManager *, int, bool)>(0x417E1B)(this, menu_index,
+./game_ui.h:1115:  static constexpr SidlScreenWndVTable *default_vtable = reinterpret_cast<SidlScreenWndVTable *>(0x005e60f0);
+./game_ui.h:1123:  void UpdateKeyboardAssignmentList() { reinterpret_cast<void(__thiscall *)(const OptionsWnd *)>(0x0042b07b)(this); }
+./game_ui.h:1201:  static constexpr SidlScreenWndVTable *default_vtable = reinterpret_cast<SidlScreenWndVTable *>(0x005e6e48);
+./game_ui.h:1204:    reinterpret_cast<void(__thiscall *)(const SidlWnd *, int, int, bool)>(0x434a05)(this, book_index, gem_index,
+./game_ui.h:1210:    reinterpret_cast<void(__thiscall *)(const SidlWnd *)>(0x00435531)(this);
+./game_ui.h:1213:  void Activate() const { reinterpret_cast<void(__thiscall *)(const SidlWnd *)>(0x0043441f)(this); }
+./game_ui.h:1215:  void Deactivate() const { reinterpret_cast<void(__thiscall *)(const SidlWnd *)>(0x0043450a)(this); }
+./game_ui.h:1218:    return reinterpret_cast<int(__thiscall *)(SpellBookWnd *, const BasicWnd *, int, void *)>(0x004345cb)(
+./game_ui.h:1223:    reinterpret_cast<int(__thiscall *)(SpellBookWnd *, const BasicWnd *)>(0x00435234)(this, src_wnd);
+./game_ui.h:1244:  CXRect GetScreenRect() { return reinterpret_cast<CXRect(__thiscall *)(const SpellGemWnd *)>(0x005751C0)(this); }
+./game_ui.h:1247:    reinterpret_cast<void(__thiscall *)(const SpellGemWnd *, int, int)>(0x00574800)(this, left, top);
+./game_ui.h:1280:  static constexpr SidlScreenWndVTable *default_vtable = reinterpret_cast<SidlScreenWndVTable *>(0x005e41ac);
+./game_ui.h:1283:    reinterpret_cast<void(__thiscall *)(const CastSpellWnd *, int)>(0x40a662)(this, index);
+./game_ui.h:1287:    reinterpret_cast<void(__thiscall *)(const CastSpellWnd *, int)>(0x40a8b7)(this, index);
+./game_ui.h:1291:    return reinterpret_cast<int(__thiscall *)(CastSpellWnd *, const BasicWnd *, int, void *)>(0x0040a32a)(
+./game_ui.h:1296:    reinterpret_cast<int(__thiscall *)(CastSpellWnd *, const BasicWnd *)>(0x0040a480)(this, src_wnd);
+./game_ui.h:1318:  void doQuery() { reinterpret_cast<void(__thiscall *)(BazaarSearchWnd *)>(0x0040614c)(this); }
+./game_ui.h:1391:  CContextMenuManager *ContextMenuManager;  // 0x63D5CC
+./game_ui.h:1392:  CChatManager *ChatManager;                // 0x63D5D0
+./game_ui.h:1393:  CConfirmationDialog *ConfirmationDialog;  // 0x63D5D4
+./game_ui.h:1394:  CharSelect *CharacterSelect;              // 0x63D5D8
+./game_ui.h:1395:  SidlWnd *FacePick;                        // 0x63D5DC
+./game_ui.h:1396:  ItemDisplayWnd *ItemWnd;                  // 0x63D5E0
+./game_ui.h:1397:  SidlWnd *Note;                            // 0x63D5E4
+./game_ui.h:1398:  SidlWnd *Help;                            // 0x63D5E8
+./game_ui.h:1399:  SidlWnd *Book;                            // 0x63D5EC
+./game_ui.h:1400:  SidlWnd *PetInfo;                         // 0x63D5F0
+./game_ui.h:1401:  SidlWnd *Train;                           // 0x63D5F4
+./game_ui.h:1402:  SidlWnd *Skills;                          // 0x63D5F8
+./game_ui.h:1403:  SidlWnd *SkillsSelect;                    // 0x63D5FC
+./game_ui.h:1404:  SidlWnd *Friends;                         // 0x63D600
+./game_ui.h:1405:  SidlWnd *AA;                              // 0x63D604
+./game_ui.h:1406:  SidlWnd *Group;                           // 0x63D608
+./game_ui.h:1407:  SidlWnd *Loadskin;                        // 0x63D60C
+./game_ui.h:1408:  SidlWnd *Alarm;                           // 0x63D610
+./game_ui.h:1409:  SidlWnd *MusicPlayer;                     // 0x63D614
+./game_ui.h:1410:  RaidWnd *Raid;                            // 0x63D618
+./game_ui.h:1411:  SidlWnd *RaidOptions;                     // 0x63D61C
+./game_ui.h:1412:  SidlWnd *Breath;                          // 0x63D620
+./game_ui.h:1413:  SidlWnd *Target;                          // 0x63D624
+./game_ui.h:1414:  HotButton *HotButton;                     // 0x63D628
+./game_ui.h:1415:  ColorPickerWnd *ColorPicker;              // 0x63D62C
+./game_ui.h:1416:  SidlWnd *Player;                          // 0x63D630
+./game_ui.h:1417:  OptionsWnd *Options;                      // 0x63D634
+./game_ui.h:1418:  SidlWnd *BuffWindowNORMAL;                // 0x63D638
+./game_ui.h:1419:  SidlWnd *CharacterCreation;               // 0x63D63C
+./game_ui.h:1420:  CursorAttachmentWnd *CursorAttachment;    // 0x63D640
+./game_ui.h:1421:  SidlWnd *Casting;                         // 0x63D644
+./game_ui.h:1422:  CastSpellWnd *SpellGems;                  // 0x63D648
+./game_ui.h:1423:  SpellBookWnd *SpellBook;                  // 0x63D64C
+./game_ui.h:1424:  SidlWnd *Inventory;                       // 0x63D650
+./game_ui.h:1425:  SidlWnd *Bank;                            // 0x63D654
+./game_ui.h:1426:  QuantityWnd *Quantity;                    // 0x63D658
+./game_ui.h:1427:  LootWnd *Loot;                            // 0x63D65C
+./game_ui.h:1428:  SidlWnd *Actions;                         // 0x63D660
+./game_ui.h:1429:  MerchantWnd *Merchant;                    // 0x63D664
+./game_ui.h:1430:  TradeWnd *Trade;                          // 0x63D668
+./game_ui.h:1431:  SidlWnd *Selector;                        // 0x63D66C
+./game_ui.h:1432:  SidlWnd *Bazaar;                          // 0x63D670
+./game_ui.h:1433:  BazaarSearchWnd *BazaarSearch;            // 0x63D674
+./game_ui.h:1434:  SidlWnd *Give;                            // 0x63D678
+./game_ui.h:1435:  SidlWnd *Tracking;                        // 0x63D67C
+./game_ui.h:1436:  SidlWnd *Inspect;                         // 0x63D680
+./game_ui.h:1437:  SidlWnd *SocialEdit;                      // 0x63D684
+./game_ui.h:1438:  SidlWnd *Feedback;                        // 0x63D688
+./game_ui.h:1439:  SidlWnd *BugReport;                       // 0x63D68C
+./game_ui.h:1440:  SidlWnd *VideoModes;                      // 0x63D690
+./game_ui.h:1441:  SidlWnd *TextEntry;                       // 0x63D694
+./game_ui.h:1442:  SidlWnd *FileSelection;                   // 0x63D698
+./game_ui.h:1443:  SidlWnd *Compass;                         // 0x63D69C
+./game_ui.h:1444:  SidlWnd *PlayerNotes;                     // 0x63D6A0
+./game_ui.h:1445:  SidlWnd *GemsGame;                        // 0x63D6A4
+./game_ui.h:1446:  SidlWnd *TimeLeft;                        // 0x63D6A8
+./game_ui.h:1447:  SidlWnd *PetitionQ;                       // 0x63D6AC
+./game_ui.h:1448:  SidlWnd *Soulmark;                        // 0x63D6B0
+./game_ui.h:1449:  CInvSlotMgr *InvSlotMgr;                  // 0x63D6B4
+./game_ui.h:1450:  ContainerMgr *ContainerMgr;               // 0x63D6B8
+./game_functions.h:20:static int fn_GetLabelFromGame = 0x436680;
+./game_functions.h:21:static int fn_GetGaugeLabelFromGame = 0x43600d;
+./game_functions.h:22:static int fn_finalizeloot = 0x47f2bd;
+./game_functions.h:23:static int fn_releaseloot = 0x426576;
+./game_functions.h:24:static int fn_targetnearestnpc = 0x4ac17f;
+./game_functions.h:25:static int *fn_s_t3dGetActorLocation_ptr = (int *)0x7f99c8;
+./game_functions.h:26:static int *fn_s_s3dGetWorldVisibleActorList = (int *)0x7f9850;
+./game_functions.h:27:static int *fn_s_s3dGetCameraLocation = (int *)0x7f99D4;
+./game_functions.h:28:static int *fn_s_t3dSetCameraLocation = (int *)0x7f9ae4;
+./game_functions.h:29:static int fn_handle_mouselook = 0x4DB384;
+./game_functions.h:30:static int fn_initkeyboardassignments = 0x42A9D7;
+./game_functions.h:31:static int fn_executecmd = 0x54050c;
+./game_functions.h:32:static int fn_interpretcmd = 0x54572f;
+./game_functions.h:33:// static int fn_main_loop = 0x5473c3;
+./game_functions.h:34:/*inline int fn_loadoptions = 0x536CE0;*/
+./game_functions.h:35:static int fn_KeyboardPageHandleKeyboardMsg = 0x42c4fb;
+./game_functions.h:37:static mem::function<void __fastcall(int t, int unused, char *data, int unknown)> DoPercentConvert = 0x00538110;
+./game_functions.h:38:static mem::function<void __cdecl(const char *data)> gamelog = 0x005240dc;
+./game_functions.h:41:    is_invisible = 0x4afa90;  // can_target
+./game_functions.h:43:    0x7f9850;
+./game_functions.h:44:static mem::function<short __fastcall(int, int)> get_max_mana = 0x4B9483;
+./game_functions.h:45:static mem::function<short __fastcall(int, int)> get_cur_mana = 0x4b9450;
+./game_functions.h:47:static mem::function<void __fastcall(DWORD, int unused, DWORD)> ui_something = 0x536bae;
+./game_functions.h:48:static mem::function<float __fastcall(void *this_display, int unused_edx, float input_heading)> fix_heading = 0x4a2eed;
+./game_functions.h:49:static mem::function<void __cdecl()> ProcessMouseEvent = 0x525db4;
+./game_functions.h:50:static mem::function<void __fastcall(int, int, float)> MouseLook = 0x4db384;
+./game_functions.h:51:static mem::function<void __fastcall(DWORD, int unused, DWORD)> proc_mouse = 0x537707;
+./game_functions.h:53:    0x42B21D;  // arguments coptionswnd ptr, cmd, string_id, category
+./game_functions.h:54:static mem::function<int __cdecl(Zeal::GameUI::CXSTR *, const char *format)> CXStr_PrintString = 0x578110;
+./game_functions.h:55:static mem::function<int __fastcall(void *this_game, int unused_edx)> LoadOptions = 0x536CE0;  // Game ::loadOptions()
+./game_functions.h:56:static mem::function<int __cdecl(int key, int type)> readKeyMapFromIni = 0x525520;
+./game_functions.h:59:    auto_inventory = 0x4F0EEB;
+./game_functions.h:60:static mem::function<int __cdecl()> UI_ChatInputCheck = 0x54042d;
+./game_functions.h:62:    0x00545bbd;  // Returns false if merchant, loot, trade, and bank windows are not activated.
+./game_functions.h:63:static mem::function<bool __cdecl()> IsPlayerABardAndSingingASong = 0x0040a74a;  // Does internal pointer checking.
+./game_functions.h:65:    0x0049e2e8;  // CRaid::SendRaidChat()
+./game_functions.h:66:static mem::function<int __cdecl(Zeal::GameStructures::Entity *, const char *)> do_say = 0x4f8172;
+./game_functions.h:67:static mem::function<int __cdecl(Zeal::GameStructures::Entity *, const char *)> do_tell = 0x004f8367;
+./game_functions.h:68:static mem::function<int __cdecl(Zeal::GameStructures::Entity *, const char *)> do_guildsay = 0x004f4bd1;
+./game_functions.h:69:static mem::function<int __cdecl(Zeal::GameStructures::Entity *, const char *)> do_gsay = 0x004f82a8;
+./game_functions.h:70:static mem::function<int __cdecl(Zeal::GameStructures::Entity *, const char *)> do_auction = 0x004f8325;
+./game_functions.h:71:static mem::function<int __cdecl(Zeal::GameStructures::Entity *, const char *)> do_ooc = 0x004f8346;
+./game_functions.h:72:static mem::function<float __fastcall(int, int)> encum_factor = 0x4bb9c7;
+./game_functions.h:73:static mem::function<float __fastcall(int, int, int, int)> OpenContainer = 0x4168bd;
+./game_functions.h:74:static mem::function<float __fastcall(int, int)> CloseAllContainers = 0x416a43;
+./game_functions.h:75:static mem::function<int __fastcall(int, int)> GetFocusWnd = 0x5a07c0;
+./game_functions.h:76:static mem::function<int __fastcall(int, int, int)> CXWndIsType = 0x571300;
+./game_functions.h:77:static mem::function<int __fastcall(int, int, int, int)> CXWndShowContextMenu = 0x5A02F0;
+./game_functions.h:80:    CXWndMoveAndInvalidate = 0x00573600;
+./game_functions.h:83:    CXWndGetMinimizedRect = 0x00573730;
+./game_functions.h:86:    CSidlScreenWndHandleRButtonDown = 0x005703f0;
+./game_functions.h:88:    0x0056e0b0;  // Does nothing.
+./game_functions.h:90:    CXWndOnMove = 0x00402301;
+./game_functions.h:92:    0x0056eb00;
+./game_functions.h:93:static mem::function<void __fastcall(Zeal::GameUI::SidlWnd *wnd, int unusedEDX)> CXWndOnMinimizeBox = 0x00402306;
+./game_functions.h:95:    0x00402317;  // Just returns zero. Shared call.
+./game_functions.h:97:    0x00402317;  // Just returns zero. Shared call.
+./game_functions.h:100:    CXWndGetHitTestRect = 0x00571540;
+./game_functions.h:103:    CXWndGetInnerRect = 0x005714b0;
+./game_functions.h:106:    CXWndGetClientRect = 0x00572390;
+./game_functions.h:107:static mem::function<int __fastcall(Zeal::GameUI::SidlWnd *wnd, int unusedEDX)> CSidlScreenWndOnShow = 0x0056f590;
+./game_functions.h:108:static mem::function<void __fastcall(Zeal::GameUI::SidlWnd *wnd, int unusedEDX)> CSidlScreenWndLoadIniInfo = 0x0056f5a0;
+./game_functions.h:110:    0x0056fe10;
+./game_functions.h:113:    CSidlScreenWndConstructor = 0x0056e2b0;
+./game_functions.h:115:    0x0056e0c0;
+./game_functions.h:118:    CItemDisplayWndConstructor = 0x00423331;
+./game_functions.h:120:    CItemDisplayWndDestructor = 0x004234e8;
+./game_functions.h:121:static mem::function<int __fastcall(int, int)> CLootWndDeactivate = 0x42651f;
+./game_functions.h:122:static mem::function<int __cdecl()> MessageEvent = 0x52437F;
+./game_functions.h:123:static mem::function<int __fastcall(int, int)> ProcessControls = 0x53F337;
+./game_functions.h:124:static mem::function<int __cdecl(Zeal::GameStructures::Entity *, const char *)> ReplyTarget = 0x4ff62d;
+./game_functions.h:126:    0x005081db;  // Entity list traversal with name stricmp.
+./game_functions.h:204:inline Zeal::GameStructures::GuildName *guild_names = (Zeal::GameStructures::GuildName *)0x7F9C94;
+./game_functions.h:333:inline int get_screen_resolution_x() { return *reinterpret_cast<int *>(0x00798564); }
+./game_functions.h:335:inline int get_screen_resolution_y() { return *reinterpret_cast<int *>(0x00798568); }
+./game_functions.h:337:inline int get_viewport_left() { return *reinterpret_cast<short *>(0x00798548); }
+./game_functions.h:339:inline int get_viewport_top() { return *reinterpret_cast<short *>(0x0079854a); }
+./game_functions.h:341:inline int get_viewport_right() { return *reinterpret_cast<short *>(0x0079854c); }
+./game_functions.h:343:inline int get_viewport_bottom() { return *reinterpret_cast<short *>(0x0079854e); }
+./spellsets.cpp:18:static constexpr int kSpellsBaseMsgId = 0x10000;          // Used in single gem selection.
+./spellsets.cpp:19:static constexpr int kSpellSetSaveMsgId = 0x21000;        // Trigger to start a save.
+./spellsets.cpp:20:static constexpr int kSpellSetBaseMsgId = 0x20000;        // Offset for selecting a set.
+./spellsets.cpp:21:static constexpr int kSpellSetDeleteBaseMsgId = 0x22000;  // Offset for deleting.
+./spellsets.cpp:22:static constexpr int kSpellSetHeaderMsgId = 0x30000;      // Header ID.
+./spellsets.cpp:478:        mov edx, 0x00418256             ; Use EDX as scratch to hold absolute jump address.
+./spellsets.cpp:484:  int patch_addr = 0x00418251;
+./spellsets.cpp:502:  zeal->hooks->Add("FinishMemorizing", 0x434b38, FinishMemorizing, hook_type_detour);
+./spellsets.cpp:503:  zeal->hooks->Add("FinishScribing", 0x43501f, FinishScribing, hook_type_detour);
+./spellsets.cpp:504:  zeal->hooks->Add("SpellGemRbutton", 0x5A67B0, SpellGemWnd_HandleRButtonUp, hook_type_detour);
+./spellsets.cpp:505:  zeal->hooks->Add("CastSpellWnd_WndNotification", 0x0040a32a, CastSpellWnd_WndNotification, hook_type_detour);
+./game_addresses.h:14:static GameStructures::Entity *Self = (Zeal::GameStructures::Entity *)0x7F94CC;
+./game_addresses.h:15:static GameStructures::Entity *Target = (Zeal::GameStructures::Entity *)0x7F94EC;
+./game_addresses.h:16:static GameStructures::Entity *Active_Corpse = (Zeal::GameStructures::Entity *)0x7f9500;
+./game_addresses.h:17:static GameStructures::Entity *EntListPtr = (Zeal::GameStructures::Entity *)0x7f9498;
+./game_addresses.h:18:static GameStructures::CameraInfo *CameraInfo = (Zeal::GameStructures::CameraInfo *)0x63B928;
+./game_addresses.h:19:static GameStructures::GroupInfo *GroupInfo = (Zeal::GameStructures::GroupInfo *)0x007912B0;
+./game_addresses.h:20:static GameStructures::RaidInfo *RaidInfo = (GameStructures::RaidInfo *)0x7914D0;
+./game_addresses.h:21:static GameStructures::ViewActor *ViewActor = (GameStructures::ViewActor *)0x63D6C0;
+./game_addresses.h:22:static GameStructures::KeyboardModifiers *KeyMods = (GameStructures::KeyboardModifiers *)0x799738;
+./game_addresses.h:23:static GameUI::pInstWindows *Windows = (GameUI::pInstWindows *)0x63D5CC;
+./game_addresses.h:24:static GameUI::CXWndManager **WndManager = (GameUI::CXWndManager **)0x809DB4;
+./game_addresses.h:28:static GameStructures::Entity **EntityIdArray = (Zeal::GameStructures::Entity **)0x0078c47c;  // IDArray
+./game_addresses.h:29:static GameStructures::GAMEZONEINFO *ZoneInfo = (GameStructures::GAMEZONEINFO *)0x00798784;
+./game_addresses.h:30:// static GameStructures::SPELLMGR* SpellsMgr = (GameStructures::SPELLMGR*)0x805CB0;
+./game_addresses.h:32:// static DWORD* ptr_LocalPC = (DWORD*)0x7F94E8;
+./game_addresses.h:33:static GameUI::ContainerMgr **ptr_ContainerMgr = reinterpret_cast<GameUI::ContainerMgr **>(0x0063d6b8);
+./game_addresses.h:34:static int *ptr_PrimaryKeyMap = (int *)0x7CD84C;
+./game_addresses.h:35:static int *ptr_AlternateKeyMap = (int *)0x7CDC4C;
+./game_addresses.h:36:static BYTE *strafe_direction = (BYTE *)0x7985EB;
+./game_addresses.h:37:static float *strafe_speed = (float *)0x799780;
+./game_addresses.h:38:static GameStructures::Entity *_ControlledPlayer = (GameStructures::Entity *)0x7f94e0;
+./game_addresses.h:39:static GameStructures::Cam *camera = (GameStructures::Cam *)0x799688;       // 0x7996C0;
+./game_addresses.h:40:static int16_t *const mouse_client_x = (int16_t *)0x00798580;               // Mouse coordinates in client rect.
+./game_addresses.h:41:static int16_t *const mouse_client_y = (int16_t *)0x00798582;               // Set to 32767 when invalid.
+./game_addresses.h:42:static int32_t *const mouse_client_x_dinput_state = (int32_t *)0x008090a8;  // Internal dinput state update.
+./game_addresses.h:43:static int32_t *const mouse_client_y_dinput_state = (int32_t *)0x008090ac;
+./game_addresses.h:44:static int32_t *const mouse_client_x_dinput_accum = (int32_t *)0x008092e8;  // Internal dinput accumulators.
+./game_addresses.h:45:static int32_t *const mouse_client_y_dinput_accum = (int32_t *)0x008092ec;
+./game_addresses.h:46:static bool *const is_right_mouse_look_down = (bool *)0x007985ea;  // Set true when in rmb mouse look mode.
+./game_addresses.h:47:static bool *const is_left_mouse_down = (bool *)0x00798614;        // Copied dinput lmb value in ProcessMouseEvent.
+./game_addresses.h:48:static bool *const is_right_mouse_down = (bool *)0x00798615;       // Copied dinput lmb value in ProcessMouseEvent.
+./game_addresses.h:49:static bool *const is_right_mouse_down_from_dinput = (bool *)0x00798616;
+./game_addresses.h:50:static bool *const is_left_mouse_down_from_dinput = (bool *)0x00798617;
+./game_addresses.h:51:static int *mouse_hover_window = (int *)0x809DD8;  // unsure
+./game_addresses.h:52:static int *camera_view = (int *)0x63BE68;
+./game_addresses.h:53:static int max_pitch = 0x5e86d0;
+./game_addresses.h:54:static GameStructures::KeyboardInput *KeyInput = (GameStructures::KeyboardInput *)0x7ce058;
+./game_addresses.h:55:static char *in_game = (char *)0x798550;
+./game_addresses.h:56:static int *attack_on_assist = (int *)0x007cf204;    // 1 = attack on assist
+./game_addresses.h:57:static int *is_logging_enabled = (int *)0x007cf1e0;  // 0 = disabled, 1 = enabled
+./game_addresses.h:59:// Vec3* camera_position = *(Vec3**)0x9c08128;
+./game_addresses.h:62:   // int pWorld = 0x7F9494;
+./ui_hotbutton.cpp:87:  zeal->hooks->Add("DoHotButton", 0x4209bd, DoHotButton, hook_type_detour);
+./ui_hotbutton.cpp:88:  zeal->hooks->Add("SetCheck", 0x595790, SetCheck, hook_type_detour);
+./zeal.cpp:245:  const char(*tell_list)[64] = reinterpret_cast<const char(*)[64]>(0x007CE45C);
+./zeal.cpp:534:      if (*reinterpret_cast<DWORD *>(0x007cf1e8))  // gKunarkEnabled_007cf1e8
+./zeal.cpp:536:      if (*reinterpret_cast<DWORD *>(0x007cf1ec))  // gVeliousEnabled_007cf1ec
+./zeal.cpp:538:      if (*reinterpret_cast<DWORD *>(0x007cf1f0))  // gLuclinEnabled_007cf1f0
+./zeal.cpp:540:      if (*reinterpret_cast<DWORD *>(0x007cf1f4))  // gPlanesOfPowerEnabled_007cf1f4
+./zeal.cpp:615:                             *reinterpret_cast<LONGLONG *>(0x008092c8));  // i64FirstTimeStampTicks
+./zeal.cpp:617:                             *reinterpret_cast<LONGLONG *>(0x008092d0));  // i64CPUTicksPerMillisecond
+./zeal.cpp:1027:      reinterpret_cast<void (*)(void)>(0x004fb5ae)();  // do_loot().
+./zeal.cpp:1045:      auto do_assist_fn = reinterpret_cast<void (*)(Zeal::GameStructures::Entity *, const char *)>(0x004fd7dc);
+./zeal.cpp:1051:      BYTE *can_attack_flag = reinterpret_cast<BYTE *>(0x007cd844);
+./ui_bank.cpp:13:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x404aec)(
+./ui_bank.cpp:15:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x404aec)(Zeal::Game::Windows->Bank, 2,
+./ui_bank.cpp:19:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x404aec)(
+./ui_bank.cpp:21:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x404aec)(Zeal::Game::Windows->Bank, 3,
+./ui_bank.cpp:25:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x404aec)(
+./ui_bank.cpp:27:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x404aec)(Zeal::Game::Windows->Bank, 0,
+./ui_bank.cpp:29:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x404aec)(Zeal::Game::Windows->Bank, 1,
+./ui_bank.cpp:31:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x404aec)(Zeal::Game::Windows->Bank, 2,
+./ui_bank.cpp:33:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x404aec)(Zeal::Game::Windows->Bank, 3,
+./ui_bank.cpp:38:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x421876)(
+./ui_bank.cpp:40:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x421876)(Zeal::Game::Windows->Inventory,
+./ui_bank.cpp:44:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x421876)(
+./ui_bank.cpp:46:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x421876)(Zeal::Game::Windows->Inventory,
+./ui_bank.cpp:50:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x421876)(
+./ui_bank.cpp:52:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x421876)(Zeal::Game::Windows->Inventory,
+./ui_bank.cpp:54:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x421876)(Zeal::Game::Windows->Inventory,
+./ui_bank.cpp:56:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x421876)(Zeal::Game::Windows->Inventory,
+./ui_bank.cpp:58:      reinterpret_cast<void(__thiscall *)(Zeal::GameUI::BasicWnd *, int, int)>(0x421876)(Zeal::Game::Windows->Inventory,
+./ui_bank.cpp:67:                                                unsigned int flag)>(0x0595330)(pWnd, unused, pt, flag);
+./ui_bank.cpp:77:  pWnd->DeleteCustomVTable(reinterpret_cast<Zeal::GameUI::BaseVTable *>(0x005eaf00));  // CButtonWnd::vtable
+./tellwindows.cpp:378:      "GetActiveChatWindow", 0x425D27, GetActiveChatWindow,
+./tellwindows.cpp:380:  zeal->hooks->Add("DeactivateChatManager", 0x410871, DeactivateChatManager, hook_type_detour);
+./tellwindows.cpp:381:  zeal->hooks->Add("ChatWndNotification", 0x413BE9, ChatWndNotification, hook_type_detour);
+./tellwindows.cpp:382:  // zeal->hooks->Add("DeactivateMainUI", 0x4a7705, DeactivateMainUI, hook_type_detour); //clean up tell windows just
+./tellwindows.cpp:395:            std::string reply_who = (char *)(0x7CE45C);
+./tellwindows.cpp:445:      int last_tell_index = *(int *)0x7cf0dc;
+./tellwindows.cpp:446:      char *reply_to = (char *)(0x7CE45C + (last_tell_index * 0x40));
+./ui_loot.cpp:15:                                                unsigned int flag)>(0x0595330)(pWnd, unused, pt, flag);
+./ui_loot.cpp:23:                                                unsigned int flag)>(0x0595330)(pWnd, unused, pt, flag);
+./ui_loot.cpp:33:  pWnd->DeleteCustomVTable(reinterpret_cast<Zeal::GameUI::BaseVTable *>(0x005eaf00));  // CButtonWnd::vtable
+./tooltip.cpp:11:void Tooltip::synchronize_hover_timeout() { mem::write<int>(0x59E10D, hover_timeout.get()); }
+./tooltip.cpp:15:    mem::set(0x416D1D, 0x90, 2);  // remove the hovered check for showing tooltips while holding alt for containers
+./tooltip.cpp:16:    mem::set(0x416D22, 0x90, 2);  // remove the hovered check for showing tooltips while holding alt for containers
+./tooltip.cpp:18:    mem::write<BYTE[2]>(0x416d1d, {0x74, 0x74});
+./tooltip.cpp:19:    mem::write<BYTE[2]>(0x416D22, {0x74, 0x6F});
+./tooltip.cpp:26:  mem::write<BYTE>(0x59e112, 0x82);  // change from jbe to jb so if you disable the tooltip timer completely it doesnt
+./commands.cpp:76:    if (index >= 0) *reinterpret_cast<BYTE *>(0x0079856c) = 1;
+./commands.cpp:182:      int start = 0x799D8D;
+./commands.cpp:183:      int end = 0x7B908D;
+./commands.cpp:207:    BYTE *run_mode = reinterpret_cast<BYTE *>(0x0079856d);
+./commands.cpp:271:        if (*(BYTE *)0x4C28B5 == 0x90) {
+./commands.cpp:272:          mem::copy(0x4C28B5, (int)orig1, sizeof(orig1));
+./commands.cpp:273:          mem::copy(0x4C28EF, (int)orig2, sizeof(orig2));
+./commands.cpp:274:          mem::copy(0x4C298B, (int)orig3a, sizeof(orig3a));
+./commands.cpp:275:          mem::copy(0x4C2991, (int)orig3b, sizeof(orig3b));
+./commands.cpp:276:          mem::copy(0x4C2BB4, (int)orig4, sizeof(orig4));
+./commands.cpp:280:          mem::set(0x4C28B5, 0x90, 9);
+./commands.cpp:282:          mem::set(0x4C28EF, 0x90, 1);
+./commands.cpp:283:          mem::set(0x4C28EF + 1, 0xE9, 1);
+./commands.cpp:285:          mem::set(0x4C298B, 0x90, 2);
+./commands.cpp:286:          mem::set(0x4C2991, 0x90, 5);
+./commands.cpp:288:          mem::set(0x4C2BB4, 0x90, 9);
+./commands.cpp:295:        BYTE orig1[7] = {0x66, 0x01, 0xBE, 0x9A, 0x0, 0x0, 0x0};  // 0x4C3F93
+./commands.cpp:296:        BYTE orig2[7] = {0x66, 0x01, 0x87, 0x9A, 0x0, 0x0, 0x0};  // 0x4c7642
+./commands.cpp:297:        if (*(BYTE *)0x4C3F93 == 0x90) {
+./commands.cpp:298:          mem::copy(0x4C3F93, (int)orig1, sizeof(orig1));
+./commands.cpp:299:          mem::copy(0x4C7642, (int)orig2, sizeof(orig2));
+./commands.cpp:302:          mem::set(0x4C3F93, 0x90, sizeof(orig1));
+./commands.cpp:303:          mem::set(0x4C7642, 0x90, sizeof(orig2));
+./commands.cpp:310:    mem::write<BYTE>(0x8092d9, 1);  // reload skin
+./commands.cpp:311:    mem::write<BYTE>(0x8092da, 1);  // reload with ui

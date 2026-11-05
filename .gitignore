@@ -1,0 +1,20 @@
+build/
+recovery-*/
+source/
+toolchain/
+*.dll
+*.asi
+*.exe
+*.obj
+*.txz
+0x*
+Logs/
+UIErrors.txt
+
+# Local EverQuest client configuration
+eqclient.ini
+keyboard.txt
+
+# Temporary development artifacts
+*.bak
+second.tag_color
