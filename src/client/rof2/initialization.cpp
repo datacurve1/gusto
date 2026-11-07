@@ -2,6 +2,7 @@
 
 #include "gusto/client/rof2/compatibility.hpp"
 #include "gusto/client/rof2/interpret_cmd_hook.hpp"
+#include "gusto/client/rof2/slow_turn_keys.hpp"
 
 #include <windows.h>
 
@@ -24,7 +25,8 @@ namespace gusto::client::rof2
         AcquireSRWLockExclusive(&g_lock);
 
         if (g_status == InitializationStatus::Ready ||
-            g_status == InitializationStatus::ValidationFailed)
+            g_status == InitializationStatus::ValidationFailed ||
+            g_status == InitializationStatus::HookInstallFailed)
         {
             const InitializationStatus status = g_status;
             ReleaseSRWLockExclusive(&g_lock);
@@ -45,6 +47,15 @@ namespace gusto::client::rof2
         if (!InstallInterpretCmdHook(module, g_validation))
             OutputDebugStringA(
                 "GUSTO: InterpretCmd diagnostic hook installation failed.\n");
+
+        if (!install_slow_turn_keys(module, g_validation))
+        {
+            g_status = InitializationStatus::HookInstallFailed;
+            OutputDebugStringA(
+                "GUSTO: slow-turn key hook installation failed; client marked unavailable.\n");
+            ReleaseSRWLockExclusive(&g_lock);
+            return InitializationStatus::HookInstallFailed;
+        }
 
         static ClientState clientState(module, g_validation);
         g_clientState = &clientState;
@@ -103,6 +114,7 @@ int GustoInitializeClient()
             return 1;
 
         case InitializationStatus::ValidationFailed:
+        case InitializationStatus::HookInstallFailed:
             return 0;
 
         default:

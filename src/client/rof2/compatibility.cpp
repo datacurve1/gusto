@@ -1,4 +1,5 @@
 #include "gusto/client/rof2/compatibility.hpp"
+#include "gusto/client/rof2/slow_turn_keys.hpp"
 #include "gusto/client/rof2/initialization.hpp"
 
 #include <windows.h>
@@ -400,7 +401,7 @@ namespace
         GustoTrace("worker started\r\n");
         const int result = GustoInitializeClient();
         GustoTrace(result == 1 ? "initialization succeeded\r\n" :
-                   result == 0 ? "client validation failed\r\n" :
+                   result == 0 ? "initialization failed\r\n" :
                                  "unexpected initialization status\r\n");
 
         HANDLE file = CreateFileA(
@@ -455,6 +456,7 @@ namespace
 
     void WINAPI GustoAsiShutdown()
     {
+        gusto::client::rof2::shutdown_slow_turn_keys();
         OutputDebugStringA("GUSTO: ASI_shutdown\n");
     }
 

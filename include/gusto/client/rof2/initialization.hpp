@@ -10,7 +10,8 @@ namespace gusto::client::rof2
         NotStarted,
         Initializing,
         Ready,
-        ValidationFailed
+        ValidationFailed,
+        HookInstallFailed
     };
 
     InitializationStatus InitializeClient();
