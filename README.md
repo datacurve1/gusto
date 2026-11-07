@@ -62,6 +62,13 @@ cmake --build build
 The CMake project defines the `GUSTO.dll` library and the
 `gusto_safety_tests` executable target.
 
+## Slow Turn Keys
+
+Gusto adds Slow Turn Left, Slow Turn Right, and Toggle All Bags to the native
+Options → Keys window. The RoF2 command mapping, bag-toggle behavior, speed
+patches, and manual verification steps are documented in
+[Slow Turn Keys and Toggle All Bags](docs/slow-turn-keys.md).
+
 ## Diagnostics
 
 The current InterpretCmd diagnostic hook records intercepted command text to:
