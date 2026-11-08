@@ -34,8 +34,6 @@ namespace gusto::client::rof2
         DspChatFunction g_dspChat = nullptr;
         void* g_trampoline = nullptr;
         volatile LONG g_installed = 0;
-        volatile LONG g_logging = 0;
-
         struct ThreadHandle
         {
             HANDLE handle = nullptr;
@@ -300,46 +298,7 @@ namespace gusto::client::rof2
             return true;
         }
 
-        void LogCommand(const char* text)
-        {
-            if (InterlockedCompareExchange(&g_logging, 1, 0) != 0)
-                return;
 
-            char command[1024]{};
-            std::size_t length = 0;
-
-            if (CopyCommandText(text, command, sizeof(command), length))
-            {
-                constexpr char prefix[] = "InterpretCmd: ";
-                constexpr char newline[] = "\r\n";
-
-                HANDLE file = CreateFileA(
-                    "C:\\gusto_interpretcmd.log",
-                    FILE_APPEND_DATA,
-                    FILE_SHARE_READ | FILE_SHARE_WRITE,
-                    nullptr,
-                    OPEN_ALWAYS,
-                    FILE_ATTRIBUTE_NORMAL,
-                    nullptr);
-
-                if (file != INVALID_HANDLE_VALUE)
-                {
-                    DWORD written = 0;
-                    WriteFile(file, prefix, sizeof(prefix) - 1, &written, nullptr);
-
-                    if (length)
-                        WriteFile(file, command, static_cast<DWORD>(length),
-                                  &written, nullptr);
-
-                    WriteFile(file, newline, sizeof(newline) - 1,
-                              &written, nullptr);
-
-                    CloseHandle(file);
-                }
-            }
-
-            InterlockedExchange(&g_logging, 0);
-        }
 
         void __fastcall InterpretCmdHook(
             void* self,
@@ -347,7 +306,7 @@ namespace gusto::client::rof2
             void* who,
             const char* text)
         {
-            LogCommand(text);
+
 
             if (text &&
                 _strnicmp(text, "/gusto", 6) == 0 &&
@@ -509,13 +468,9 @@ namespace gusto::client::rof2
 
         ResumeThreads(threads);
 
-        if (!flushed)
-            OutputDebugStringA(
-                "GUSTO: InterpretCmd hook installed; instruction-cache flush failed.\n");
 
-        if (!restored)
-            OutputDebugStringA(
-                "GUSTO: InterpretCmd hook installed; original page protection restore failed.\n");
+
+
 
         return true;
     }

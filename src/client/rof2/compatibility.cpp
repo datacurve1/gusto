@@ -375,64 +375,23 @@ namespace
 
     volatile LONG g_initializationWorkerStarted = 0;
 
-    void GustoTrace(const char* message)
-    {
-        HANDLE file = CreateFileA(
-            "C:\\gusto_asi_trace.txt",
-            FILE_APPEND_DATA,
-            FILE_SHARE_READ | FILE_SHARE_WRITE,
-            nullptr,
-            OPEN_ALWAYS,
-            FILE_ATTRIBUTE_NORMAL,
-            nullptr);
 
-        if (file != INVALID_HANDLE_VALUE)
-        {
-            DWORD written = 0;
-            WriteFile(file, message,
-                      static_cast<DWORD>(strlen(message)),
-                      &written, nullptr);
-            CloseHandle(file);
-        }
-    }
 
     DWORD WINAPI GustoInitializationWorker(LPVOID)
     {
-        GustoTrace("worker started\r\n");
-        const int result = GustoInitializeClient();
-        GustoTrace(result == 1 ? "initialization succeeded\r\n" :
-                   result == 0 ? "initialization failed\r\n" :
-                                 "unexpected initialization status\r\n");
 
-        HANDLE file = CreateFileA(
-            "C:\\gusto_initialization.txt",
-            GENERIC_WRITE,
-            FILE_SHARE_READ,
-            nullptr,
-            CREATE_ALWAYS,
-            FILE_ATTRIBUTE_NORMAL,
-            nullptr);
+        GustoInitializeClient();
 
-        if (file != INVALID_HANDLE_VALUE)
-        {
-            const char* message =
-                result == 1 ? "GUSTO initialization succeeded" :
-                result == 0 ? "GUSTO client validation failed" :
-                              "GUSTO initialization returned unexpected status";
 
-            DWORD written = 0;
-            WriteFile(file, message, static_cast<DWORD>(strlen(message)),
-                      &written, nullptr);
-            CloseHandle(file);
-        }
+
 
         return 0;
     }
 
     void WINAPI GustoAsiStartup()
     {
-        GustoTrace("ASI_startup entered\r\n");
-        OutputDebugStringA("GUSTO: ASI_startup\n");
+
+
 
         if (InterlockedCompareExchange(
                 &g_initializationWorkerStarted, 1, 0) != 0)
@@ -450,14 +409,14 @@ namespace
         else
         {
             InterlockedExchange(&g_initializationWorkerStarted, 0);
-            OutputDebugStringA("GUSTO: failed to start initialization worker\n");
+
         }
     }
 
     void WINAPI GustoAsiShutdown()
     {
         gusto::client::rof2::shutdown_slow_turn_keys();
-        OutputDebugStringA("GUSTO: ASI_shutdown\n");
+
     }
 
     struct RibEntry
@@ -475,12 +434,12 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD reason, LPVOID)
 {
     if (reason == DLL_PROCESS_ATTACH)
     {
-        OutputDebugStringA("GUSTO: DLL_PROCESS_ATTACH\n");
+
 
         HMODULE miles = GetModuleHandleA("mss32.dll");
         if (!miles)
         {
-            OutputDebugStringA("GUSTO: mss32.dll not found\n");
+
             return TRUE;
         }
 
@@ -491,7 +450,7 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD reason, LPVOID)
 
         if (!getProviderHandle || !registerInterface)
         {
-            OutputDebugStringA("GUSTO: RIB exports not found\n");
+
             return TRUE;
         }
 
@@ -502,7 +461,7 @@ BOOL WINAPI DllMain(HINSTANCE, DWORD reason, LPVOID)
         };
 
         registerInterface(getProviderHandle(), "ASI codec", 2, entries);
-        OutputDebugStringA("GUSTO: ASI lifecycle registered\n");
+
     }
 
     return TRUE;

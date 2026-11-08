@@ -15,10 +15,13 @@ add_library(gusto SHARED
     src/client/rof2/initialization.cpp
     src/client/rof2/globals.cpp
     src/client/rof2/client_state.cpp
-    src/client/rof2/diagnostics.cpp
     src/client/rof2/interpret_cmd_hook.cpp
     src/client/rof2/slow_turn_keys.cpp
-)
+    src/client/rof2/hook_utils.cpp
+    src/client/rof2/nameplate_hooks.cpp
+    src/client/rof2/hook_utils.cpp
+    src/client/rof2/nameplate_hooks.cpp
+    )
 
 target_include_directories(gusto
     PUBLIC
@@ -49,6 +52,8 @@ add_executable(gusto_safety_tests
     src/client/rof2/client_state.cpp
     src/client/rof2/interpret_cmd_hook.cpp
     src/client/rof2/slow_turn_keys.cpp
+    src/client/rof2/hook_utils.cpp
+    src/client/rof2/nameplate_hooks.cpp
 )
 
 target_include_directories(gusto_safety_tests PRIVATE

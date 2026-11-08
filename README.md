@@ -5,7 +5,7 @@ client modification framework.
 
 The goal of Gusto is to adapt Zeal functionality for the EverQuest Rain of
 Fear 2 (RoF2) client through a dedicated compatibility layer, client
-initialization, diagnostics, and client hooks.
+initialization, and client hooks.
 
 Gusto is an independent community project and is not affiliated with or
 endorsed by Daybreak Game Company.
@@ -69,17 +69,20 @@ Options → Keys window. The RoF2 command mapping, bag-toggle behavior, speed
 patches, and manual verification steps are documented in
 [Slow Turn Keys and Toggle All Bags](docs/slow-turn-keys.md).
 
-## Diagnostics
+## Client Hooks
 
-The current InterpretCmd diagnostic hook records intercepted command text to:
+Gusto includes RoF2 client hooks for slow-turn key controls, bag toggling,
+nameplate handling, and the `/gusto version` command.
 
-`C:\gusto_interpretcmd.log`
+Hook installation uses client validation and initialization checks. Optional
+hook installation failures do not, by themselves, abort client initialization.
 
-It also provides the `/gusto version` command.
+The runtime hooks do not write diagnostic log files or emit debugger trace
+messages.
 
-The diagnostic log may contain commands entered in the client. Review and
-protect this file accordingly. Diagnostic behavior may change during
-development.
+The slow-turn hook installer temporarily suspends client threads while
+patching code and resumes those threads before releasing their handles. This
+is required to avoid leaving client threads suspended during startup.
 
 ## Repository Layout
 

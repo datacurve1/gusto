@@ -193,6 +193,15 @@ namespace gusto::client::rof2
                 addresses::ZoneInfoReferenceSize));
     }
 
+    Display* ClientState::GetDisplay() const
+    {
+        return static_cast<Display*>(
+            ResolvePointer(
+                m_module, m_validation,
+                addresses::Display,
+                addresses::DisplayReferenceSize));
+    }
+
     PlayerClient* ClientState::GetLocalPlayer() const
     {
         return static_cast<PlayerClient*>(

@@ -34,18 +34,7 @@ static_assert(sizeof(void*) == 4, "RoF2 client is 32-bit");
 
 namespace {
 
-void trace_slow_turn(const char* message) {
-  // Reuse the ASI trace path that is already confirmed writable in this Wine
-  // setup. This also lets us distinguish the active DLL from stale copies.
-  HANDLE file = CreateFileA("C:\\gusto_asi_trace.txt", FILE_APPEND_DATA,
-                            FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
-                            OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-  if (file == INVALID_HANDLE_VALUE) return;
-  DWORD written = 0;
-  WriteFile(file, message, static_cast<DWORD>(std::strlen(message)), &written,
-            nullptr);
-  CloseHandle(file);
-}
+
 
 struct ThreadRef {
   HANDLE handle = nullptr;
@@ -62,9 +51,13 @@ struct PatchSite {
 
 void resume_threads(std::vector<ThreadRef>& threads) {
   for (auto it = threads.rbegin(); it != threads.rend(); ++it) {
-    if (it->suspended && ResumeThread(it->handle) == static_cast<DWORD>(-1))
-      OutputDebugStringA("GUSTO: failed to resume a client thread after hook patching.\n");
-    if (it->handle) CloseHandle(it->handle);
+    if (it->handle) {
+      if (it->suspended) {
+        ResumeThread(it->handle);
+        it->suspended = false;
+      }
+      CloseHandle(it->handle);
+    }
   }
   threads.clear();
 }
@@ -354,8 +347,7 @@ bool set_slow_patches(bool on) {
         if (*reinterpret_cast<const uint8_t*>(g_speedPatchAddress[i]) != before[i])
           rollbackOk = write_mem(g_speedPatchAddress[i], &before[i], 1) && rollbackOk;
       }
-      if (!rollbackOk)
-        OutputDebugStringA("GUSTO: speed patch rollback incomplete; next transition will reconcile bytes.\n");
+
       ReleaseSRWLockExclusive(&g_speed_lock);
       return false;
     }
@@ -429,7 +421,7 @@ GUSTO_ENTRY void gusto_prepare_records(void* window) {
   char trace[128]{};
   wsprintfA(trace, "Options row hook reached; inherited category mask=0x%08lX\r\n",
             static_cast<unsigned long>(category));
-  trace_slow_turn(trace);
+
   for (int id = kFirstExtendedId; id < kExtendedLimit; ++id)
     gusto_records[(id - kFirstExtendedId) * 2 + 1] = 0;
   assign(&gusto_records[(kSlowLeftId - kFirstExtendedId) * 2], "Slow Turn Left");
@@ -460,16 +452,16 @@ using CloseContainerFn = void (GUSTO_THISCALL*)(void*, const void*, bool);
 
 GUSTO_ENTRY void gusto_toggle_all_bags() {
   if (InterlockedCompareExchange(&g_active, 0, 0) == 0) {
-    trace_slow_turn("bag toggle ignored: key hooks inactive\r\n");
+
     return;
   }
   if (enter_or_chat_owns_input()) {
-    trace_slow_turn("bag toggle ignored: chat/input owns focus\r\n");
+
     return;
   }
   if (!g_localPcGlobalAddress || !g_containerMgrGlobalAddress ||
       !g_getCurrentProfileAddress || !g_openContainerAddress || !g_closeContainerAddress) {
-    trace_slow_turn("bag toggle failed: an MQ RoF2 address was not resolved\r\n");
+
     return;
   }
 
@@ -480,7 +472,7 @@ GUSTO_ENTRY void gusto_toggle_all_bags() {
       !is_readable_range(reinterpret_cast<const void*>(manager),
                          kContainerMgrWindowsOffset +
                              kMaxContainerWindows * sizeof(uintptr_t))) {
-    trace_slow_turn("bag toggle failed: local PC or container manager unavailable\r\n");
+
     return;
   }
 
@@ -490,7 +482,7 @@ GUSTO_ENTRY void gusto_toggle_all_bags() {
   void* profile = getProfile(reinterpret_cast<void*>(pc + kPcProfileManagerOffset));
   if (!profile || !is_readable_range(reinterpret_cast<const void*>(profile),
                                      kProfileInventoryOffset + kInventoryItemsOffset + 0x18)) {
-    trace_slow_turn("bag toggle failed: MacroQuest profile lookup returned no profile\r\n");
+
     return;
   }
 
@@ -505,7 +497,7 @@ GUSTO_ENTRY void gusto_toggle_all_bags() {
     char trace[128]{};
     wsprintfA(trace, "bag toggle failed: bad inventory array (count=%lu)\r\n",
               static_cast<unsigned long>(itemCount));
-    trace_slow_turn(trace);
+
     return;
   }
 
@@ -541,7 +533,7 @@ GUSTO_ENTRY void gusto_toggle_all_bags() {
                 static_cast<unsigned long>(slot), static_cast<unsigned long>(item),
                 static_cast<unsigned long>(definition), static_cast<unsigned>(itemType),
                 static_cast<unsigned long>(bagCapacity), gotItem, gotType, gotContents);
-      trace_slow_turn(slotTrace);
+
     }
     // RoF2's virtual GetItemDefinition accessor is at vtable + 0x08 (confirmed
     // by the native accessor at 0x7AFFE0); direct legacy definition fields are
@@ -557,7 +549,7 @@ GUSTO_ENTRY void gusto_toggle_all_bags() {
     wsprintfA(trace,
               "bag toggle found no bags (inventory slots=%lu, first bag slot=%d)\r\n",
               static_cast<unsigned long>(itemCount), kFirstBagInventorySlot);
-    trace_slow_turn(trace);
+
     return;
   }
 
@@ -580,13 +572,13 @@ GUSTO_ENTRY void gusto_toggle_all_bags() {
   for (int i = 0; i < bagCount; ++i) openCount += bags[i].open ? 1 : 0;
   char trace[128]{};
   wsprintfA(trace, "bag toggle found %d bags; %d currently open\r\n", bagCount, openCount);
-  trace_slow_turn(trace);
+
 
   if (allOpen) {
     for (int i = 0; i < bagCount; ++i)
       closeContainer(reinterpret_cast<void*>(manager),
                      reinterpret_cast<const void*>(bags[i].itemRef), true);
-    trace_slow_turn("bag toggle closed every inventory bag\r\n");
+
     return;
   }
 
@@ -598,7 +590,7 @@ GUSTO_ENTRY void gusto_toggle_all_bags() {
                   reinterpret_cast<const void*>(bags[i].itemRef),
                   reinterpret_cast<const void*>(bags[i].item + kItemGlobalIndexOffset), true);
   }
-  trace_slow_turn("bag toggle opened closed inventory bags\r\n");
+
 }
 
 GUSTO_ENTRY void gusto_bag_toggle_event(int down) {
@@ -607,7 +599,7 @@ GUSTO_ENTRY void gusto_bag_toggle_event(int down) {
     return;
   }
   if (InterlockedExchange(&g_bagToggleKeyDown, 1) == 0) {
-    trace_slow_turn("Toggle All Bags key-down received (command ID 485)\r\n");
+
     gusto_toggle_all_bags();
   }
 }
@@ -636,8 +628,8 @@ void release_latched_inputs() {
     for (bool command : release) anyMovement = anyMovement || command;
     if (!anyMovement) return;
   }
-  if (releasedSlow && !set_slow_patches(g_held[0] || g_held[1]))
-    trace_slow_turn("failed restoring speed while releasing latched movement\r\n");
+  if (releasedSlow)
+    set_slow_patches(g_held[0] || g_held[1]);
   auto dispatch = reinterpret_cast<void (__cdecl*)(int, int, int)>(
       gusto_dispatch_trampoline);
   if (dispatch) {
@@ -646,7 +638,7 @@ void release_latched_inputs() {
         dispatch(command, 0, 0);
     }
   }
-  trace_slow_turn("latched movement released after next movement key press\r\n");
+
 }
 
 GUSTO_ENTRY int gusto_native_movement_event(int command, int down) {
@@ -661,14 +653,14 @@ GUSTO_ENTRY int gusto_native_movement_event(int command, int down) {
         movementHeld = movementHeld || g_movementHeld[i];
       if (movementHeld) {
         g_latchMode = true;
-        trace_slow_turn("AUTORUN pressed; current movement combo latched\r\n");
+
       }
     }
     return 0;
   }
   if (down) {
     if (enter_or_chat_owns_input()) {
-      trace_slow_turn("movement key-down suppressed while Enter/chat owns input\r\n");
+
       return 1;
     }
     release_latched_inputs();
@@ -680,7 +672,7 @@ GUSTO_ENTRY int gusto_native_movement_event(int command, int down) {
   if (g_movementHeld[command] &&
       (g_latchMode || enter_or_chat_owns_input())) {
     g_latchedMovement[command] = true;
-    trace_slow_turn("movement key-up latched while Enter/chat owns input\r\n");
+
     return 1;
   }
   g_movementHeld[command] = false;
@@ -707,29 +699,19 @@ GUSTO_ENTRY int gusto_slow_turn_event(int which, int down) {
   } else if (g_held[index] &&
              (g_latchMode || enter_or_chat_owns_input())) {
     g_latchedSlow[index] = true;
-    trace_slow_turn(index == 0
-        ? "slow-left latched by Enter/chat until next movement key\r\n"
-        : "slow-right latched by Enter/chat until next movement key\r\n");
+
     return 0;
   }
   g_held[index] = isDown;
   if (!set_slow_patches(g_held[0] || g_held[1])) {
     if (isDown)
       g_held[index] = false;
-    trace_slow_turn(isDown
-        ? "slow-turn speed update failed on key-down; turn suppressed\r\n"
-        : "slow-turn speed restore failed on key-up\r\n");
-    OutputDebugStringA(isDown
-        ? "GUSTO: slow-turn activation failed; custom turn key-down was suppressed.\n"
-        : "GUSTO: slow-turn release update failed; custom turn key-up was dispatched.\n");
+
+
     return isDown ? 0 : 1;
   }
   if (wasHeld != isDown) {
-    trace_slow_turn(index == 0
-        ? (isDown ? "slow-left held; slow speed enabled\r\n"
-                  : "slow-left released; normal speed restored\r\n")
-        : (isDown ? "slow-right held; slow speed enabled\r\n"
-                  : "slow-right released; normal speed restored\r\n"));
+
   }
   return 1;
 }
@@ -875,9 +857,9 @@ _gusto_legacy_delete_wrapper:
 namespace gusto::client::rof2 {
 
 bool install_slow_turn_keys(HMODULE module, const ValidatedClient& validation) {
-  trace_slow_turn("slow-turn installer entered\r\n");
+
   if (!validation.IsValidFor(module) || !module) {
-    trace_slow_turn("installer rejected validation token or module\r\n");
+
     return false;
   }
 
@@ -911,7 +893,7 @@ bool install_slow_turn_keys(HMODULE module, const ValidatedClient& validation) {
       !g_windowManagerAddress || !g_keymapGlobalAddress || !g_localPcGlobalAddress ||
       !g_containerMgrGlobalAddress || !g_getCurrentProfileAddress || !g_openContainerAddress ||
       !g_closeContainerAddress) {
-    trace_slow_turn("installer failed resolving one or more client addresses\r\n");
+
     return false;
   }
 
@@ -951,8 +933,8 @@ bool install_slow_turn_keys(HMODULE module, const ValidatedClient& validation) {
       std::memcmp(reinterpret_cast<void*>(g_getCurrentProfileAddress), expectedGetCurrentProfile, 8) ||
       std::memcmp(reinterpret_cast<void*>(g_openContainerAddress), expectedOpenContainer, 13) ||
       std::memcmp(reinterpret_cast<void*>(g_closeContainerAddress), expectedCloseContainer, 14)) {
-    trace_slow_turn("installer rejected a hook-site signature\r\n");
-    OutputDebugStringA("GUSTO: slow-turn hook signature mismatch; no sites patched.\n");
+
+
     return false;
   }
 
@@ -968,8 +950,8 @@ bool install_slow_turn_keys(HMODULE module, const ValidatedClient& validation) {
     if (!g_speedGuardAddress[i] || !g_speedPatchAddress[i] ||
         *reinterpret_cast<const uint8_t*>(g_speedGuardAddress[i]) != kSpeed[i].guard ||
         *reinterpret_cast<const uint8_t*>(g_speedPatchAddress[i]) != kSpeed[i].orig) {
-      trace_slow_turn("installer rejected a speed-patch signature\r\n");
-      OutputDebugStringA("GUSTO: slow-turn speed patch signature mismatch.\n");
+
+
       return false;
     }
   }
@@ -984,8 +966,8 @@ bool install_slow_turn_keys(HMODULE module, const ValidatedClient& validation) {
     if (trampLookup) VirtualFree(trampLookup, 0, MEM_RELEASE);
     if (trampLegacyGet) VirtualFree(trampLegacyGet, 0, MEM_RELEASE);
     if (trampLegacyDelete) VirtualFree(trampLegacyDelete, 0, MEM_RELEASE);
-    trace_slow_turn("installer could not allocate hook trampolines\r\n");
-    OutputDebugStringA("GUSTO: slow-turn trampoline allocation failed.\n");
+
+
     return false;
   }
   gusto_dispatch_trampoline = trampDispatch;
@@ -1039,8 +1021,8 @@ bool install_slow_turn_keys(HMODULE module, const ValidatedClient& validation) {
     VirtualFree(trampLookup, 0, MEM_RELEASE);
     VirtualFree(trampLegacyGet, 0, MEM_RELEASE);
     VirtualFree(trampLegacyDelete, 0, MEM_RELEASE);
-    trace_slow_turn("installer could not suspend client threads safely\r\n");
-    OutputDebugStringA("GUSTO: could not safely suspend client threads for key hooks.\n");
+
+
     return false;
   }
 
@@ -1060,8 +1042,8 @@ bool install_slow_turn_keys(HMODULE module, const ValidatedClient& validation) {
     VirtualFree(trampLookup, 0, MEM_RELEASE);
     VirtualFree(trampLegacyGet, 0, MEM_RELEASE);
     VirtualFree(trampLegacyDelete, 0, MEM_RELEASE);
-    trace_slow_turn("installer rejected startup race with KeyMaps construction\r\n");
-    OutputDebugStringA("GUSTO: KeyMaps startup raced hook installation; refusing install.\n");
+
+
     return false;
   }
 
@@ -1082,7 +1064,7 @@ bool install_slow_turn_keys(HMODULE module, const ValidatedClient& validation) {
     VirtualFree(trampLookup, 0, MEM_RELEASE);
     VirtualFree(trampLegacyGet, 0, MEM_RELEASE);
     VirtualFree(trampLegacyDelete, 0, MEM_RELEASE);
-    trace_slow_turn("installer could not pin GUSTO module\r\n");
+
     return false;
   }
 
@@ -1096,7 +1078,7 @@ bool install_slow_turn_keys(HMODULE module, const ValidatedClient& validation) {
         auto& previous = sites[--applied];
         if (!write_mem(previous.address, previous.old, previous.length)) {
           rollbackComplete = false;
-          OutputDebugStringA("GUSTO: slow-turn rollback write failed.\n");
+
         }
       }
       resume_threads(threads);
@@ -1104,7 +1086,7 @@ bool install_slow_turn_keys(HMODULE module, const ValidatedClient& validation) {
         // A remaining detour may still point into these trampolines and this
         // DLL. Keep them alive and leave custom dispatch disabled.
         InterlockedExchange(&g_active, 0);
-        OutputDebugStringA("GUSTO: incomplete hook rollback; preserving trampoline memory.\n");
+
         return false;
       }
       gusto_dispatch_trampoline = nullptr;
@@ -1117,22 +1099,22 @@ bool install_slow_turn_keys(HMODULE module, const ValidatedClient& validation) {
       VirtualFree(trampLookup, 0, MEM_RELEASE);
       VirtualFree(trampLegacyGet, 0, MEM_RELEASE);
       VirtualFree(trampLegacyDelete, 0, MEM_RELEASE);
-      OutputDebugStringA("GUSTO: slow-turn hook transaction failed and was rolled back.\n");
-      trace_slow_turn("installer hook transaction failed and rolled back\r\n");
+
+
       return false;
     }
   }
   if (keymapAtStart) {
-    trace_slow_turn("late-start: reloading KeyMaps through native loader\r\n");
+
     reinterpret_cast<KeymapLoadFn>(keymapLoader)(keymapAtStart);
-    trace_slow_turn("late-start: native KeyMaps reload returned\r\n");
+
   }
   resume_threads(threads);
 
   InterlockedExchange(&g_active, 1);
   InterlockedExchange(&installed, 1);
-  trace_slow_turn("slow-turn hooks installed for command IDs 484 and 486\r\n");
-  OutputDebugStringA("GUSTO: slow-turn key hooks installed (IDs 484, 486).\n");
+
+
   return true;
 }
 
@@ -1143,8 +1125,7 @@ void shutdown_slow_turn_keys() {
   g_held[1] = false;
   if (!g_speedReady)
     return;
-  if (!set_slow_patches(false))
-    OutputDebugStringA("GUSTO: unable to restore all slow-turn speed bytes at shutdown.\n");
+
 }
 
 }  // namespace gusto::client::rof2

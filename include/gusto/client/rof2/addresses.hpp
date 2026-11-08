@@ -78,5 +78,6 @@ namespace gusto::client::rof2::addresses
     // These are not independently runtime-validated by GUSTO.
     inline constexpr std::size_t EverQuestInfoReferenceSize = 0x83F9C;
     inline constexpr std::size_t ZoneInfoReferenceSize = 0x3B4;
+    inline constexpr std::size_t DisplayReferenceSize = 0x2D6B;
     inline constexpr std::size_t PlayerClientReferenceSize = 0x1F08;
 }

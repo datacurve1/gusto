@@ -10,6 +10,7 @@ namespace gusto::client::rof2
     struct PlayerClient;
     struct EverQuestInfo;
     struct ZoneInfo;
+    struct Display;
 
     struct PlayerSnapshot
     {
@@ -56,6 +57,7 @@ namespace gusto::client::rof2
 
         EverQuestInfo* GetEverQuestInfo() const;
         ZoneInfo* GetZoneInfo() const;
+        Display* GetDisplay() const;
 
         PlayerClient* GetLocalPlayer() const;
         PlayerClient* GetControlledPlayer() const;
