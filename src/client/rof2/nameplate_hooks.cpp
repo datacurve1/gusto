@@ -1,4 +1,5 @@
 #include "gusto/client/rof2/nameplate_hooks.hpp"
+#include "gusto/client/rof2/tag_hooks.hpp"
 
 #include "gusto/client/rof2/hook_utils.hpp"
 #include "gusto/client/rof2/globals.hpp"
@@ -407,6 +408,7 @@ namespace gusto::client::rof2
         {
 
 
+            TickTags();
             const auto original = g_originalState;
             return original ? original(self, show) : 0;
         }
@@ -523,6 +525,19 @@ namespace gusto::client::rof2
                 }
             }
 
+            const std::string tag = GetActorTagText(actor);
+            std::string tagged;
+            if (!tag.empty() && replacement) {
+                std::size_t length = 0;
+                while (length < 480 && IsReadableRange(replacement + length, 1) && replacement[length]) ++length;
+                if (length < 480 && IsReadableRange(replacement + length, 1) && !replacement[length]) {
+                    const std::string prefix = tag + "\n";
+                    if (std::strncmp(replacement, prefix.c_str(), prefix.size()) != 0) {
+                        tagged = prefix + replacement;
+                        replacement = tagged.c_str();
+                    }
+                }
+            }
             original(actor, arg1, text, replacement);
         }
 
@@ -673,6 +688,22 @@ namespace gusto::client::rof2
         }
 
 
+    }
+
+    std::uint32_t GetNameplateTagColor(void* spawn)
+    {
+        const ClientState* state = GetClientState();
+        BYTE npcLevel = 0, playerLevel = 0;
+        const NameplateBGR* color = &kWhite;
+        if (state && spawn == state->GetTarget()) color = &kPink;
+        else if (state && spawn &&
+            ReadValue(static_cast<const BYTE*>(spawn) + kLevelOffset, npcLevel) &&
+            state->GetLocalPlayer() &&
+            ReadValue(reinterpret_cast<const BYTE*>(state->GetLocalPlayer()) + kLevelOffset, playerLevel) &&
+            npcLevel && playerLevel)
+            color = GetNpcConColor(playerLevel, npcLevel);
+        return 0xff000000u | (std::uint32_t(color->red) << 16) |
+            (std::uint32_t(color->green) << 8) | color->blue;
     }
 
     bool InstallNameplateHooks(

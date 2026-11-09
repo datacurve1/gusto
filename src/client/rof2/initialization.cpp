@@ -5,6 +5,7 @@
 #include "gusto/client/rof2/slow_turn_keys.hpp"
 
 #include "gusto/client/rof2/nameplate_hooks.hpp"
+#include "gusto/client/rof2/tag_hooks.hpp"
 
 #include <windows.h>
 
@@ -45,6 +46,8 @@ namespace gusto::client::rof2
             ReleaseSRWLockExclusive(&g_lock);
             return InitializationStatus::ValidationFailed;
         }
+
+        InstallTagHooks(module, g_validation);
 
         InstallInterpretCmdHook(module, g_validation);
 

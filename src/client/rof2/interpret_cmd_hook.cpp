@@ -1,5 +1,7 @@
 #include "gusto/client/rof2/interpret_cmd_hook.hpp"
 
+#include "gusto/client/rof2/tag_hooks.hpp"
+#include <string>
 #include <windows.h>
 #include <tlhelp32.h>
 
@@ -295,7 +297,7 @@ namespace gusto::client::rof2
             }
 
             destination[copied] = '\0';
-            return true;
+            return false; // A truncated command must not be interpreted as a different command.
         }
 
 
@@ -307,6 +309,24 @@ namespace gusto::client::rof2
             const char* text)
         {
 
+            char safeText[1024]{};
+            std::size_t copied = 0;
+            if (!CopyCommandText(text, safeText, sizeof(safeText), copied)) {
+                if (g_original) g_original(self, who, text);
+                return;
+            }
+            text = safeText;
+            if (_strnicmp(text, "/tag", 4) == 0 &&
+                (text[4] == '\0' || text[4] == ' ' || text[4] == '\t')) {
+                struct Context { void* self; void* who; } context{self, who};
+                std::string reply;
+                HandleTagCommand(text + 4, &context, [](void* raw, const char* command) {
+                    const auto& ctx = *static_cast<Context*>(raw);
+                    if (g_original) g_original(ctx.self, ctx.who, command);
+                }, reply);
+                if (!reply.empty() && g_dspChat) g_dspChat(self, reply.c_str(), UserColorDefault, true, true);
+                return;
+            }
 
             if (text &&
                 _strnicmp(text, "/gusto", 6) == 0 &&

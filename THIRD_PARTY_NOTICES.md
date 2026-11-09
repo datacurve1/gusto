@@ -7,6 +7,11 @@ Gusto is a RoF2 compatibility project based on the Zeal project.
 Zeal:
 Copyright (c) 2024 Clint
 
+The procedural tag geometry in `src/client/rof2/tag_models.cpp` and the tag
+protocol/field semantics in `src/client/rof2/tag_state.cpp` are adapted from
+Zeal 1.4.8's `tag_arrows.cpp` and `nameplate.cpp`. Gusto supplies the RoF2
+integration and Direct3D 9 renderer.
+
 Zeal is distributed under the MIT License. Its license terms are
 reproduced below:
 

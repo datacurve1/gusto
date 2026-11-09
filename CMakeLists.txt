@@ -19,8 +19,9 @@ add_library(gusto SHARED
     src/client/rof2/slow_turn_keys.cpp
     src/client/rof2/hook_utils.cpp
     src/client/rof2/nameplate_hooks.cpp
-    src/client/rof2/hook_utils.cpp
-    src/client/rof2/nameplate_hooks.cpp
+    src/client/rof2/tag_hooks.cpp
+    src/client/rof2/tag_state.cpp
+    src/client/rof2/tag_models.cpp
     )
 
 target_include_directories(gusto
@@ -54,6 +55,9 @@ add_executable(gusto_safety_tests
     src/client/rof2/slow_turn_keys.cpp
     src/client/rof2/hook_utils.cpp
     src/client/rof2/nameplate_hooks.cpp
+    src/client/rof2/tag_hooks.cpp
+    src/client/rof2/tag_state.cpp
+    src/client/rof2/tag_models.cpp
 )
 
 target_include_directories(gusto_safety_tests PRIVATE
@@ -68,3 +72,11 @@ target_compile_definitions(gusto_safety_tests PRIVATE
 )
 
 target_link_libraries(gusto_safety_tests PRIVATE bcrypt)
+
+add_executable(gusto_tagging_tests
+    test/tagging_tests.cpp
+    src/client/rof2/tag_state.cpp
+    src/client/rof2/tag_models.cpp
+)
+target_include_directories(gusto_tagging_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_features(gusto_tagging_tests PRIVATE cxx_std_20)

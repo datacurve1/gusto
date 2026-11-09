@@ -239,13 +239,29 @@ namespace gusto::client::rof2
         const void* hook,
         void** trampolineOut)
     {
+        if (preferredVa < PreferredImageBase) return false;
+        return InstallModuleDetour(module, validation, module,
+            preferredVa - PreferredImageBase, expectedBytes, length, hook, trampolineOut);
+    }
+
+    bool InstallModuleDetour(
+        HMODULE clientModule,
+        const ValidatedClient& validation,
+        HMODULE module,
+        std::uintptr_t rva,
+        const BYTE* expectedBytes,
+        std::size_t length,
+        const void* hook,
+        void** trampolineOut)
+    {
         if (!expectedBytes || !hook || !trampolineOut || length < 5 || length > 16)
             return false;
 
-        if (!validation.IsValidFor(module))
+        if (!validation.IsValidFor(clientModule) || !module ||
+            rva > UINTPTR_MAX - PreferredImageBase)
             return false;
 
-        const auto targetAddress = ResolvePreferredVA(module, preferredVa, length);
+        const auto targetAddress = ResolvePreferredVA(module, PreferredImageBase + rva, length);
 
         if (!targetAddress ||
             !IsExecutableMemory(reinterpret_cast<const void*>(targetAddress), length) ||
@@ -278,6 +294,14 @@ namespace gusto::client::rof2
         std::vector<ThreadHandle> threads;
 
         if (!SuspendAndCheckThreads(targetAddress, length, threads))
+        {
+            ResumeThreads(threads);
+            VirtualFree(trampoline, 0, MEM_RELEASE);
+            return false;
+        }
+
+        // Another hook may have changed the entry while threads were stopping.
+        if (std::memcmp(target, expectedBytes, length) != 0)
         {
             ResumeThreads(threads);
             VirtualFree(trampoline, 0, MEM_RELEASE);

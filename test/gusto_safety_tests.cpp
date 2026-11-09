@@ -7,6 +7,8 @@
 #include "gusto/client/rof2/client_state.hpp"
 #include "gusto/client/rof2/globals.hpp"
 #include "gusto/client/rof2/initialization.hpp"
+#include "gusto/client/rof2/tag_hooks.hpp"
+#include "gusto/client/rof2/hook_utils.hpp"
 
 using namespace gusto::client::rof2;
 
@@ -57,6 +59,16 @@ int main()
         "Reject preferred VA below image base");
 
     const HMODULE self = GetModuleHandleW(nullptr);
+    Check(!InstallTagHooks(nullptr, token), "Reject tagging hooks on null module");
+    Check(!InstallTagHooks(self, token), "Reject tagging hooks without validation token");
+    BYTE companionPrologue[] = {0x83, 0xec, 0x20, 0x80, 0x7c, 0x24, 0x24, 0};
+    void* companionTrampoline = nullptr;
+    Check(!InstallModuleDetour(self, token, self, 0xae370, companionPrologue,
+        sizeof(companionPrologue), reinterpret_cast<void*>(&TickTags), &companionTrampoline),
+        "Reject companion-module detour without client validation");
+    Check(companionTrampoline == nullptr, "Failed companion detour leaves trampoline unpublished");
+    TickTags();
+    Check(GetActorTagText(nullptr).empty(), "Ignore tags before client validation");
 
     const auto selfDosHeader = ResolvePreferredVA(
         self,

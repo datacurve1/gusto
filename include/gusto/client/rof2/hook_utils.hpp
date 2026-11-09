@@ -31,4 +31,16 @@ namespace gusto::client::rof2
         std::size_t length,
         const void* hook,
         void** trampolineOut);
+    // Detour a loaded companion module by RVA, authorized by the validated
+    // game executable. The caller must provide audited whole-instruction bytes.
+    bool InstallModuleDetour(
+        HMODULE clientModule,
+        const ValidatedClient& validation,
+        HMODULE codeModule,
+        std::uintptr_t rva,
+        const BYTE* expectedBytes,
+        std::size_t length,
+        const void* hook,
+        void** trampolineOut);
+
 }
