@@ -25,6 +25,40 @@ Replacing an ASI while the game runs only stages the update; restart to load it.
 The plugin uses Windows system DLLs and embeds its meshes. Players do not need
 Blender, Python, a compiler, or a separate GCC/C++ runtime installation.
 
+### Windows startup and release builds
+
+Use the supported 32-bit RoF2 client and put `GUSTO.asi` beside the
+`eqgame.exe` your shortcut actually launches. With EverQuest closed, back up
+the installed ASI before replacing it. Use the existing compatible 32-bit ASI
+loader, restart EverQuest, then enter `/gusto version` to verify the plugin.
+
+If Gusto starts but reports a client-validation failure, run
+`python tools/verify_rof2.py "C:\path\to\rof2\eqgame.exe"` from the source
+checkout. A passing result confirms the file on disk. The older validator
+can still fail at startup with `UnexpectedImageBase` when Windows relocates
+the executable. In a Windows reproduction, the verified client loaded at
+`0x00900000` instead of its preferred `0x00400000`. A local build initialized
+successfully after allowing the mapped PE header's image base to match
+either the preferred base or the actual module address. The client version,
+image size, and SHA-256 checks still apply. This startup test did not require
+changing Defender or Windows exploit-protection settings.
+
+For a native Windows build, put CMake, Ninja and the 32-bit MinGW-w64
+toolchain on PATH, then run from the source checkout:
+
+```powershell
+cmake -S . -B build-win32 -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/mingw32-toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build build-win32 --target gusto
+```
+
+The output is `build-win32/GUSTO.dll`. Distribute it as `GUSTO.asi` using
+the Windows packaging script described below. For a public update, commit
+the source fix first, bump `VERSION`, then rebuild and test that version on
+Windows. Publish the versioned Windows ZIP and its matching SHA-256 as
+release assets, and update the download links above. The download links
+in this README still point to the existing beta until a fixed package is
+published.
+
 ## Features
 
 | Feature | Included controls and behavior |
