@@ -267,3 +267,5 @@ later HUD callback draws player bars only. This keeps NPC depth tests on the
 world buffer before UI rendering can clear or replace it. The regression now
 clears depth between the world and UI phases and verifies that an occluded NPC
 bar does not reappear during the UI phase. Live scene confirmation is pending.
+
+NPC/pet bars also require a model definition, positive actor alpha, no native invisible flag, and visibility in the current DPVS frame. Race 127 (Invisible Man) and race 240 (Teleport Man / TPN_ACTORDEF) placeholder NPCs have no bars. The latter was verified on the invisible Nexus helpers. Player bars retain their existing visibility behavior.

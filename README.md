@@ -1,4 +1,4 @@
-# Gusto 1.1.0-beta.1
+# Gusto 1.1.0-beta.3
 
 Gusto brings Zeal-inspired features to the **EverQuest Rain of Fear 2 (RoF2)**
 client, with a Hailstone-style minimap and native Windows/Wine controller support.
@@ -10,8 +10,9 @@ Daybreak Game Company.
 
 ## Download and install
 
-- [Windows x86 package](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/windows-x86-build.zip) · [SHA256](releases/windows-x86-build.zip.sha256)
-- [Windows/Wine package with artwork, previews and documentation](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/GUSTO-1.1.0-beta.1-RoF2-Windows-Wine.zip) · [SHA256](releases/GUSTO-1.1.0-beta.1-RoF2-Windows-Wine.zip.sha256)
+- [Verified Windows x86 build](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/windows-x86-build.zip) · [SHA256](releases/windows-x86-build.zip.sha256)
+- [Beta.3 Windows package (Wine-tested)](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/GUSTO-1.1.0-beta.3-RoF2-Windows.zip) · [SHA256](releases/GUSTO-1.1.0-beta.3-RoF2-Windows.zip.sha256)
+- [Windows/Wine package with artwork, previews and documentation](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/GUSTO-1.1.0-beta.3-RoF2-Windows-Wine.zip) · [SHA256](releases/GUSTO-1.1.0-beta.3-RoF2-Windows-Wine.zip.sha256)
 
 1. Fully exit EverQuest and back up your existing `GUSTO.asi`.
 2. Extract a package and copy `GUSTO.asi` beside `eqgame.exe`.
@@ -58,6 +59,11 @@ Windows. Publish the versioned Windows ZIP and its matching SHA-256 as
 release assets, and update the download links above. The Windows x86 download above includes the startup and `/gusto` command
 registration fixes for relocated Windows clients.
 
+The separate verified Windows x86 build includes native Windows startup fixes
+that are not yet incorporated into this beta.3 source/package. The beta.3
+packages include the Nexus placeholder-bar fix and have been tested under Wine;
+use the verified Windows download when those startup fixes are required.
+
 ## Features
 
 | Feature | Included controls and behavior |
@@ -65,7 +71,7 @@ registration fixes for relocated Windows clients.
 | Minimap | Hailstone Midnight-style circular map, zone geometry and labels, heading rotation, height filtering, zoom and adjustable arrow sizes. Player arrows use distinct colors; pets use light brown arrows. |
 | External map | Independent resizable map window that can be dragged to another monitor. |
 | Combat floats | Damage, misses, large hits and healing floats with filters and size controls. |
-| Overhead bars | HP, mana and stamina controls with independent sizes/colors and optional RPG frames. NPCs/pets show HP only; other players' mana is limited to known group data. |
+| Overhead bars | HP, mana and stamina controls with independent sizes/colors and optional RPG frames. NPCs/pets show HP only and require a visible model; other players' mana is limited to known group data. |
 | Nameplates | Con colors, pink target highlighting, brackets, attack flashing, and EverQuest-style pet owner labels. |
 | Tagging | Native labels and 3D arrow/stop/paw markers; local, group, raid and channel exchange using `GUSTOTAG` messages and `Gt...` channel names. |
 | Death / feign death | Original extruded ghost and jester meshes; rising/fading effects, color/size controls, and native skeleton laugh for player feign death. |

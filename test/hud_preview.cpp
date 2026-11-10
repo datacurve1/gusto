@@ -231,13 +231,30 @@ int main() {
   void* npcActorPointer=npcActor.data(); std::uint32_t npcId=654;
   std::memcpy(npcMemory.data()+0x101c,&npcActorPointer,sizeof(npcActorPointer));
   std::memcpy(npcMemory.data()+0x148,&npcId,4);
+  NpcVisibilityContext visibleNpc{42,4,true};
+  unsigned actorFrame=42,actorFlags=0;float actorAlpha=1;void* actorDefinition=npcActor.data();
+  std::memcpy(npcActor.data()+0x44,&actorFrame,4);std::memcpy(npcActor.data()+0x48,&actorAlpha,4);
+  std::memcpy(npcActor.data()+0x13c,&actorFlags,4);std::memcpy(npcActor.data()+0x174,&actorDefinition,4);
+  check(NpcModelVisible(npcMemory.data(),visibleNpc));
+  actorAlpha=0;std::memcpy(npcActor.data()+0x48,&actorAlpha,4);check(!NpcModelVisible(npcMemory.data(),visibleNpc));
+  actorAlpha=1;std::memcpy(npcActor.data()+0x48,&actorAlpha,4);
+  actorFlags=4;std::memcpy(npcActor.data()+0x13c,&actorFlags,4);check(!NpcModelVisible(npcMemory.data(),visibleNpc));
+  actorFlags=0;std::memcpy(npcActor.data()+0x13c,&actorFlags,4);
+  actorFrame=41;std::memcpy(npcActor.data()+0x44,&actorFrame,4);check(!NpcModelVisible(npcMemory.data(),visibleNpc));
+  actorFrame=42;std::memcpy(npcActor.data()+0x44,&actorFrame,4);
+  int invisibleRace=127;std::memcpy(npcMemory.data()+0xeb4,&invisibleRace,4);check(!NpcModelVisible(npcMemory.data(),visibleNpc));
+  invisibleRace=240;std::memcpy(npcMemory.data()+0xeb4,&invisibleRace,4);check(!NpcModelVisible(npcMemory.data(),visibleNpc));
+  invisibleRace=1;std::memcpy(npcMemory.data()+0xeb4,&invisibleRace,4);
+  actorDefinition=nullptr;std::memcpy(npcActor.data()+0x174,&actorDefinition,4);check(!NpcModelVisible(npcMemory.data(),visibleNpc));
+  actorDefinition=npcActor.data();std::memcpy(npcActor.data()+0x174,&actorDefinition,4);
+  check(!NpcModelVisible(nullptr,visibleNpc));
   auto npc=previewSpawn; npc.object=npcMemory.data(); npc.id=npcId;
   npc.type=1; npc.owner=321; npc.position={100,100,0}; hudSpawns.push_back(npc);
   cfg.barWidths=page==2?std::array<float,4>{96,96,96,96}:std::array<float,4>{48,48,48,48};cfg.barHeights=page==2?std::array<float,4>{8,8,8,8}:std::array<float,4>{4,4,4,4};cfg.barRpg=preview==9;
   if(preview==9){cfg.barWidths={96,72,60,80};cfg.barHeights={10,6,4,7};cfg.npcHpColor=0xff55ddd0;}
   cfg.npcHpColor=preview==9?0xff55ddd0:page==2?0xffff5555:0xff35d85b;
   cfg.hpColor=page==2?0xffff5555:0xff35d85b;cfg.manaColor=page==2?0xffffffff:0xff468dff;cfg.staminaColor=page==2?0xffb68bff:0xffffd45e;
-  DrawOverheadBars(fakeRender.data(),viewport,player);
+  DrawOverheadBars(fakeRender.data(),viewport,player,0,&visibleNpc);
   DrawMinimap(player, viewport);
   DrawMenu(viewport);
   canvas.Text(mapCX, mapCY + mapR + 11, "3:24 PM", TextColor, 0, 1, true);
@@ -307,11 +324,11 @@ int main() {
     canvas.Depth(true,.05f);device->SetRenderState(D3DRS_ZWRITEENABLE,TRUE);
     canvas.Rect(650,480,50,30,0xff112233);canvas.Flush();
     device->SetRenderState(D3DRS_ZWRITEENABLE,FALSE);canvas.Depth(false);
-    DrawOverheadBars(fakeRender.data(),viewport,player,1);canvas.Flush();
+    DrawOverheadBars(fakeRender.data(),viewport,player,1,&visibleNpc);canvas.Flush();
     // Reproduce the late UI stage losing world depth: NPCs must not be
     // redrawn here, or they would become visible through the occluder.
     check(SUCCEEDED(device->Clear(0,nullptr,D3DCLEAR_ZBUFFER,0,1,0)));
-    DrawOverheadBars(fakeRender.data(),viewport,player,2);
+    DrawOverheadBars(fakeRender.data(),viewport,player,2,&visibleNpc);
     canvas.Rect(657,487,6,6,0xffabcdef);canvas.Flush();
     check(SUCCEEDED(device->EndScene()));check(SUCCEEDED(device->GetRenderTargetData(back,sys)));
     check(SUCCEEDED(sys->LockRect(&locked,nullptr,D3DLOCK_READONLY)));
@@ -319,6 +336,17 @@ int main() {
     check((pixel(710,491)&0xffffff)==0x55ddd0); // unobstructed bar remains
     check((pixel(780,315)&0xffffff)==0xff5555); // player stays an overlay
     check((pixel(660,490)&0xffffff)==0xabcdef); // UI depth restored
+    sys->UnlockRect();
+    // Reproduce Nexus TPN placeholders: non-null model, alpha 1,
+    // no invisible flags and current DPVS index, yet no visible body.
+    invisibleRace=240;std::memcpy(npcMemory.data()+0xeb4,&invisibleRace,4);
+    check(SUCCEEDED(device->Clear(0,nullptr,D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER,0xff253544,1,0)));
+    check(SUCCEEDED(device->BeginScene()));canvas.Begin();
+    DrawOverheadBars(fakeRender.data(),viewport,player,0,&visibleNpc);canvas.Flush();
+    check(SUCCEEDED(device->EndScene()));check(SUCCEEDED(device->GetRenderTargetData(back,sys)));
+    check(SUCCEEDED(sys->LockRect(&locked,nullptr,D3DLOCK_READONLY)));
+    check((pixel(710,491)&0xffffff)==0x253544); // no bar without a visible NPC mesh
+    check((pixel(780,315)&0xffffff)==0xff5555); // player bar is unchanged
     sys->UnlockRect();
   }
   sys->Release();

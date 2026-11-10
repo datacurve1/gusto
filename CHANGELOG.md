@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0-beta.3 — 2026-11-10
+
+- Hide HP bars for race 240 (Teleport Man / TPN_ACTORDEF) placeholder NPCs. Read-only live Nexus diagnostics identified Scion, Mystic Voice, spire and trap helpers that reported visible actor state despite having no visible body.
+
+## 1.1.0-beta.2 — 2026-11-10
+
+- Suppress NPC/pet health bars when the graphics actor has no model definition, is invisible or transparent, or is not visible in the current graphics frame. Exclude Invisible Man placeholder NPCs.
+
 ## 1.1.0-beta.1 — 2026-11-10
 
 First semantic-versioned beta collecting the HUD development previews after 1.0.

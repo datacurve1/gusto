@@ -17,7 +17,7 @@ assert version.encode('utf-16le') in dll.read_bytes(), 'Windows version metadata
 info={'version':version,'binary_sha256':digest,
 'native_game_sha256':'2a8702ad9f722704f01355c0750be7d6f164a8b9c9128ba0cf286ea32b405b0e',
 'native_graphics_sha256':'ade556b68e98f6f39c5578f70431e11c0b9babcc15b8571eb22cf1e2b654417e',
-'validation':'Release MinGW x86 build; safety, tagging, HUD, controller, life-effect and pipe suites under isolated Wine; D3D9 menu/settings/controller mouse capture, NPC bar world/UI-stage depth-clear regressions and embedded meshes; standard ASI exports, system-only imports, runtime version and unsupported-host smoke checks. Live controller movement, keyboard/mouse mapping and 3D tags confirmed. Live NPC occlusion after the render-stage fix and physical Windows hardware remain unconfirmed.',
+'validation':'Release MinGW x86 build; safety, tagging, HUD, controller, life-effect and pipe suites under isolated Wine; D3D9 menu/settings/controller mouse capture, NPC bar world/UI-stage depth-clear regressions, actor model/invisible/alpha/DPVS visibility fixtures, no-visible-model pixel check and embedded meshes; standard ASI exports, system-only imports, runtime version and unsupported-host smoke checks. Live controller movement, keyboard/mouse mapping and 3D tags confirmed. Live NPC occlusion after the render-stage fix and physical Windows hardware remain unconfirmed.',
 'source_sha256':manifest}
 
 with zipfile.ZipFile(release,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:

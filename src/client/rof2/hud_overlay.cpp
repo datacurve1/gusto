@@ -1120,7 +1120,38 @@ bool ScreenHead(void *spawn,const D3DMATRIX& vp,const D3DVIEWPORT9& view,float &
   if(depth)*depth=view.MinZ+nz*(view.MaxZ-view.MinZ);
   return true;
 }
-void DrawOverheadBars(void *render,const D3DVIEWPORT9& view,const PlayerSnapshot& player,int pass=0) {
+struct NpcVisibilityContext {unsigned frame=0,invisibleMask=0;bool ready=false;};
+NpcVisibilityContext ReadNpcVisibility(){
+ NpcVisibilityContext out;auto graphics=GetModuleHandleA("EQGraphicsDX9.dll");if(!graphics)return out;
+ // Audited RoF2 actor getters: definition +0x174, alpha +0x48,
+ // IsInvisible uses actorData (+0xe0) flags +0x5c, and DPVS compares
+ // actor +0x44 with the graphics engine's current visibility index.
+ constexpr BYTE definition[]={0x8b,0x81,0x74,0x01,0,0,0xc3},alpha[]={0xd9,0x41,0x48,0xc3};
+ BYTE def[7]{},a[4]{},dpvs[19]{},invisible[12]{};void* engine=nullptr;
+ if(!Read(graphics,0x526b0,def)||std::memcmp(def,definition,7)||
+    !Read(graphics,0x56460,a)||std::memcmp(a,alpha,4)||
+    !Read(graphics,0x39f70,dpvs)||!Read(graphics,0xc4010,invisible))return out;
+ constexpr BYTE dpvsHead[]={0x8b,0x41,0x44,0x8b,0x0d},dpvsTail[]={0x3b,0x81,0xe4,0xaf,0,0,0x0f,0x94,0xc0,0xc3};
+ constexpr BYTE hiddenTail[]={0x85,0x41,0x5c,0x0f,0x95,0xc0,0xc3};
+ std::uintptr_t engineStorage=0,maskStorage=0;
+ std::memcpy(&engineStorage,dpvs+5,4);std::memcpy(&maskStorage,invisible+1,4);
+ if(std::memcmp(dpvs,dpvsHead,5)||std::memcmp(dpvs+9,dpvsTail,10)||invisible[0]!=0xa1||
+    std::memcmp(invisible+5,hiddenTail,7)||engineStorage!=reinterpret_cast<std::uintptr_t>(graphics)+0x17910c||
+    maskStorage!=reinterpret_cast<std::uintptr_t>(graphics)+0x174ba4)return out;
+ out.ready=Read(reinterpret_cast<void*>(engineStorage),0,engine)&&Read(engine,0xafe4,out.frame)&&
+   Read(reinterpret_cast<void*>(maskStorage),0,out.invisibleMask)&&out.invisibleMask!=0;
+ return out;
+}
+bool NpcModelVisible(void* spawn,const NpcVisibilityContext& visibility){
+ void* actor=nullptr;void* definition=nullptr;float alpha=0;unsigned flags=0,visibleFrame=0;int race=0;
+ return visibility.ready&&Read(spawn,0x101c,actor)&&actor&&Read(actor,0x174,definition)&&definition&&
+   Read(actor,0x48,alpha)&&std::isfinite(alpha)&&alpha>0&&Read(actor,0x13c,flags)&&
+   !(flags&visibility.invisibleMask)&&Read(actor,0x44,visibleFrame)&&visibleFrame==visibility.frame&&
+   // Race 240 is Teleport Man / TPN_ACTORDEF: Nexus helpers report
+   // visible DPVS/alpha and have a definition, but no visible body.
+   Read(spawn,0xeb4,race)&&race!=127&&race!=240;
+}
+void DrawOverheadBars(void *render,const D3DVIEWPORT9& view,const PlayerSnapshot& player,int pass=0,const NpcVisibilityContext* fixtureVisibility=nullptr) {
   if (!cfg.hpBars && !cfg.manaBars && !cfg.staminaBars) return;
   D3DMATRIX vp{};
   if (!Read(render,0x16c0,vp)) return;
@@ -1128,8 +1159,10 @@ void DrawOverheadBars(void *render,const D3DVIEWPORT9& view,const PlayerSnapshot
   void *target=state?state->GetTarget():nullptr;
   const auto grouped=GroupPlayerIds();
   const float s=cfg.scale;
+  const auto visibility=fixtureVisibility?*fixtureVisibility:ReadNpcVisibility();
   for (const auto &e:hudSpawns) {
     if((pass==1 && e.type==0)||(pass==2 && e.type!=0))continue;
+    if(e.type!=0 && !NpcModelVisible(e.object,visibility))continue;
     if ((e.id==localId && !cfg.barSelf) ||
         (e.owner ? !cfg.barPets : e.type==0 ? !cfg.barPlayers : !cfg.barNpcs) ||
         (cfg.barsTargetOnly && e.object!=target) ||

@@ -35,6 +35,10 @@ def main():
             (0x9d0de4, struct.pack('<f', 53).hex(), 'native maximum zoom constant'),
         ]),
         ('EQGraphicsDX9.dll', GRAPHICS_HASH, [
+            (0x100526b0, '8b8174010000c3', 'actor model definition +0x174'),
+            (0x10056460, 'd94148c3', 'actor alpha +0x48'),
+            (0x10039f70, '8b41448b0d0c9117103b81e4af00000f94c0c3', 'actor current DPVS visibility'),
+            (0x100c4010, 'a1a44b171085415c0f95c0c3', 'actor invisible flags mask'),
             (0x10006470, '558bec83e4f0', 'camera matrix whole-instruction prologue'),
             (0x10005f00, 'd981bc000000', 'camera position getter +0xbc'),
             (0x10005f30, 'd981b0000000', 'camera orientation getter +0xb0'),
