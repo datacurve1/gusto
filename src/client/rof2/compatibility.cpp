@@ -287,7 +287,9 @@ namespace gusto::client::rof2
             return false;
         }
 
-        if (nt->OptionalHeader.ImageBase != PreferredImageBase)
+        // Windows can update the mapped header when it relocates this image.
+        if (nt->OptionalHeader.ImageBase != PreferredImageBase &&
+            nt->OptionalHeader.ImageBase != base)
         {
             report.status = ValidationStatus::UnexpectedImageBase;
             return false;
