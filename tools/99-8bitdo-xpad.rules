@@ -1,0 +1,5 @@
+# 8BitDo 2dc8:3106 on kernels whose xpad USB table lacks this vendor.
+# Preserve the existing rule that registers the USB ID when xpad loads.
+ACTION=="add", SUBSYSTEM=="module", KERNEL=="xpad", RUN+="/bin/sh -c 'echo 2dc8 3106 > /sys/bus/usb/drivers/xpad/new_id'"
+# Also load xpad when this receiver appears (including boot coldplug).
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="2dc8", ATTR{idProduct}=="3106", RUN+="/sbin/modprobe xpad"

@@ -6,6 +6,7 @@
 
 #include "gusto/client/rof2/nameplate_hooks.hpp"
 #include "gusto/client/rof2/tag_hooks.hpp"
+#include "gusto/client/rof2/hud_overlay.hpp"
 
 #include <windows.h>
 
@@ -48,6 +49,7 @@ namespace gusto::client::rof2
         }
 
         InstallTagHooks(module, g_validation);
+        InstallHudHooks(module, g_validation);
 
         InstallInterpretCmdHook(module, g_validation);
 

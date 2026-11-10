@@ -1,3 +1,5 @@
+#include "gusto/version.hpp"
+#include "gusto/client/rof2/hud_overlay.hpp"
 #include "gusto/client/rof2/compatibility.hpp"
 #include "gusto/client/rof2/slow_turn_keys.hpp"
 #include "gusto/client/rof2/initialization.hpp"
@@ -355,7 +357,7 @@ namespace gusto::client::rof2
 extern "C" __declspec(dllexport)
 const char* GustoVersion()
 {
-    return "GUSTO 0.1.0 - RoF2";
+    return "GUSTO " GUSTO_VERSION_STRING " - RoF2";
 }
 
 extern "C" __declspec(dllexport)
@@ -415,6 +417,7 @@ namespace
 
     void WINAPI GustoAsiShutdown()
     {
+        gusto::client::rof2::ShutdownHudOverlay();
         gusto::client::rof2::shutdown_slow_turn_keys();
 
     }
@@ -428,6 +431,11 @@ namespace
     };
 
     using RibRegisterInterface = int (WINAPI *)(RibProviderHandle, const char*, int, const RibEntry*);
+}
+
+extern "C" __declspec(dllexport) void InitializeASI()
+{
+    GustoInitializeClient();
 }
 
 BOOL WINAPI DllMain(HINSTANCE, DWORD reason, LPVOID)

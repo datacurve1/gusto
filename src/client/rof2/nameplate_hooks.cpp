@@ -1,5 +1,6 @@
 #include "gusto/client/rof2/nameplate_hooks.hpp"
 #include "gusto/client/rof2/tag_hooks.hpp"
+#include "gusto/client/rof2/hud_model.hpp"
 
 #include "gusto/client/rof2/hook_utils.hpp"
 #include "gusto/client/rof2/globals.hpp"
@@ -9,7 +10,13 @@
 #include <windows.h>
 
 #include <algorithm>
+#include <atomic>
+#include <cmath>
+#include <unordered_set>
+#include <unordered_map>
+#include <array>
 #include <cstdint>
+#include <climits>
 #include <cstdio>
 #include <cstring>
 #include <limits>
@@ -58,6 +65,17 @@ namespace gusto::client::rof2
         constexpr NameplateBGR kGreen{0, 240, 0};
         constexpr NameplateBGR kPink{180, 80, 255};
 
+        bool IsAttackingTargetNpc(void* self);
+        std::atomic_bool conColors{true}, pinkTarget{true}, attackBrackets{true}, attackFlash{true};
+        std::atomic<float> flashRate{15.5f};
+        std::atomic_bool nameOptionsDirty{false}, nativePetOwners{true};
+        const NameplateBGR* TargetTint(void* spawn) {
+            if (attackFlash && IsAttackingTargetNpc(spawn) &&
+                hud::AttackFlashWhite(GetTickCount64(),flashRate.load()))
+                return &kWhite;
+            return &kPink;
+        }
+
         constexpr LONG kMaxLoggedCalls = 500;
 
         using SetNameSpriteStateFn = int(__thiscall*)(void*, bool);
@@ -70,6 +88,17 @@ namespace gusto::client::rof2
         using AttackStateSetterFn = void(__thiscall*)(void*, bool);
 
         SetNameSpriteStateFn g_originalState = nullptr;
+        thread_local void* currentNameSpawn=nullptr;
+        struct NameplateScope {
+            void* previous=currentNameSpawn;
+            explicit NameplateScope(void* spawn) {currentNameSpawn=spawn;}
+            ~NameplateScope(){currentNameSpawn=previous;}
+        };
+        int InvokeNameState(void* spawn,bool show) {
+            NameplateScope scope(spawn);
+            return g_originalState?g_originalState(spawn,show):0;
+        }
+        std::string PetOwnerFor(void* spawn);
         SetNameSpriteTintFn g_originalTint = nullptr;
         ChangeBoneStringSpriteFn g_originalChangeBoneStringSprite = nullptr;
         ActorNameSetterFn g_originalActorName = nullptr;
@@ -390,10 +419,9 @@ namespace gusto::client::rof2
                 clientState->GetTarget() ==
                     reinterpret_cast<PlayerClient*>(self);
 
-            const NameplateBGR* color =
-                isTarget
-                    ? &kPink
-                    : GetNpcConColor(playerLevel, npcLevel);
+            if (!(isTarget && pinkTarget) && !conColors) return;
+            const NameplateBGR* color = (isTarget && pinkTarget)
+                ? TargetTint(self) : GetNpcConColor(playerLevel, npcLevel);
 
             const auto setActorTint =
                 reinterpret_cast<SetActorTintFn>(functionAddress);
@@ -409,8 +437,7 @@ namespace gusto::client::rof2
 
 
             TickTags();
-            const auto original = g_originalState;
-            return original ? original(self, show) : 0;
+            return InvokeNameState(self,show);
         }
 
         // No stack arguments: matches a thiscall with no arguments.
@@ -471,61 +498,33 @@ namespace gusto::client::rof2
             const auto original = g_originalActorName;
             if (!original)
                 return;
+            if (arg1!=kNameSpriteBone) { original(actor,arg1,text,outputText); return; }
 
-            const char* replacement = outputText;
-            char decorated[512]{};
-
-            if (outputText && IsReadableRange(outputText, 1))
-            {
-                const ClientState* clientState = GetClientState();
-                PlayerClient* target =
-                    clientState ? clientState->GetTarget() : nullptr;
-
-                void* targetActor = nullptr;
-                const bool targetActorMatches =
-                    target &&
-                    IsReadableRange(target, addresses::PlayerClientReferenceSize) &&
-                    ReadValue(
-                        reinterpret_cast<const BYTE*>(target) + kPlayerActorOffset,
-                        targetActor) &&
-                    targetActor == actor;
-
-                if (targetActorMatches && IsAttackingTargetNpc(target))
-                {
-                    std::size_t length = 0;
-                    bool terminated = false;
-
-                    while (length < 480)
-                    {
-                        if (!IsReadableRange(outputText + length, 1))
-                            break;
-                        if (outputText[length] == '\0')
-                        {
-                            terminated = true;
-                            break;
-                        }
-                        ++length;
-                    }
-
-                    const bool alreadyDecorated =
-                        terminated && length >= 4 &&
-                        outputText[0] == '>' && outputText[1] == '>' &&
-                        outputText[length - 2] == '<' &&
-                        outputText[length - 1] == '<';
-
-                    if (terminated && !alreadyDecorated)
-                    {
-                        const int written = std::snprintf(
-                            decorated, sizeof(decorated), ">>%s<<", outputText);
-
-                        if (written > 0 &&
-                            static_cast<std::size_t>(written) < sizeof(decorated))
-                            replacement = decorated;
-                    }
+            const std::string tag=GetActorTagText(actor);
+            const char* replacement=outputText;
+            std::string formatted;
+            if (outputText) {
+                std::size_t length=0;
+                while (length<480 && IsReadableRange(outputText+length,1) && outputText[length]) ++length;
+                if (length<480 && IsReadableRange(outputText+length,1)) {
+                    const auto* state=GetClientState();
+                    void* target=state?state->GetTarget():nullptr;
+                    void* targetActor=nullptr;
+                    bool matches=target && ReadValue(static_cast<const BYTE*>(target)+kPlayerActorOffset,targetActor) && targetActor==actor;
+                    auto base=std::string_view(outputText,length);
+                    const auto prefix=tag+"\n";
+                    if (!tag.empty() && base.starts_with(prefix)) base.remove_prefix(prefix.size());
+                    std::string body(base);
+                    void* contextActor=nullptr; BYTE contextType=255;
+                    if (currentNameSpawn &&
+                        ReadValue(static_cast<const BYTE*>(currentNameSpawn)+kPlayerActorOffset,contextActor) && contextActor==actor &&
+                        ReadValue(static_cast<const BYTE*>(currentNameSpawn)+kCharacterTypeOffset,contextType) && contextType==1)
+                        body=hud::PetNameplate(body,PetOwnerFor(currentNameSpawn));
+                    formatted=hud::AttackNameplate(body,attackBrackets && matches && IsAttackingTargetNpc(target));
+                    replacement=formatted.c_str();
                 }
             }
 
-            const std::string tag = GetActorTagText(actor);
             std::string tagged;
             if (!tag.empty() && replacement) {
                 std::size_t length = 0;
@@ -614,7 +613,7 @@ namespace gusto::client::rof2
                 !targetActor)
                 return;
 
-            g_originalState(targetActor, true);
+            InvokeNameState(target, true);
         }
 
         void __fastcall AutoAttackSetterHook(void* self, void*, bool enabled)
@@ -637,57 +636,107 @@ namespace gusto::client::rof2
 
         bool IsAttackingTargetNpcSprite(void* sprite)
         {
-            return sprite && IsAttackingTargetNpc(GetClientState()
-                ? GetClientState()->GetTarget()
-                : nullptr);
+            return IsAttackingTargetNpc(sprite);
         }
 
-        void __fastcall ChangeBoneStringSpriteHook(
-            void* self, void*, int bone, const char* spriteText)
-        {
-            const auto original = g_originalChangeBoneStringSprite;
-
-            if (!original)
-                return;
-
-            if (bone != kNameSpriteBone || !spriteText ||
-                !IsAttackingTargetNpcSprite(self))
-            {
-                original(self, bone, spriteText);
-                return;
-            }
-
-            std::size_t length = 0;
-            while (length < 480 && spriteText[length] != '\0')
-                ++length;
-
-            if (length == 480)
-            {
-                original(self, bone, spriteText);
-                return;
-            }
-
-            if (length >= 4 &&
-                spriteText[0] == '>' && spriteText[1] == '>' &&
-                spriteText[length - 2] == '<' &&
-                spriteText[length - 1] == '<')
-            {
-                original(self, bone, spriteText);
-                return;
-            }
-
-            char decorated[512]{};
-            const int written = std::snprintf(
-                decorated, sizeof(decorated), ">>%s<<", spriteText);
-
-            if (written > 0 &&
-                static_cast<std::size_t>(written) < sizeof(decorated))
-                original(self, bone, decorated);
-            else
-                original(self, bone, spriteText);
+        std::string PetOwnerFor(void* spawn) {
+            if (!nativePetOwners || !g_validation.IsValidFor(g_module)) return {};
+            BYTE type=255; std::uint32_t owner=0;
+            if (!ReadValue(static_cast<const BYTE*>(spawn)+kCharacterTypeOffset,type) || type!=1 ||
+                !ReadValue(static_cast<const BYTE*>(spawn)+0x38c,owner) || !owner || owner>INT_MAX) return {};
+            void* manager=ResolvePointer(g_module,g_validation,{0xe641d0,addresses::Storage::PointerStorage},0x18);
+            const auto address=ResolvePreferredVA(g_module,0x5996e0,5);
+            if (!manager || !address) return {};
+            using LookupFn=void*(__thiscall*)(void*,int);
+            void* player=reinterpret_cast<LookupFn>(address)(manager,int(owner));
+            if (!player || !ReadValue(static_cast<const BYTE*>(player)+kCharacterTypeOffset,type) || type!=0) return {};
+            std::array<char,64> name{};
+            if (!ReadValue(static_cast<const BYTE*>(player)+0xa4,name)) return {};
+            const auto end=std::find(name.begin(),name.end(),'\0');
+            return end==name.end()?std::string{}:std::string(name.begin(),end);
+        }
+        void __fastcall ChangeBoneStringSpriteHook(void* self,void*,int bone,const char* text) {
+            const auto original=g_originalChangeBoneStringSprite;
+            if (!original) return;
+            NameplateScope scope(self);
+            if (bone!=kNameSpriteBone || !text) { original(self,bone,text); return; }
+            std::size_t length=0;
+            while (length<480 && IsReadableRange(text+length,1) && text[length]) ++length;
+            if (length==480 || !IsReadableRange(text+length,1)) { original(self,bone,text); return; }
+            BYTE type=255;
+            std::string result(text,length);
+            if (ReadValue(static_cast<const BYTE*>(self)+kCharacterTypeOffset,type) && type==1)
+                result=hud::PetNameplate(result,PetOwnerFor(self));
+            result=hud::AttackNameplate(result,attackBrackets && IsAttackingTargetNpc(self));
+            original(self,bone,result.c_str());
         }
 
 
+
+    }
+
+    NameplateOptions GetNameplateOptions() {
+        return {conColors.load(), pinkTarget.load(), attackBrackets.load(),
+                attackFlash.load(), flashRate.load()};
+    }
+    void SetNameplateOptions(const NameplateOptions& o) {
+        conColors=o.conColors; pinkTarget=o.pinkTarget; attackBrackets=o.brackets;
+        attackFlash=o.attackFlash;
+        flashRate=std::isfinite(o.flashChangesPerSecond)
+            ? std::clamp(o.flashChangesPerSecond, 1.f, 16.f) : 15.5f;
+        nameOptionsDirty=true;
+    }
+    void SetNativePetOwnerNames(bool enabled) {
+        if (nativePetOwners.exchange(enabled)!=enabled) nameOptionsDirty=true;
+    }
+    void TickNameplateOptions() {
+        if (!g_installed || !g_validation.IsValidFor(g_module)) return;
+        const auto* state=GetClientState();
+        if (!state) return;
+        void* target=state->GetTarget();
+        static void* oldTarget=nullptr;
+        static bool oldAttack=false;
+        const bool attacking=IsAttackingTargetNpc(target);
+        const bool changed=nameOptionsDirty.exchange(false);
+        static ULONGLONG petTick=0;
+        static std::unordered_map<void*,std::pair<std::uint32_t,std::uint32_t>> owners;
+        const auto now=GetTickCount64();
+        const bool checkPets=now-petTick>=500;
+        if (checkPets) petTick=now;
+        const bool targetChanged=target!=oldTarget || attacking!=oldAttack;
+        if (changed || targetChanged || checkPets) {
+            // Only invoke native code on objects still in the live spawn list.
+            void* manager=ResolvePointer(g_module,g_validation,
+                {0xe641d0,addresses::Storage::PointerStorage},0x18);
+            void* spawn=nullptr;
+            if (manager) ReadValue(static_cast<const BYTE*>(manager)+8,spawn);
+            std::unordered_set<void*> seen;
+            while (spawn && seen.size()<4096 && seen.insert(spawn).second &&
+                   IsReadableRange(spawn,addresses::PlayerClientReferenceSize)) {
+                void* next=nullptr;
+                if (!ReadValue(static_cast<const BYTE*>(spawn)+8,next)) break;
+                BYTE type=255; ReadValue(static_cast<const BYTE*>(spawn)+kCharacterTypeOffset,type);
+                std::uint32_t id=0,owner=0;
+                ReadValue(static_cast<const BYTE*>(spawn)+0x148,id);
+                ReadValue(static_cast<const BYTE*>(spawn)+0x38c,owner);
+                const auto identity=std::make_pair(id,owner);
+                const auto old=owners.find(spawn);
+                const bool ownerChanged=type==kNpcType &&
+                    ((owner && (old==owners.end() || old->second!=identity)) ||
+                     (!owner && old!=owners.end() && old->second.second));
+                if (type==kNpcType) owners[spawn]=identity;
+                if (type==kNpcType && (changed || ownerChanged || spawn==target || spawn==oldTarget)) {
+                    if (g_originalTint) g_originalTint(spawn);
+                    ApplyNpcConColor(spawn);
+                    if ((spawn==target || spawn==oldTarget || ownerChanged || (changed && owner)) && g_originalState)
+                        InvokeNameState(spawn,true);
+                }
+                spawn=next;
+            }
+            std::erase_if(owners,[&](const auto& pair){return !seen.contains(pair.first);});
+        }
+        oldTarget=target; oldAttack=attacking;
+        if (target && IsAttackingTargetNpc(target)) ApplyNpcConColor(target);
     }
 
     std::uint32_t GetNameplateTagColor(void* spawn)
@@ -695,8 +744,8 @@ namespace gusto::client::rof2
         const ClientState* state = GetClientState();
         BYTE npcLevel = 0, playerLevel = 0;
         const NameplateBGR* color = &kWhite;
-        if (state && spawn == state->GetTarget()) color = &kPink;
-        else if (state && spawn &&
+        if (state && spawn == state->GetTarget() && pinkTarget) color = TargetTint(spawn);
+        else if (conColors && state && spawn &&
             ReadValue(static_cast<const BYTE*>(spawn) + kLevelOffset, npcLevel) &&
             state->GetLocalPlayer() &&
             ReadValue(reinterpret_cast<const BYTE*>(state->GetLocalPlayer()) + kLevelOffset, playerLevel) &&

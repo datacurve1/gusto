@@ -18,3 +18,19 @@ keyboard.txt
 # Temporary development artifacts
 *.bak
 second.tag_color
+
+# Local upstream reference checkout
+hailstone-client/
+
+# Python verification scripts
+__pycache__/
+
+# Wavefront model assets, rather than compiled Windows objects
+!assets/life_fx/*.obj
+
+# Local editor backups and superseded development packages
+*.bak2
+*.pre_*
+*.kate-swp
+releases/*Preview*.zip
+releases/*Preview*.zip.sha256

@@ -1,4 +1,7 @@
 #include "gusto/client/rof2/tag_hooks.hpp"
+#include "gusto/client/rof2/hud_overlay.hpp"
+#include "gusto/client/rof2/named_pipe.hpp"
+#include "gusto/client/rof2/life_fx.hpp"
 #include "gusto/client/rof2/addresses.hpp"
 #include "gusto/client/rof2/globals.hpp"
 #include "gusto/client/rof2/hook_utils.hpp"
@@ -42,6 +45,7 @@ using RenderCallback = void (*)();
 using PrimitiveRenderFn = void(__thiscall *)(void *, bool, bool);
 PrimitiveRenderFn originalPrimitives = nullptr;
 std::atomic_bool drawPending{false};
+std::atomic_bool overlayPending{false};
 std::atomic_ulong latePasses{0};
 std::atomic<float> lastClipX{0}, lastClipY{0}, lastClipZ{0}, lastClipW{0};
 HMODULE module = nullptr;
@@ -54,6 +58,7 @@ RemoveSpawnFn originalRemoveSpawn = nullptr;
 SRWLOCK lock = SRWLOCK_INIT;
 TagState tags;
 std::atomic_bool suppress{false}, filter{false}, prettyprint{false};
+std::atomic_bool showModels{true}, showText{true}, optionsDirty{false}, clearRequested{false};
 std::string tagChannel;
 void *hookedRender = nullptr;
 RenderCallback previousRender = nullptr;
@@ -267,6 +272,7 @@ int ChannelNumber() {
 void __fastcall ChatHook(void *self, void *, const char *message, int color,
                          bool log, bool percent) {
   std::string text;
+  std::string pipeText;if(Text(message,pipeText))PipeChat(pipeText.c_str(),color);
   const bool group = color == 258 || color == 309 || color == 327;
   const int number = ChannelNumber();
   const bool channel =
@@ -305,6 +311,7 @@ void __fastcall ChatHook(void *self, void *, const char *message, int color,
 void *__fastcall RemoveSpawnHook(void *self, void *, void *spawn) {
   std::uint32_t id = 0;
   if (Read(spawn, IdOffset, id) && id) {
+    RemoveHudSpawn(id,spawn);
     AcquireSRWLockExclusive(&lock);
     tags.Clear(id);
     ReleaseSRWLockExclusive(&lock);
@@ -312,6 +319,7 @@ void *__fastcall RemoveSpawnHook(void *self, void *, void *spawn) {
   return originalRemoveSpawn ? originalRemoveSpawn(self, spawn) : nullptr;
 }
 void __fastcall GameStateHook(void *self, void *, int state) {
+  ResetHudState();
   // Drop identities before any zone or character transition can recycle spawn
   // IDs.
   AcquireSRWLockExclusive(&lock);
@@ -343,7 +351,7 @@ bool ActorPosition(void *actor, float (&position)[3]) {
 }
 
 void DrawTagModels() {
-  if (!InGame())
+  if (!showModels || !InGame())
     return;
   const auto entries = Entries();
   if (entries.empty()) {
@@ -510,15 +518,29 @@ void RenderTags() {
   if (previousRender)
     previousRender();
   drawPending = InGame();
+  overlayPending = InGame();
   renderStage = "queued for late pass";
 }
 void __fastcall PrimitiveRenderHook(void *self, void *, bool firstPass,
                                     bool deferredPass) {
   ++latePasses;
-  if (firstPass && !deferredPass && drawPending.exchange(false))
+  if (firstPass && !deferredPass && drawPending.exchange(false)) {
+    IDirect3DDevice9* device=nullptr;D3DMATRIX matrix{};hud::Point camera{};void* activeCamera=nullptr;
+    if(Read(hookedRender,DeviceOffset,device) && Read(hookedRender,0x16c0,matrix)) {
+      Read(Global(addresses::Display),0x118,activeCamera);Read(activeCamera,0xbc,camera);
+      DrawLifeEffects(device,matrix,camera,GetTickCount64());
+    }
     DrawTagModels();
+    // World depth is still bound here. Later 2D/UI passes may clear or
+    // replace it, so depth-tested NPC bars must precede those passes.
+    if(device)DrawHudWorldBars(device,hookedRender);
+  }
   if (originalPrimitives)
     originalPrimitives(self, firstPass, deferredPass);
+  if (!firstPass && !deferredPass && overlayPending.exchange(false)) {
+    IDirect3DDevice9* device = nullptr;
+    if (Read(hookedRender, DeviceOffset, device)) DrawHudOverlay(device, hookedRender);
+  }
 }
 } // namespace
 
@@ -527,6 +549,15 @@ void TickTags() {
   // game hooks; two patching threads must never suspend one another.
   if (!InGame() || GetInitializationStatus() != InitializationStatus::Ready)
     return;
+  if (optionsDirty.exchange(false) || clearRequested.load()) {
+    std::vector<std::pair<std::uint32_t, TagEntry>> old;
+    AcquireSRWLockExclusive(&lock);
+    for (const auto& pair : tags.Entries()) old.push_back(pair);
+    if (clearRequested.exchange(false)) tags.Clear();
+    ReleaseSRWLockExclusive(&lock);
+    Refresh(old);
+  }
+  TickHudHooks();
   void *engine = Global(GraphicsEngine, 16);
   void *render = nullptr;
   if (!Read(engine, 12, render) || !render) {
@@ -605,7 +636,7 @@ void TickTags() {
   }
 }
 std::string GetActorTagText(void *actor) {
-  if (!actor || !InGame())
+  if (!showText || !actor || !InGame())
     return {};
   for (const auto &[id, entry] : Entries()) {
     if (entry.text.empty())
@@ -617,6 +648,23 @@ std::string GetActorTagText(void *actor) {
   }
   return {};
 }
+
+TagDisplayOptions GetTagDisplayOptions() {
+  AcquireSRWLockShared(&lock);
+  TagDisplayOptions o{tags.enabled, showModels.load(), showText.load(),
+    tags.defaultArrow, filter.load(), suppress.load(), prettyprint.load()};
+  ReleaseSRWLockShared(&lock);
+  return o;
+}
+void SetTagDisplayOptions(const TagDisplayOptions& o) {
+  AcquireSRWLockExclusive(&lock);
+  tags.enabled=o.enabled; tags.defaultArrow=o.defaultArrow;
+  showModels=o.models; showText=o.text;
+  filter=o.filter; suppress=o.suppress; prettyprint=o.prettyprint;
+  ReleaseSRWLockExclusive(&lock);
+  optionsDirty=true;
+}
+void RequestClearTags() { clearRequested=true; }
 
 bool HandleTagCommand(std::string_view command, void *context,
                       TagSendCommand send, std::string &reply) {

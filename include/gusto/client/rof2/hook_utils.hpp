@@ -15,7 +15,8 @@ namespace gusto::client::rof2
     //
     //  - expectedBytes/length: the bytes the target must start with. `length`
     //    must be 5..16 and cover WHOLE instructions that are position
-    //    independent (no relative call/jmp among them). They are copied into
+    //    independent (no relative call/jmp among them), except a single 5-byte
+    // entry JMP, which is relocated to preserve an existing compatible hook. They are copied into
     //    the trampoline, which then jumps to target + length.
     //  - hook: the replacement function (same calling convention/signature).
     //  - trampolineOut: receives a callable pointer to the original function.

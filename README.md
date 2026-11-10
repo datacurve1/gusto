@@ -1,196 +1,150 @@
-# Gusto
+# Gusto 1.1.0-beta.1
 
-Gusto adapts EverQuest Zeal features for the **Rain of Fear 2 (RoF2)** client
-through a dedicated compatibility layer. It supports Windows and Wine with a
-compatible 32-bit ASI loader.
+Gusto brings Zeal-inspired features to the **EverQuest Rain of Fear 2 (RoF2)**
+client, with a Hailstone-style minimap and native Windows/Wine controller support.
+It is a 32-bit ASI plugin for the **May 10, 2013, 23:30:08** client.
 
-Gusto is an independent community project and is not affiliated with or
-endorsed by Daybreak Game Company.
+This beta follows Gusto 1.0 and replaces the numbered HUD development previews.
+Gusto is an independent community project, not affiliated with or endorsed by
+Daybreak Game Company.
 
 ## Download and install
 
-[Download the tagging preview](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/GUSTO-RoF2-Tagging-Preview.zip)
-([SHA256](releases/GUSTO-RoF2-Tagging-Preview.zip.sha256)).
+- [Windows package](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/GUSTO-1.1.0-beta.1-RoF2-Windows.zip) · [SHA256](releases/GUSTO-1.1.0-beta.1-RoF2-Windows.zip.sha256)
+- [Windows/Wine package with artwork, previews and documentation](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/GUSTO-1.1.0-beta.1-RoF2-Windows-Wine.zip) · [SHA256](releases/GUSTO-1.1.0-beta.1-RoF2-Windows-Wine.zip.sha256)
 
-1. Fully exit EverQuest.
-2. Back up the existing `GUSTO.asi` in your game directory.
-3. Extract the preview ZIP and copy its `GUSTO.asi` beside `eqgame.exe`.
-4. Ensure your compatible 32-bit ASI loader is installed and enabled.
-5. Restart EverQuest using your normal Windows or Wine launcher.
+1. Fully exit EverQuest and back up your existing `GUSTO.asi`.
+2. Extract a package and copy `GUSTO.asi` beside `eqgame.exe`.
+3. Install or enable a compatible **32-bit ASI loader** if you do not already use one.
+4. Start EverQuest through your normal Windows or Wine launcher.
+5. Enter `/gusto version` to verify the version and `/gusto` to open settings.
 
-Replacing the file while EverQuest is running does not update the loaded
-plugin. Fully exit and restart after every update.
-
-The older [GUSTO 1.0 package](releases/GUSTO-1.0-RoF2-Windows-Wine.zip) does
-**not** include the new tagging commands.
-
-## Status and compatibility
-
-This is an experimental tagging preview. The supported client is **May 10
-2013, 23:30:08 RoF2**; addresses and memory layouts are specific to that client.
-Startup validates the executable before installing hooks.
-
-**Native tag text and live 3D marker visibility have been confirmed in game.**
-Automated protocol, geometry, channel-lookup, and safety tests pass. Server chat
-interoperability and broader device-reset testing still need live confirmation.
-Use a separate client installation for testing.
+The Windows package also includes `Install-Gusto.ps1`, which checks the client
+and plugin hashes and backs up an existing plugin. See [Windows installation](docs/windows.md).
+Replacing an ASI while the game runs only stages the update; restart to load it.
+The plugin uses Windows system DLLs and embeds its meshes. Players do not need
+Blender, Python, a compiler, or a separate GCC/C++ runtime installation.
 
 ## Features
 
-- Native Slow Turn Left, Slow Turn Right, and Toggle All Bags keybinds.
-- NPC nameplate colors and attack-target brackets.
-- `/tag` text labels with colored arrow, stop-sign, and paw geometry.
-- Local, group, raid, and selected-channel tag exchange.
-- `GUSTOTAG` outgoing messages and `Gt...` tagging channels.
-- Exact tag targeting, append/remove/move operations, clear commands, and chat
-  filtering.
-- In-game diagnostics through `/tag status` and `/gusto version`.
+| Feature | Included controls and behavior |
+| --- | --- |
+| Minimap | Hailstone Midnight-style circular map, zone geometry and labels, heading rotation, height filtering, zoom and adjustable arrow sizes. Player arrows use distinct colors; pets use light brown arrows. |
+| External map | Independent resizable map window that can be dragged to another monitor. |
+| Combat floats | Damage, misses, large hits and healing floats with filters and size controls. |
+| Overhead bars | HP, mana and stamina controls with independent sizes/colors and optional RPG frames. NPCs/pets show HP only; other players' mana is limited to known group data. |
+| Nameplates | Con colors, pink target highlighting, brackets, attack flashing, and EverQuest-style pet owner labels. |
+| Tagging | Native labels and 3D arrow/stop/paw markers; local, group, raid and channel exchange using `GUSTOTAG` messages and `Gt...` channel names. |
+| Death / feign death | Original extruded ghost and jester meshes; rising/fading effects, color/size controls, and native skeleton laugh for player feign death. |
+| Camera | Optional orientation smoothing, FOV, zoom and native camera-mode controls. |
+| Gamepad | XInput and generic joystick/WinMM backends for Windows and Wine; keyboard shortcuts, held stick directions, mouse movement and mouse-click bindings. |
+| Named pipes | Outbound Zeal-compatible JSON snapshots through `gusto_PID`, with an optional `zeal_PID` alias. |
+| Native keybinds | Slow Turn Left, Slow Turn Right and Toggle All Bags in EverQuest Options → Keys. |
 
-## Tagging quick start
+The settings menu has Map, Combat, Bars, Nameplates, Camera, Tags, Death / FD,
+Gamepad and Pipes pages. Slow turn and bag keybinds use the native game options.
+Settings persist in `%LOCALAPPDATA%\Gusto\hud.ini` inside the active Windows/Wine
+profile. Updating the plugin preserves those settings.
 
-Target a living NPC, then add a tag for yourself. No group is required:
+Hold a single click on the minimap to preview the larger map. Double-click and
+hold to move the minimap. Ordinary menu clicks do not take ownership of the cursor.
+Zone `.txt` map files belong in the game client's `maps` directory; maps are not
+bundled with Gusto.
 
-```text
-/tag local ^R^Assist
-```
+## Controller setup
 
-For a stop sign or paw:
+1. Open **Gamepad** and enable your controller; start with the Auto backend.
+2. Select the mapping wizard and press the controller input to assign.
+3. Press a keyboard key/shortcut **or click left, right or middle mouse**.
+4. Release the captured input, close the menu, and test in the game.
 
-```text
-/tag local ^S^
-/tag local ^P^
-```
+Keys use your existing EverQuest **Options → Keys** bindings. A stick holds its
+key while tilted and releases near center. A stick assigned to mouse movement
+is dedicated to the pointer. Escape cancels mapping.
 
-Share tags with a group or raid:
+Controller output pauses for menus, text editing, lost focus and disconnection.
+Return the sticks/buttons to neutral after a pause to rearm. Windows and Wine
+use the native EQ keybinding handler; ordinary focused UI buttons do not block
+movement. Linux controllers must first be recognized by the host and exposed
+to the game's active Wine prefix. See [controller setup and troubleshooting](docs/gamepad.md).
 
-```text
-/tag gsay ^Y^Mez
-/tag rsay ^R^Main assist
-/tag rsgs Off tank
-```
-
-`rsgs` chooses raid, then group, then local.
-
-### Shared tagging channel
-
-All participants must use the updated Gusto build and the same channel:
-
-```text
-/tag join Gt123
-```
-
-Wait for EverQuest's join confirmation. Once joined, target an NPC and send:
-
-```text
-/tag chat ^R^Assist
-```
-
-Gusto reports `joined as /N` only after it finds the channel in the client's
-joined-channel list. If it remains pending, run native `/join Gt123` and
-`/list` to check the server's response. A working server chat service is
-required for channel exchange.
-
-Outgoing messages use `GUSTOTAG`; incoming `GUSTOTAG`/`GT` and legacy
-`ZEALTAG`/`ZT` messages are accepted. Original Zeal clients do not understand
-Gusto's new outgoing header. Tag channels must begin with `Gt` and contain only
-letters and digits; matching is case insensitive.
-
-### Manage tags
+## Useful commands
 
 ```text
-/tag target Assist
-/tag clear
-/tag local clear
-/tag off
-/tag on
+/gusto
+/gusto version
+/gusto status
+/gusto gamepad status
+/minimap on
+/minimap external
+/fcd on
+/camera on
 /tag status
 ```
 
-`/tag clear` clears the selected living target, or all tags when no living
-target is selected. `/tag local clear` always clears all local tags.
-`/tag status` reports tracked tags, renderer stages, frame/draw counts,
-projected marker coordinates, and channel lookup details.
+See the detailed guides for complete commands and settings:
 
-Settings are currently held in memory for the session. Zeal's font renderer,
-target-window tooltip, UI settings controls, and INI persistence are not part
-of this port.
+- [HUD, map, combat, bars and camera](docs/hud.md)
+- [Controller mappings and Linux/Wine troubleshooting](docs/gamepad.md)
+- [Tagging and chat channels](docs/tagging.md)
+- [Death/feign-death effects and artwork](docs/life_effects.md)
+- [Named pipes and example reader](docs/pipes.md)
 
-See [RoF2 tagging](docs/tagging.md) for the complete command reference,
-verified offsets, limitations, and live acceptance checks.
+## Compatibility and beta status
 
-## Slow turn and bag keybinds
+Only the supported RoF2 build is targeted. Startup validates the executable
+before installing hooks. `tools/verify_hud.py` checks the expected client and
+graphics DLL hashes plus the native code anchors used by these features.
+MacroQuest and compatible existing entry-JMP hooks can be chained; unrecognized
+patches are rejected.
 
-Slow Turn Left, Slow Turn Right, and Toggle All Bags appear in the native
-Options → Keys window. See [Slow Turn Keys and Toggle All Bags](docs/slow-turn-keys.md)
-for the command mappings and verification steps.
+Live testing has confirmed 3D tag visibility, controller keyboard delivery,
+sustained stick movement, button remapping and mouse-click mapping under Wine.
+The latest NPC/pet bar change draws in the world-complete render stage before
+the label/UI pass; automated occlusion tests pass, but **live wall/tree occlusion
+still needs confirmation**. Physical Windows hardware, server-channel
+interoperability and broader device-reset coverage also need further testing.
+
+Some resource values and pipe fields depend on what the client knows. The pipes
+export snapshots; they do not accept inbound game commands. See the guides for
+field coverage and implementation limits.
 
 ## Build from source
 
-Build as a **32-bit Windows DLL** with a MinGW-w64 cross-compiler. On Ubuntu:
+Requirements: CMake 3.20+, a C++20-capable 32-bit Windows toolchain, and Windows
+SDK/MinGW headers. On Linux with MinGW-w64:
 
-```bash
-sudo apt update
-sudo apt install cmake ninja-build mingw-w64
-cmake -S . -B build \
-  -DCMAKE_TOOLCHAIN_FILE=cmake/mingw32-toolchain.cmake \
-  -DCMAKE_BUILD_TYPE=Release
-cmake --build build
+```sh
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=cmake/mingw32-toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j4
 ```
 
-The targets are `GUSTO.dll`, `gusto_safety_tests.exe`, and
-`gusto_tagging_tests.exe`. Install the built `GUSTO.dll` as `GUSTO.asi` beside
-`eqgame.exe`, then fully restart the game.
+The output is `build/GUSTO.dll`; packages rename it to `GUSTO.asi`. `VERSION` is
+the source of the semantic version used by CMake, `/gusto version`, Windows file
+metadata and release filenames.
 
-The current CMake targets include the adapted tagging code and do not require
-a separate Zeal checkout. The full Zeal/MacroQuest reference sources are not
-included. Developers obtaining those sources for comparison may place them
-under `source/Zeal-1.4.8/Zeal`; `source/` is ignored by Git.
+The repository includes safety, tagging, HUD, controller, life-effect and pipe
+tests, plus opt-in Wine/D3D9 preview and runtime smoke targets. For the graphical
+and runtime checks:
 
-### Verification
-
-Audit your client installation:
-
-```bash
-python3 tools/verify_rof2.py /path/to/rof2/eqgame.exe
-python3 tools/verify_tagging.py /path/to/rof2
+```sh
+cmake --build build --target gusto_hud_preview gusto_life_preview gusto_gamepad_preview gusto_windows_runtime_smoke -j4
 ```
 
-Run the Windows test executables directly on Windows, or through Wine. Portable
-tagging tests can also run on Linux:
+Run Windows test executables on Windows or in an **isolated** Wine prefix. The
+HUD preview uses synthetic data and requires a working D3D9 display. Full source,
+original Blender/SVG artwork, runtime meshes, packaging tools and third-party
+notices are included; proprietary game executables and map packs are not.
 
-```bash
-g++ -std=c++20 -fsanitize=address,undefined -g -Iinclude \
-  test/tagging_tests.cpp src/client/rof2/tag_state.cpp \
-  src/client/rof2/tag_models.cpp -o /tmp/gusto-tagging-tests
-ASAN_OPTIONS=detect_leaks=0 /tmp/gusto-tagging-tests
+After building and generating the preview PNGs, package the current version:
+
+```sh
+python3 tools/package_hud.py
+python3 tools/package_windows.py
 ```
 
-The suite covers `GUSTOTAG` round trips, legacy reception, malformed messages,
-field operations, channel selection, and model geometry. It also exercises
-10,000 malformed-message inputs. These checks do not replace live rendering,
-network, and device-reset testing.
+## License and credits
 
-## Hook behavior
-
-Optional hook failures do not by themselves abort initialization. Code patches
-check expected instructions and temporarily suspend other client threads;
-those threads are resumed before their handles are released.
-
-Runtime hooks write no diagnostic log files. Rendering diagnostics are
-available in game through `/tag status`.
-
-## Repository layout
-
-- `include/gusto/` — Gusto headers
-- `src/client/rof2/` — client compatibility, hooks, and tagging implementation
-- `test/` — safety, protocol, channel, and geometry tests
-- `tools/` — executable and tagging-address audits
-- `docs/` — command references, technical details, and manual checks
-- `releases/` — downloadable packages
-- `cmake/` — cross-compilation configuration
-
-## License
-
-Gusto is distributed under **GPL-3.0-only**. See [LICENSE](LICENSE).
-Adapted Zeal components retain their MIT attribution; see
-[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Gusto and its original ghost/jester artwork use the [MIT license](LICENSE).
+Thanks to Zeal, MacroQuest/eqlib, Hailstone and nlohmann/json. Attribution and
+upstream licenses are preserved in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

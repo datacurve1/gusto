@@ -8,6 +8,9 @@
 #include "gusto/client/rof2/globals.hpp"
 #include "gusto/client/rof2/initialization.hpp"
 #include "gusto/client/rof2/tag_hooks.hpp"
+#include "gusto/client/rof2/hud_overlay.hpp"
+#include "gusto/client/rof2/named_pipe.hpp"
+#include "gusto/client/rof2/nameplate_hooks.hpp"
 #include "gusto/client/rof2/hook_utils.hpp"
 
 using namespace gusto::client::rof2;
@@ -67,6 +70,13 @@ int main()
         sizeof(companionPrologue), reinterpret_cast<void*>(&TickTags), &companionTrampoline),
         "Reject companion-module detour without client validation");
     Check(companionTrampoline == nullptr, "Failed companion detour leaves trampoline unpublished");
+    Check(!InstallHudHooks(nullptr, token), "Reject HUD hooks on null module");
+    Check(!InstallHudHooks(self, token), "Reject HUD hooks without validated client");
+    std::string hudReply;
+    Check(!InitializePipes(nullptr, ValidatedClient{}), "Reject pipes without a validated client");
+    Check(!HandleHudCommand("/gusto version", hudReply), "HUD preserves existing version command");
+    Check(HandleHudCommand("/minimap on", hudReply) && !hudReply.empty(), "Unavailable HUD reports failure without reading client memory");
+    TickHudHooks();
     TickTags();
     Check(GetActorTagText(nullptr).empty(), "Ignore tags before client validation");
 
@@ -151,6 +161,21 @@ int main()
     Check(
         !zoneSnapshot.available && zoneSnapshot.zoneId == 0,
         "Clear zone snapshot when validation fails");
+
+    const auto namesBefore=GetNameplateOptions();
+    SetNameplateOptions({false,false,false,false,99});
+    const auto names=GetNameplateOptions();
+    Check(!names.conColors&&!names.pinkTarget&&!names.brackets&&!names.attackFlash &&
+          names.flashChangesPerSecond==16, "Independent nameplate controls and bounded flash speed");
+    TickNameplateOptions();
+    SetNameplateOptions(namesBefore);
+    const auto tagsBefore=GetTagDisplayOptions();
+    SetTagDisplayOptions({false,false,false,true,true,true,true});
+    const auto display=GetTagDisplayOptions();
+    Check(!display.enabled&&!display.models&&!display.text&&display.defaultArrow&&
+          display.filter&&display.suppress&&display.prettyprint,
+          "Independent tag controls round-trip without native memory access");
+    SetTagDisplayOptions(tagsBefore);
 
     // Initialization must reject the safety-test executable.
     Check(

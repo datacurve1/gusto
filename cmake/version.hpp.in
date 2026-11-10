@@ -1,0 +1,2 @@
+#pragma once
+#define GUSTO_VERSION_STRING "@GUSTO_RELEASE_VERSION@"

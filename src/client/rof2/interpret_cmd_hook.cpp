@@ -1,6 +1,7 @@
 #include "gusto/client/rof2/interpret_cmd_hook.hpp"
 
 #include "gusto/client/rof2/tag_hooks.hpp"
+#include "gusto/client/rof2/hud_overlay.hpp"
 #include <string>
 #include <windows.h>
 #include <tlhelp32.h>
@@ -316,6 +317,12 @@ namespace gusto::client::rof2
                 return;
             }
             text = safeText;
+            TickTags();
+            std::string hudReply;
+            if (HandleHudCommand(text, hudReply)) {
+                if (!hudReply.empty() && g_dspChat) g_dspChat(self, hudReply.c_str(), UserColorDefault, true, true);
+                return;
+            }
             if (_strnicmp(text, "/tag", 4) == 0 &&
                 (text[4] == '\0' || text[4] == ' ' || text[4] == '\t')) {
                 struct Context { void* self; void* who; } context{self, who};

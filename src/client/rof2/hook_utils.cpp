@@ -228,6 +228,16 @@ namespace gusto::client::rof2
 
             std::memcpy(destination + 1, &displacement, sizeof(displacement));
         }
+        bool CopyEntryInstructions(BYTE* trampoline,const BYTE* target,std::size_t length)
+        {
+            if(length==5 && target[0]==0xe9){
+                std::int32_t displacement=0;std::memcpy(&displacement,target+1,4);
+                auto destination=reinterpret_cast<std::uintptr_t>(target)+5+displacement;
+                if(!IsExecutableMemory(reinterpret_cast<void*>(destination),1))return false;
+                WriteRelativeJump(trampoline,trampoline,reinterpret_cast<void*>(destination));
+            } else std::memcpy(trampoline,target,length);
+            return true;
+        }
     }
 
     bool InstallDetour(
@@ -282,7 +292,7 @@ namespace gusto::client::rof2
         if (!trampoline)
             return false;
 
-        std::memcpy(trampoline, target, length);
+        if(!CopyEntryInstructions(trampoline,target,length)){VirtualFree(trampoline,0,MEM_RELEASE);return false;}
         WriteRelativeJump(trampoline + length, trampoline + length, target + length);
 
         if (!FlushInstructionCache(GetCurrentProcess(), trampoline, length + 5))
