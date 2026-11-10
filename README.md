@@ -10,7 +10,7 @@ Daybreak Game Company.
 
 ## Download and install
 
-- [Verified Windows x86 build](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/windows-x86-build.zip) · [SHA256](releases/windows-x86-build.zip.sha256)
+- [Verified Windows x86 build](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/windows-x86-build.zip) · [SHA256](releases/windows-x86-build.zip.sha256) · [Corresponding source](https://github.com/datacurve1/gusto/archive/cf16e962d81f591d35fba99083338a99a8bac708.zip)
 - [Beta.3 Windows package (Wine-tested)](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/GUSTO-1.1.0-beta.3-RoF2-Windows.zip) · [SHA256](releases/GUSTO-1.1.0-beta.3-RoF2-Windows.zip.sha256)
 - [Windows/Wine package with artwork, previews and documentation](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/GUSTO-1.1.0-beta.3-RoF2-Windows-Wine.zip) · [SHA256](releases/GUSTO-1.1.0-beta.3-RoF2-Windows-Wine.zip.sha256)
 
@@ -59,10 +59,8 @@ Windows. Publish the versioned Windows ZIP and its matching SHA-256 as
 release assets, and update the download links above. The Windows x86 download above includes the startup and `/gusto` command
 registration fixes for relocated Windows clients.
 
-The separate verified Windows x86 build includes native Windows startup fixes
-that are not yet incorporated into this beta.3 source/package. The beta.3
-packages include the Nexus placeholder-bar fix and have been tested under Wine;
-use the verified Windows download when those startup fixes are required.
+The Windows x86 package is built from beta.3 with both relocation fixes. The
+separate Wine-tested packages are listed above.
 
 ## Features
 
@@ -184,6 +182,6 @@ python3 tools/package_windows.py
 
 ## License and credits
 
-Gusto and its original ghost/jester artwork use the [MIT license](LICENSE).
+Gusto is distributed under the [GNU General Public License v3](LICENSE).
 Thanks to Zeal, MacroQuest/eqlib, Hailstone and nlohmann/json. Attribution and
 upstream licenses are preserved in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
