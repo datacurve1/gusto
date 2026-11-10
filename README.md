@@ -10,7 +10,7 @@ Daybreak Game Company.
 
 ## Download and install
 
-- [Windows package](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/GUSTO-1.1.0-beta.1-RoF2-Windows.zip) · [SHA256](releases/GUSTO-1.1.0-beta.1-RoF2-Windows.zip.sha256)
+- [Windows x86 package](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/windows-x86-build.zip) · [SHA256](releases/windows-x86-build.zip.sha256)
 - [Windows/Wine package with artwork, previews and documentation](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/GUSTO-1.1.0-beta.1-RoF2-Windows-Wine.zip) · [SHA256](releases/GUSTO-1.1.0-beta.1-RoF2-Windows-Wine.zip.sha256)
 
 1. Fully exit EverQuest and back up your existing `GUSTO.asi`.
@@ -55,9 +55,8 @@ The output is `build-win32/GUSTO.dll`. Distribute it as `GUSTO.asi` using
 the Windows packaging script described below. For a public update, commit
 the source fix first, bump `VERSION`, then rebuild and test that version on
 Windows. Publish the versioned Windows ZIP and its matching SHA-256 as
-release assets, and update the download links above. The download links
-in this README still point to the existing beta until a fixed package is
-published.
+release assets, and update the download links above. The Windows x86 download above includes the startup and `/gusto` command
+registration fixes for relocated Windows clients.
 
 ## Features
 
