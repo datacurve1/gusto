@@ -22,6 +22,7 @@ namespace gusto::client::rof2
         constexpr int UserColorDefault = 273;
         constexpr std::size_t PatchLength = 7;
 
+        constexpr std::uintptr_t ExceptionHandlerVA = 0x0097852C;
         constexpr BYTE ExpectedBytes[PatchLength] =
         {
             0x6A, 0xFF, 0x68, 0x2C, 0x85, 0x97, 0x00
@@ -419,7 +420,16 @@ namespace gusto::client::rof2
 
         auto* target = reinterpret_cast<BYTE*>(targetAddress);
 
-        if (std::memcmp(target, ExpectedBytes, PatchLength) != 0)
+        // The loader relocates the absolute operand of the second push.
+        const auto exceptionHandler = ResolvePreferredVA(module, ExceptionHandlerVA, 1);
+        if (!exceptionHandler)
+            return false;
+
+        BYTE expected[PatchLength];
+        std::memcpy(expected, ExpectedBytes, sizeof(expected));
+        const auto operand = static_cast<std::uint32_t>(exceptionHandler);
+        std::memcpy(expected + 3, &operand, sizeof(operand));
+        if (std::memcmp(target, expected, PatchLength) != 0)
             return false;
 
         // Build the trampoline before stopping threads or modifying the game.
