@@ -6,6 +6,8 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <span>
+#include <vector>
 
 #include "gusto/client/rof2/compatibility.hpp"
 
@@ -43,5 +45,26 @@ namespace gusto::client::rof2
         std::size_t length,
         const void* hook,
         void** trampolineOut);
+
+    struct CodePatch
+    {
+        std::uintptr_t preferredVa;
+        std::vector<BYTE> expected;
+        std::vector<BYTE> replacement;
+    };
+
+    struct CodeRange
+    {
+        std::uintptr_t begin;
+        std::uintptr_t end;
+    };
+
+    // All sites are checked before any write. Other threads stay stopped until
+    // the complete patch set is published. Zero globals and guarded routines
+    // prevent changing object layouts after construction has started.
+    bool ApplyCodePatches(HMODULE module, const ValidatedClient& validation,
+        std::span<const CodePatch> patches,
+        std::span<const CodeRange> guardedRanges = {},
+        std::span<const std::uintptr_t> zeroGlobals = {});
 
 }

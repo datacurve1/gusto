@@ -5,14 +5,11 @@
 #include "gusto/client/rof2/initialization.hpp"
 
 #include <windows.h>
-#include <wincrypt.h>
-#include <bcrypt.h>
 
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <limits>
-#include <vector>
 
 namespace gusto::client::rof2
 {
@@ -71,111 +68,7 @@ namespace gusto::client::rof2
             return true;
         }
 
-        bool CalculateFileSha256(
-            const wchar_t* path,
-            char output[65])
-        {
-            BCRYPT_ALG_HANDLE algorithm = nullptr;
-            BCRYPT_HASH_HANDLE hash = nullptr;
-            HANDLE file = INVALID_HANDLE_VALUE;
-            std::vector<UCHAR> hashObject;
-            UCHAR digest[32]{};
 
-            bool success = false;
-
-            do
-            {
-                if (BCryptOpenAlgorithmProvider(
-                    &algorithm,
-                    BCRYPT_SHA256_ALGORITHM,
-                    nullptr,
-                    0) < 0)
-                    break;
-
-                DWORD objectLength = 0;
-                DWORD resultLength = 0;
-
-                if (BCryptGetProperty(
-                    algorithm,
-                    BCRYPT_OBJECT_LENGTH,
-                    reinterpret_cast<PUCHAR>(&objectLength),
-                    sizeof(objectLength),
-                    &resultLength,
-                    0) < 0)
-                    break;
-
-                hashObject.resize(objectLength);
-
-                if (BCryptCreateHash(
-                    algorithm,
-                    &hash,
-                    hashObject.data(),
-                    objectLength,
-                    nullptr,
-                    0,
-                    0) < 0)
-                    break;
-
-                file = CreateFileW(
-                    path,
-                    GENERIC_READ,
-                    FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                    nullptr,
-                    OPEN_EXISTING,
-                    FILE_ATTRIBUTE_NORMAL,
-                    nullptr);
-
-                if (file == INVALID_HANDLE_VALUE)
-                    break;
-
-                UCHAR buffer[65536];
-                DWORD bytesRead = 0;
-
-                bool readSucceeded = true;
-
-                while (true)
-                {
-                    if (!ReadFile(file, buffer, sizeof(buffer), &bytesRead, nullptr))
-                    {
-                        readSucceeded = false;
-                        break;
-                    }
-
-                    if (bytesRead == 0)
-                        break;
-
-                    if (BCryptHashData(hash, buffer, bytesRead, 0) < 0)
-                    {
-                        readSucceeded = false;
-                        break;
-                    }
-                }
-
-                if (!readSucceeded)
-                    break;
-
-                if (BCryptFinishHash(hash, digest, sizeof(digest), 0) < 0)
-                    break;
-
-                for (unsigned i = 0; i < sizeof(digest); ++i)
-                    std::sprintf(output + i * 2, "%02x", digest[i]);
-
-                output[64] = '\0';
-                success = true;
-
-            } while (false);
-
-            if (file != INVALID_HANDLE_VALUE)
-                CloseHandle(file);
-
-            if (hash)
-                BCryptDestroyHash(hash);
-
-            if (algorithm)
-                BCryptCloseAlgorithmProvider(algorithm, 0);
-
-            return success;
-        }
     }
 
     std::uintptr_t ResolvePreferredVA(
@@ -325,28 +218,6 @@ namespace gusto::client::rof2
             std::memcmp(time, ExpectedVersionTime, sizeof(ExpectedVersionTime)) != 0)
         {
             report.status = ValidationStatus::VersionMismatch;
-            return false;
-        }
-
-        wchar_t modulePath[MAX_PATH]{};
-        const DWORD pathLength = GetModuleFileNameW(
-            module, modulePath, static_cast<DWORD>(std::size(modulePath)));
-
-        if (!pathLength || pathLength >= std::size(modulePath))
-        {
-            report.status = ValidationStatus::ModulePathUnavailable;
-            return false;
-        }
-
-        if (!CalculateFileSha256(modulePath, report.sha256))
-        {
-            report.status = ValidationStatus::HashFailure;
-            return false;
-        }
-
-        if (_stricmp(report.sha256, ExpectedSha256) != 0)
-        {
-            report.status = ValidationStatus::HashMismatch;
             return false;
         }
 

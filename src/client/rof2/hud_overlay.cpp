@@ -1,3 +1,4 @@
+#include "gusto/client/rof2/bank.hpp"
 // Zeal-inspired map/combat/camera features with Hailstone's modern minimap
 // layout and Midnight palette. MIT reference attributions in
 // THIRD_PARTY_NOTICES.md.
@@ -2072,6 +2073,7 @@ bool HandleHudCommand(std::string_view text, std::string &reply) {
     menu = !menu;
     return true;
   }
+  if(root && sub=="bank") { reply=BankExpansionStatus(); return true; }
   if(root && sub=="gamepad") {
     if(!initialized){reply="Gusto HUD hooks unavailable for this client.";return true;}
     Guard guard;auto options=GetGamepadOptions();

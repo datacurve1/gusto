@@ -12,6 +12,7 @@
 #include "gusto/client/rof2/named_pipe.hpp"
 #include "gusto/client/rof2/nameplate_hooks.hpp"
 #include "gusto/client/rof2/hook_utils.hpp"
+#include "gusto/client/rof2/bank.hpp"
 
 using namespace gusto::client::rof2;
 
@@ -64,6 +65,11 @@ int main()
     const HMODULE self = GetModuleHandleW(nullptr);
     Check(!InstallTagHooks(nullptr, token), "Reject tagging hooks on null module");
     Check(!InstallTagHooks(self, token), "Reject tagging hooks without validation token");
+    Check(!InstallBankExpansion(nullptr, token), "Reject bank expansion on null module");
+    Check(!InstallBankExpansion(self, token), "Reject bank expansion without validation");
+    const CodePatch bankPatch{0x498c41, {0x68,0xc8,2,0,0}, {0x68,0x68,3,0,0}};
+    Check(!ApplyCodePatches(self, token, std::span(&bankPatch, 1)),
+        "Reject grouped code patches without validation");
     BYTE companionPrologue[] = {0x83, 0xec, 0x20, 0x80, 0x7c, 0x24, 0x24, 0};
     void* companionTrampoline = nullptr;
     Check(!InstallModuleDetour(self, token, self, 0xae370, companionPrologue,
@@ -76,6 +82,8 @@ int main()
     Check(!InitializePipes(nullptr, ValidatedClient{}), "Reject pipes without a validated client");
     Check(!HandleHudCommand("/gusto version", hudReply), "HUD preserves existing version command");
     Check(HandleHudCommand("/minimap on", hudReply) && !hudReply.empty(), "Unavailable HUD reports failure without reading client memory");
+    Check(HandleHudCommand("/gusto bank", hudReply) && hudReply.find("disabled") != std::string::npos,
+        "Bank status reports unavailable hooks without native memory access");
     TickHudHooks();
     TickTags();
     Check(GetActorTagText(nullptr).empty(), "Ignore tags before client validation");

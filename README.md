@@ -20,8 +20,7 @@ Daybreak Game Company.
 4. Start EverQuest through your normal Windows or Wine launcher.
 5. Enter `/gusto version` to verify the version and `/gusto` to open settings.
 
-The Windows package also includes `Install-Gusto.ps1`, which checks the client
-and plugin hashes and backs up an existing plugin. See [Windows installation](docs/windows.md).
+The Windows package also includes `Install-Gusto.ps1`, which checks the plugin hash and backs up an existing plugin. See [Windows installation](docs/windows.md).
 Replacing an ASI while the game runs only stages the update; restart to load it.
 The plugin uses Windows system DLLs and embeds its meshes. Players do not need
 Blender, Python, a compiler, or a separate GCC/C++ runtime installation.
@@ -40,8 +39,8 @@ can still fail at startup with `UnexpectedImageBase` when Windows relocates
 the executable. In a Windows reproduction, the verified client loaded at
 `0x00900000` instead of its preferred `0x00400000`. A local build initialized
 successfully after allowing the mapped PE header's image base to match
-either the preferred base or the actual module address. The client version,
-image size, and SHA-256 checks still apply. This startup test did not require
+either the preferred base or the actual module address. The client version and image size checks still apply; executable and graphics
+file hashes no longer gate startup or installation. This startup test did not require
 changing Defender or Windows exploit-protection settings.
 
 For a native Windows build, put CMake, Ninja and the 32-bit MinGW-w64
@@ -76,6 +75,7 @@ separate Wine-tested packages are listed above.
 | Camera | Optional orientation smoothing, FOV, zoom and native camera-mode controls. |
 | Gamepad | XInput and generic joystick/WinMM backends for Windows and Wine; keyboard shortcuts, held stick directions, mouse movement and mouse-click bindings. |
 | Named pipes | Outbound Zeal-compatible JSON snapshots through `gusto_PID`, with an optional `zeal_PID` alias. |
+| Bank | 32 regular and 8 shared slots through native RoF2 hooks and matching UI files; requires server support. `/gusto bank` reports hook status. See [bank setup](docs/bank.md). |
 | Native keybinds | Slow Turn Left, Slow Turn Right and Toggle All Bags in EverQuest Options → Keys. |
 
 The settings menu has Map, Combat, Bars, Nameplates, Camera, Tags, Death / FD,
@@ -129,8 +129,10 @@ See the detailed guides for complete commands and settings:
 
 ## Compatibility and beta status
 
-Only the supported RoF2 build is targeted. Startup validates the executable
-before installing hooks. `tools/verify_hud.py` checks the expected client and
+RoF2 memory layouts are still required. Modified executables are accepted without
+an exact file hash match; startup checks the PE architecture, version and image size
+before installing hooks. Removing a file hash restriction does not add support for
+other client versions. `tools/verify_hud.py` checks the expected client and
 graphics DLL hashes plus the native code anchors used by these features.
 MacroQuest and compatible existing entry-JMP hooks can be chained; unrecognized
 patches are rejected.
@@ -185,3 +187,58 @@ python3 tools/package_windows.py
 Gusto is distributed under the [GNU General Public License v3](LICENSE).
 Thanks to Zeal, MacroQuest/eqlib, Hailstone and nlohmann/json. Attribution and
 upstream licenses are preserved in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+## November 2026 Development Updates
+
+### Mercenary Expansion
+
+GUSTO expands the RoF2 mercenary management interface to support
+up to **100 mercenary entries**.
+
+- Expands the mercenary list and selection loops.
+- Updates the hardcoded capacity-label maximum to 100.
+- Includes an expanded Mercenary Management UI layout.
+- Applies version-validated client patches without modifying eqgame.exe on disk.
+
+The expanded mercenary list has been tested in-game with 100 entries.
+
+### Bank Expansion
+
+GUSTO includes bank expansion functionality and custom UI layouts.
+
+- Custom Bank, Big Bank, and Inventory XML layouts.
+- Dedicated bank expansion implementation.
+- Bank expansion safety tests.
+- Additional documentation in docs/bank.md.
+
+### Automatic UI Generation
+
+The CMake build generates the expanded mercenary UI XML:
+
+    build/rof2/uifiles/default/EQUI_MercenaryManageWnd.xml
+
+The generated file must be installed into the active EverQuest UI directory.
+
+### Windows and Wine
+
+GUSTO supports the validated 32-bit RoF2 client on compatible
+Windows and Wine environments.
+
+Build using:
+
+    cmake --build build/rof2 --parallel 4
+
+The project includes Windows packaging and installation scripts.
+
+### Testing
+
+The GUSTO safety test suite passes with zero failures under Wine.
+
+Bank expansion tests are also included in the source tree.
+
+### Repository Contents
+
+Release ZIP archives, local backups, build outputs, and third-party
+Zeal source directories are excluded from new Git commits.
+
+Previously committed archives may still exist in Git history.

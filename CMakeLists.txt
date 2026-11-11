@@ -21,6 +21,8 @@ endif()
 add_library(gusto SHARED
     "${CMAKE_CURRENT_BINARY_DIR}/generated/gusto_version.rc"
     src/client/rof2/compatibility.cpp
+    src/client/rof2/bank.cpp
+    src/client/rof2/mercenary_ui.cpp
     src/client/rof2/initialization.cpp
     src/client/rof2/globals.cpp
     src/client/rof2/client_state.cpp
@@ -69,6 +71,8 @@ set_target_properties(gusto PROPERTIES
 add_executable(gusto_safety_tests
     test/gusto_safety_tests.cpp
     src/client/rof2/compatibility.cpp
+    src/client/rof2/bank.cpp
+    src/client/rof2/mercenary_ui.cpp
     src/client/rof2/initialization.cpp
     src/client/rof2/globals.cpp
     src/client/rof2/client_state.cpp
@@ -169,3 +173,36 @@ add_executable(gusto_hook_chain_tests test/hook_chain_tests.cpp)
 target_include_directories(gusto_hook_chain_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_compile_features(gusto_hook_chain_tests PRIVATE cxx_std_20)
 target_compile_definitions(gusto_hook_chain_tests PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+
+# Runs against a privately mapped client image; never starts EQ or logs in.
+get_target_property(GUSTO_BANK_TEST_SOURCES gusto SOURCES)
+add_executable(gusto_bank_tests EXCLUDE_FROM_ALL test/bank_expansion_tests.cpp ${GUSTO_BANK_TEST_SOURCES})
+target_include_directories(gusto_bank_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_features(gusto_bank_tests PRIVATE cxx_std_20)
+target_compile_definitions(gusto_bank_tests PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+target_link_libraries(gusto_bank_tests PRIVATE bcrypt gdi32)
+if(MINGW)
+    # Leave the game's preferred image base free for native instruction tests.
+    target_link_options(gusto_bank_tests PRIVATE -Wl,--image-base,0x10000000)
+endif()
+
+# Generate the expanded Mercenary Management UI.
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
+set(GUSTO_MERC_UI_SOURCE
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets/ui/EQUI_MercenaryManageWnd.xml"
+)
+
+set(GUSTO_MERC_UI_OUTPUT
+    "${CMAKE_CURRENT_BINARY_DIR}/uifiles/default/EQUI_MercenaryManageWnd.xml"
+)
+
+add_custom_target(gusto_mercenary_ui ALL
+    COMMAND "${Python3_EXECUTABLE}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_mercenary_ui.py"
+        "${GUSTO_MERC_UI_SOURCE}"
+        "${GUSTO_MERC_UI_OUTPUT}"
+    BYPRODUCTS "${GUSTO_MERC_UI_OUTPUT}"
+    COMMENT "Generating GUSTO mercenary UI"
+    VERBATIM
+)

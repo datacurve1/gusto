@@ -34,3 +34,27 @@ __pycache__/
 *.kate-swp
 releases/*Preview*.zip
 releases/*Preview*.zip.sha256
+
+# Release archives and checksums
+*.zip
+*.zip.sha256
+
+# Backup and temporary source files
+*.before-*
+*.backup
+*.orig
+*.old
+*.save
+*~
+backup/
+backups/
+**/backup/
+**/backups/
+
+# Zeal reference source
+zeal/
+Zeal/
+zeal-source/
+zeal-src/
+**/zeal/
+**/Zeal/

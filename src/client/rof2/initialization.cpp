@@ -1,6 +1,8 @@
 #include "gusto/client/rof2/initialization.hpp"
 
 #include "gusto/client/rof2/compatibility.hpp"
+#include "gusto/client/rof2/bank.hpp"
+#include "gusto/client/rof2/mercenary_ui.hpp"
 #include "gusto/client/rof2/interpret_cmd_hook.hpp"
 #include "gusto/client/rof2/slow_turn_keys.hpp"
 
@@ -47,6 +49,10 @@ namespace gusto::client::rof2
             ReleaseSRWLockExclusive(&g_lock);
             return InitializationStatus::ValidationFailed;
         }
+
+        InstallBankExpansion(module, g_validation);
+
+        InstallMercenaryUiExpansion(module, g_validation);
 
         InstallTagHooks(module, g_validation);
         InstallHudHooks(module, g_validation);

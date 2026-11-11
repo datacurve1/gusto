@@ -7,6 +7,7 @@
 #include <tlhelp32.h>
 
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
 #include <vector>
 #include <algorithm>
@@ -304,6 +305,77 @@ namespace gusto::client::rof2
 
 
 
+        bool ReadMercMemory(
+            std::uintptr_t address, void* output, std::size_t length)
+        {
+            if (!address || !output || !length)
+                return false;
+
+            MEMORY_BASIC_INFORMATION info{};
+            if (!VirtualQuery(reinterpret_cast<const void*>(address),
+                              &info, sizeof(info)) ||
+                info.State != MEM_COMMIT ||
+                (info.Protect & (PAGE_GUARD | PAGE_NOACCESS)))
+                return false;
+
+            const DWORD protection = info.Protect & 0xFF;
+            if (protection != PAGE_READONLY &&
+                protection != PAGE_READWRITE &&
+                protection != PAGE_WRITECOPY &&
+                protection != PAGE_EXECUTE_READ &&
+                protection != PAGE_EXECUTE_READWRITE &&
+                protection != PAGE_EXECUTE_WRITECOPY)
+                return false;
+
+            const auto begin =
+                reinterpret_cast<std::uintptr_t>(info.BaseAddress);
+            if (address < begin ||
+                address - begin >= info.RegionSize ||
+                length > info.RegionSize - (address - begin))
+                return false;
+
+            std::memcpy(output,
+                        reinterpret_cast<const void*>(address), length);
+            return true;
+        }
+
+        std::string GetMercenaryDiagnostic()
+        {
+            constexpr std::uintptr_t ManagerGlobal = 0x00E63E90;
+
+            std::uint32_t manager = 0;
+            if (!ReadMercMemory(ManagerGlobal, &manager, sizeof(manager)))
+                return "GUSTO mercs: manager global unreadable";
+
+            if (!manager)
+                return "GUSTO mercs: manager not initialized";
+
+            std::uint32_t count = 0;
+            std::uint32_t roster = 0;
+            std::uint32_t maximum = 0;
+
+            if (!ReadMercMemory(
+                    static_cast<std::uintptr_t>(manager) + 0x1E8,
+                    &count, sizeof(count)) ||
+                !ReadMercMemory(
+                    static_cast<std::uintptr_t>(manager) + 0x1EC,
+                    &roster, sizeof(roster)) ||
+                !ReadMercMemory(
+                    static_cast<std::uintptr_t>(manager) + 0x1F8,
+                    &maximum, sizeof(maximum)))
+                return "GUSTO mercs: manager fields unreadable";
+
+            char message[192]{};
+            std::snprintf(
+                message, sizeof(message),
+                "GUSTO mercs: count=%u max=%u roster=0x%08X",
+                static_cast<unsigned>(count),
+                static_cast<unsigned>(maximum),
+                static_cast<unsigned>(roster));
+
+            return message;
+        }
+
         void __fastcall InterpretCmdHook(
             void* self,
             void*,
@@ -353,9 +425,14 @@ namespace gusto::client::rof2
                     {
                         dspChat(self, GustoVersion(), UserColorDefault, true, true);
                     }
+                    else if (_stricmp(command, "mercs") == 0)
+                    {
+                        const auto reply = GetMercenaryDiagnostic();
+                        dspChat(self, reply.c_str(), UserColorDefault, true, true);
+                    }
                     else
                     {
-                        dspChat(self, "Usage: /gusto version", UserColorDefault, true, true);
+                        dspChat(self, "Usage: /gusto version | mercs", UserColorDefault, true, true);
                     }
 
                     return;

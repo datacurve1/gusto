@@ -27,6 +27,10 @@ with zipfile.ZipFile(release, 'w', compression=zipfile.ZIP_DEFLATED, compresslev
     package.write(root / 'docs/windows.md', 'WINDOWS-INSTALL.md')
     for name in ('VERSION', 'CHANGELOG.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md'):
         package.write(root / name, name)
+    package.write(root / 'docs/bank.md', 'docs/bank.md')
+    for asset in (root / 'assets/ui').rglob('*'):
+        if asset.is_file():
+            package.write(asset, str(asset.relative_to(root)))
     guide = (root / 'docs/gamepad.md').read_text().split('## Linux / Wine controllers')[0]
     package.writestr('CONTROLLER-KEYBINDS.md', guide)
     package.writestr('BUILD.json', json.dumps(manifest, indent=2) + '\n')

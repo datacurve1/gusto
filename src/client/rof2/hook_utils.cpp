@@ -349,4 +349,79 @@ namespace gusto::client::rof2
 
         return true;
     }
+    bool ApplyCodePatches(HMODULE module, const ValidatedClient& validation,
+        std::span<const CodePatch> patches,
+        std::span<const CodeRange> guardedRanges,
+        std::span<const std::uintptr_t> zeroGlobals)
+    {
+        if (!validation.IsValidFor(module) || patches.empty()) return false;
+        struct Site { BYTE* address; DWORD protection = 0; };
+        std::vector<Site> sites;
+        std::vector<const std::uintptr_t*> globals;
+        std::vector<CodeRange> ranges;
+        sites.reserve(patches.size());
+        for (const auto& patch : patches) {
+            if (patch.expected.empty() || patch.expected.size() != patch.replacement.size()) return false;
+            auto address = ResolvePreferredVA(module, patch.preferredVa, patch.expected.size());
+            if (!address || !IsExecutableSection(module, address) ||
+                !IsExecutableMemory(reinterpret_cast<void*>(address), patch.expected.size())) return false;
+            for (std::size_t i = 0; i < sites.size(); ++i) {
+                auto previous = reinterpret_cast<std::uintptr_t>(sites[i].address);
+                if (address < previous + patches[i].expected.size() && previous < address + patch.expected.size()) return false;
+            }
+            sites.push_back({reinterpret_cast<BYTE*>(address)});
+            ranges.push_back({address, address + patch.expected.size()});
+        }
+        for (auto range : guardedRanges) {
+            if (range.end <= range.begin) return false;
+            auto address = ResolvePreferredVA(module, range.begin, range.end - range.begin);
+            if (!address) return false;
+            ranges.push_back({address, address + range.end - range.begin});
+        }
+        for (auto va : zeroGlobals) {
+            auto address = ResolvePreferredVA(module, va, sizeof(std::uintptr_t));
+            if (!address) return false;
+            globals.push_back(reinterpret_cast<const std::uintptr_t*>(address));
+        }
+        std::vector<ThreadHandle> threads;
+        if (!SuspendAndCheckThreads(0, 0, threads)) { ResumeThreads(threads); return false; }
+        bool valid = true;
+        for (const auto& thread : threads) {
+            CONTEXT context{};
+            context.ContextFlags = CONTEXT_CONTROL;
+            if (!GetThreadContext(thread.handle, &context)) { valid = false; break; }
+            for (auto range : ranges)
+                if (context.Eip >= range.begin && context.Eip < range.end) valid = false;
+        }
+        for (auto global : globals) if (*global) valid = false;
+        for (std::size_t i = 0; i < patches.size(); ++i)
+            if (std::memcmp(sites[i].address, patches[i].expected.data(), patches[i].expected.size())) valid = false;
+        std::size_t writable = 0;
+        if (valid) {
+            for (; writable < sites.size(); ++writable) {
+                if (!VirtualProtect(sites[writable].address, patches[writable].expected.size(),
+                    PAGE_EXECUTE_READWRITE, &sites[writable].protection)) break;
+            }
+            valid = writable == sites.size();
+        }
+        if (valid) {
+            for (std::size_t i = 0; i < sites.size(); ++i)
+                std::memcpy(sites[i].address, patches[i].replacement.data(), patches[i].replacement.size());
+            if (!FlushInstructionCache(GetCurrentProcess(), nullptr, 0)) {
+                for (std::size_t i = 0; i < sites.size(); ++i)
+                    std::memcpy(sites[i].address, patches[i].expected.data(), patches[i].expected.size());
+                FlushInstructionCache(GetCurrentProcess(), nullptr, 0);
+                valid = false;
+            }
+        }
+        while (writable) {
+            --writable;
+            DWORD ignored = 0;
+            VirtualProtect(sites[writable].address, patches[writable].expected.size(),
+                sites[writable].protection, &ignored);
+        }
+        ResumeThreads(threads);
+        return valid;
+    }
+
 }

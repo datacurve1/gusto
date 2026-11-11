@@ -9,7 +9,8 @@ dll=root/'build/GUSTO.dll'
 digest=hashlib.sha256(dll.read_bytes()).hexdigest()
 files=['VERSION','CHANGELOG.md','cmake/version.hpp.in','cmake/mingw32-toolchain.cmake','windows/gusto_version.rc.in','tools/package_hud.py','CMakeLists.txt','THIRD_PARTY_NOTICES.md','README.md','docs/hud.md','test/hud_model_tests.cpp','test/hud_preview.cpp','test/gusto_safety_tests.cpp','tools/verify_hud.py']
 files+=['test/hook_chain_tests.cpp','tools/package_windows.py','docs/windows.md','windows/Install-Gusto.ps1','tools/verify_windows_package.py','tools/windows_runtime_smoke.cpp','tools/check_controller_linux.py','tools/controller_probe.cpp','tools/99-8bitdo-xpad.rules','test/pipe_snapshot_tests.cpp','docs/pipes.md','tools/read_gusto_pipe.py','include/gusto/third_party/json.hpp','test/pipe_tests.cpp','test/pipe_model_tests.cpp','test/gamepad_preview.cpp','docs/life_effects.md','docs/gamepad.md','test/gamepad_tests.cpp','test/life_fx_tests.cpp','test/life_fx_preview.cpp','tools/create_life_fx.py','tools/verify_life_assets.py']
-files += [str(p.relative_to(root)) for p in (root/'assets/life_fx').rglob('*') if p.is_file()]
+files += ['test/bank_expansion_tests.cpp', 'docs/bank.md']
+files += [str(p.relative_to(root)) for d in ('assets/life_fx','assets/ui') for p in (root/d).rglob('*') if p.is_file()]
 files+= [str(p.relative_to(root)) for d in ('src/client/rof2','include/gusto/client/rof2') for p in (root/d).glob('*') if p.suffix in ('.cpp','.hpp')]
 manifest={name:hashlib.sha256((root/name).read_bytes()).hexdigest() for name in sorted(set(files))}
 assert ('GUSTO '+version+' - RoF2').encode()+b'\0' in dll.read_bytes(), 'Rebuild the plugin after changing VERSION'
@@ -24,6 +25,9 @@ with zipfile.ZipFile(release,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=
  z.write(dll,'GUSTO.asi')
  for name in ('VERSION','CHANGELOG.md','README.md','LICENSE','THIRD_PARTY_NOTICES.md','docs/hud.md','docs/tagging.md','tools/verify_hud.py','tools/verify_tagging.py','docs/life_effects.md','docs/gamepad.md','docs/windows.md','docs/pipes.md','tools/read_gusto_pipe.py','tools/check_controller_linux.py','tools/controller_probe.cpp','tools/99-8bitdo-xpad.rules','tools/create_life_fx.py','tools/verify_life_assets.py'):
   z.write(root/name,name)
+ z.write(root/'docs/bank.md','docs/bank.md')
+ for asset in (root/'assets/ui').rglob('*'):
+  if asset.is_file():z.write(asset,str(asset.relative_to(root)))
  for asset in (root/'assets/life_fx').rglob('*'):
   if asset.is_file():z.write(asset,str(asset.relative_to(root)))
  z.write(root/'build/gusto-life-effects-preview.png','previews/life-effects-d3d9.png')
