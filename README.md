@@ -15,7 +15,7 @@ Daybreak Game Company.
 - [Windows/Wine package with artwork, previews and documentation](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/GUSTO-1.1.0-beta.3-RoF2-Windows-Wine.zip) · [SHA256](releases/GUSTO-1.1.0-beta.3-RoF2-Windows-Wine.zip.sha256)
 - [Quarm guild/PvP instance-gate build](https://github.com/datacurve1/gusto/raw/refs/heads/master/GUSTO.asi) · [SHA256](GUSTO.asi.sha256)
 
-For Quarm guild/PvP instances, place `GUSTO.asi` beside `eqgame.exe`. It answers the server's one-use verification challenge by sending `/say #gusto verify <token>`. Bare `GUSTO_INSTANCE_GATE:<token>`, bracketed markers, and markers wrapped in RoF2 clickable links are supported. The reply is queued for the next game update; `gusto-instance-gate.log` records hook installation, challenge receipt, and command submission for troubleshooting.
+For Quarm guild/PvP instances, place `GUSTO.asi` beside `eqgame.exe`. Click the instance book once: Gusto answers the server's one-use verification challenge silently, then retries that same book once after confirmation. Challenge and confirmation text are hidden from chat; verification errors remain visible. Bare markers, bracketed markers, and RoF2 clickable-link markers are supported. `gusto-instance-gate.log` records the exchange for troubleshooting.
 
 1. Fully exit EverQuest and back up your existing `GUSTO.asi`.
 2. Extract a package and copy `GUSTO.asi` beside `eqgame.exe`.

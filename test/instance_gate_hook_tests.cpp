@@ -56,15 +56,30 @@ void Write(void* destination, const void* source, std::size_t size)
 }
 
 std::string sent;
-void *sentGame = nullptr, *sentPlayer = nullptr;
-void __fastcall CaptureCommand(void *game, void *, void *player, const char *command) {
+void *sentGame = nullptr, *usedBook = nullptr;
+int bookUses = 0;
+float usedHit[3]{};
+void Jump(const Image& image, std::uintptr_t va, const void *target) {
+    BYTE jump[5] = {0xe9};
+    auto delta = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(target) -
+        reinterpret_cast<std::uintptr_t>(image.At(va)) - 5);
+    std::memcpy(jump + 1, &delta, 4);
+    Write(image.At(va, 5), jump, 5);
+}
+void __fastcall CaptureBook(void *book, void *, unsigned user, int key, int skill, const float *hit) {
+    Check(user == 1234 && key == -1 && skill == 0, "book replay arguments changed");
+    usedBook = book; ++bookUses;
+    if (hit) std::memcpy(usedHit, hit, sizeof(usedHit));
+}
+void __fastcall CaptureCommand(void *game, void *, int channel, const char *target, const char *command, int language) {
+    Check(channel == 8 && !target && language == 0, "wrong quiet command transport");
     sentGame = game;
-    sentPlayer = player;
     sent = command;
-    // InterpretCmd reenters TickTags in the live plugin. It must not resend.
     TickInstanceGate();
 }
 void GateTest(const Image& image, const ValidatedClient& token) {
+    // Preserve UseSwitch's validated prologue, but capture its continuation.
+    Jump(image, 0x511d75, reinterpret_cast<const void *>(&CaptureBook));
     ValidatedClient invalid;
     Check(!InstallInstanceGateHooks(image.module, invalid), "invalid token installed gate hook");
     Check(InstallInstanceGateHooks(image.module, token), "instance chat hook installation failed");
@@ -76,19 +91,24 @@ void GateTest(const Image& image, const ValidatedClient& token) {
     void *gamePointer = game.data(), *playerPointer = player.data();
     Write(image.At(0xe67ccc, 4), &gamePointer, 4);
     Write(image.At(0xdd2630, 4), &playerPointer, 4);
-    BYTE jump[5] = {0xe9};
-    auto delta = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&CaptureCommand) -
-        reinterpret_cast<std::uintptr_t>(image.At(0x51fce0)) - 5);
-    std::memcpy(jump + 1, &delta, 4);
-    Write(image.At(0x51fce0, 5), jump, 5);
+    Jump(image, 0x51dcd0, reinterpret_cast<const void *>(&CaptureCommand));
+    unsigned playerId = 1234;
+    std::memcpy(player.data() + 0x148, &playerId, 4);
+    std::vector<BYTE> book(0x100), otherBook(0x100);
+    void *vtable = book.data();
+    std::memcpy(book.data(), &vtable, 4); book[5] = 7;
+    std::memcpy(otherBook.data(), &vtable, 4); otherBook[5] = 8;
+    float hit[3] = {1, 2, 3};
+    using Use = void(__thiscall *)(void *, unsigned, int, int, const float *);
+    auto use = reinterpret_cast<Use>(image.At(0x511d70));
     using Chat = void(__thiscall *)(void *, const char *, int, bool, bool);
     auto chat = reinterpret_cast<Chat>(image.At(0x51f1a0));
     const char *challenge = "Verification code: [GUSTO_INSTANCE_GATE:8d6af98b0272a8ebaf]";
     chat(gamePointer, challenge, 0, true, true);
     Check(sent.empty(), "sent reentrantly from incoming chat");
     TickInstanceGate();
-    Check(sent == "/say #gusto verify 8d6af98b0272a8ebaf", "challenge did not reach native interpreter");
-    Check(sentGame == gamePointer && sentPlayer == playerPointer, "wrong native command context");
+    Check(sent == "#gusto verify 8d6af98b0272a8ebaf", "challenge did not reach native interpreter");
+    Check(sentGame == gamePointer, "wrong native command context");
     sent.clear();
     chat(gamePointer, challenge, 0, true, true);
     TickInstanceGate();
@@ -102,17 +122,35 @@ void GateTest(const Image& image, const ValidatedClient& token) {
     playerPointer = player.data();
     Write(image.At(0xdd2630, 4), &playerPointer, 4);
     TickInstanceGate();
-    Check(sent == "/say #gusto verify abcdef1234", "deferred reply was lost");
+    Check(sent == "#gusto verify abcdef1234", "deferred reply was lost");
     sent.clear();
     chat(gamePointer, "GUSTO_INSTANCE_GATE:fedcba4321", 0, true, true);
     TickInstanceGate();
-    Check(sent == "/say #gusto verify fedcba4321", "bare marker did not send");
+    Check(sent == "#gusto verify fedcba4321", "bare marker did not send");
     sent.clear();
     const char *liveChallenge = "GUSTO.asi is required for this guild or PvP instance. If installed, it will verify automatically; after the confirmation, click the book again. Verification code: [\x12" "0FFFFF01CC2000000000000000000000000000000000000000000000GUSTO_INSTANCE_GATE:8d6af9918d70ba3bd8\x12]";
     chat(gamePointer, liveChallenge, 0, true, true);
     TickInstanceGate();
-    Check(sent == "/say #gusto verify 8d6af9918d70ba3bd8", "live saylink challenge did not send");
-    std::puts("PASS real RoF2 chat entry -> deferred native command, context, reentry, deduplication and retry");
+    Check(sent == "#gusto verify 8d6af9918d70ba3bd8", "live saylink challenge did not send");
+    // One player click, then server challenge, then confirmation: one replay.
+    use(book.data(), 1234, -1, 0, hit);
+    Check(bookUses == 1, "original book click was swallowed");
+    chat(gamePointer, "[GUSTO_INSTANCE_GATE:998877]", 0, true, true);
+    TickInstanceGate();
+    Check(sent == "#gusto verify 998877", "one-click verification not sent");
+    Check(bookUses == 1, "book retried before verification confirmation");
+    // A different subsequent click cannot redirect the original request.
+    use(otherBook.data(), 1234, -1, 0, nullptr);
+    hit[0] = 99;
+    chat(gamePointer, "GUSTO.asi verified. Click the instance book again to enter.", 0, true, true);
+    Check(bookUses == 2, "book retried reentrantly from chat");
+    TickInstanceGate();
+    Check(bookUses == 3 && usedBook == book.data(), "verified original book not retried once");
+    Check(usedHit[0] == 1 && usedHit[1] == 2 && usedHit[2] == 3, "hit position was not copied");
+    chat(gamePointer, "GUSTO.asi verified. Click the instance book again to enter.", 0, true, true);
+    TickInstanceGate();
+    Check(bookUses == 3, "duplicate confirmation replayed book twice");
+    std::puts("PASS link challenges, quiet transport, context/reentry/retry, hidden confirmation and one-click book replay");
 }
 }
 

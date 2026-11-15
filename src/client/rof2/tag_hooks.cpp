@@ -56,6 +56,19 @@ NameStateFn refreshName = nullptr;
 ChatFn originalChat = nullptr;
 SRWLOCK gateLock = SRWLOCK_INIT;
 std::string gatePending, gateLastSent;
+using UseSwitchFn = void(__thiscall *)(void *, unsigned, int, int, const float *);
+UseSwitchFn originalUseSwitch = nullptr;
+struct GateBook {
+  void *object = nullptr, *vtable = nullptr;
+  unsigned user = 0;
+  int key = 0, skill = 0;
+  BYTE id = 0;
+  float hit[3]{};
+  bool hasHit = false;
+  ULONGLONG clicked = 0;
+};
+GateBook gateLastBook, gateBook;
+bool gateAwaitingAck = false, gateReplayPending = false;
 void GateTrace(const char *event) {
   if (auto *file = std::fopen("gusto-instance-gate.log", "a")) {
     std::fprintf(file, "%lu %s\n", GetTickCount(), event);
@@ -250,6 +263,35 @@ bool NativeCommand(const std::string &text) {
   reinterpret_cast<InterpretFn>(address)(game, player, text.c_str());
   return true;
 }
+bool SendGateReply(const std::string &command) {
+  // Use the transport under /say, without its local echo or input history.
+  constexpr std::string_view prefix = "/say ";
+  if (!command.starts_with(prefix)) return false;
+  using SendTextFn = void(__thiscall *)(void *, int, const char *, const char *, int);
+  const auto address = ResolvePreferredVA(module, 0x51dcd0, 1);
+  auto *game = Global(EverQuest);
+  if (!address || !game || !Global(addresses::LocalPlayer, addresses::PlayerClientReferenceSize)) return false;
+  reinterpret_cast<SendTextFn>(address)(game, 8, nullptr, command.c_str() + prefix.size(), 0);
+  return true;
+}
+void __fastcall GateUseSwitchHook(void *object, void *, unsigned user, int key,
+                                  int skill, const float *hit) {
+  GateBook book;
+  unsigned localId = 0;
+  if (user && Read(Global(addresses::LocalPlayer), IdOffset, localId) && user == localId &&
+      Read(object, 0, book.vtable) && Read(object, 5, book.id)) {
+    book.object = object;
+    book.user = user;
+    book.key = key;
+    book.skill = skill;
+    book.hasHit = hit && Read(hit, 0, book.hit);
+    book.clicked = GetTickCount64();
+    AcquireSRWLockExclusive(&gateLock);
+    gateLastBook = book;
+    ReleaseSRWLockExclusive(&gateLock);
+  }
+  if (originalUseSwitch) originalUseSwitch(object, user, key, skill, hit);
+}
 std::vector<std::string> JoinedChannels(std::size_t proxyOffset) {
   void *proxy = nullptr, *list = nullptr;
   int count = 0;
@@ -285,9 +327,23 @@ void __fastcall ChatHook(void *self, void *, const char *message, int color,
     const auto command = InstanceGateCommand(text);
     if (!command.empty()) {
       AcquireSRWLockExclusive(&gateLock);
-      if (command != gateLastSent) gatePending = command;
+      if (command != gateLastSent) {
+        gatePending = command;
+        gateAwaitingAck = false;
+        gateReplayPending = false;
+        gateBook = gateLastBook;
+        if (GetTickCount64() - gateBook.clicked > 5000) gateBook = {};
+      }
       ReleaseSRWLockExclusive(&gateLock);
       GateTrace("challenge received; reply queued");
+      return;
+    }
+    if (text == "GUSTO.asi verified. Click the instance book again to enter.") {
+      AcquireSRWLockExclusive(&gateLock);
+      gateReplayPending = gateAwaitingAck && gateBook.object;
+      gateAwaitingAck = false;
+      ReleaseSRWLockExclusive(&gateLock);
+      GateTrace("verification confirmed; book retry queued");
       return;
     }
   }
@@ -342,6 +398,8 @@ void __fastcall GameStateHook(void *self, void *, int state) {
   AcquireSRWLockExclusive(&gateLock);
   gatePending.clear();
   gateLastSent.clear();
+  gateLastBook = {}; gateBook = {};
+  gateAwaitingAck = false; gateReplayPending = false;
   ReleaseSRWLockExclusive(&gateLock);
   ResetHudState();
   // Drop identities before any zone or character transition can recycle spawn
@@ -571,30 +629,47 @@ void __fastcall PrimitiveRenderHook(void *self, void *, bool firstPass,
 
 bool InstallInstanceGateHooks(HMODULE clientModule, const ValidatedClient &clientValidation) {
   if (!clientValidation.IsValidFor(clientModule)) return false;
-  if (originalChat) return module == clientModule;
+  if (originalChat && originalUseSwitch) return module == clientModule;
   module = clientModule;
   validation = clientValidation;
   constexpr BYTE bytes[] = {0x64, 0xa1, 0, 0, 0, 0};
-  const bool installed = InstallDetour(module, validation, 0x51f1a0, bytes, sizeof(bytes),
+  const bool installed = originalChat || InstallDetour(module, validation, 0x51f1a0, bytes, sizeof(bytes),
       reinterpret_cast<void *>(&ChatHook), reinterpret_cast<void **>(&originalChat));
+  constexpr BYTE switchBytes[] = {0xb8, 0x30, 0x20, 0, 0};
+  const bool bookInstalled = originalUseSwitch || InstallDetour(module, validation, 0x511d70,
+      switchBytes, sizeof(switchBytes), reinterpret_cast<void *>(&GateUseSwitchHook),
+      reinterpret_cast<void **>(&originalUseSwitch));
+  GateTrace(bookInstalled ? "book click hook installed" : "ERROR: book click hook installation failed");
   GateTrace(installed ? "chat hook installed" : "ERROR: chat hook installation failed");
-  return installed;
+  return installed && bookInstalled;
 }
 
 void TickInstanceGate() {
   int gameState = 0;
   if (!originalChat || !Read(Global(EverQuest), 0x5c8, gameState) || gameState != 5) return;
   std::string command;
+  GateBook retry;
   AcquireSRWLockExclusive(&gateLock);
+  if (gateReplayPending) { retry = gateBook; gateReplayPending = false; gateBook = {}; }
   command.swap(gatePending);
+  if (!command.empty()) gateAwaitingAck = true;
   ReleaseSRWLockExclusive(&gateLock);
+  if (retry.object && originalUseSwitch && GetTickCount64() - retry.clicked <= 15000) {
+    void *vtable = nullptr; BYTE id = 0; unsigned localId = 0;
+    if (Read(retry.object, 0, vtable) && vtable == retry.vtable &&
+        Read(retry.object, 5, id) && id == retry.id &&
+        Read(Global(addresses::LocalPlayer), IdOffset, localId) && localId == retry.user) {
+      originalUseSwitch(retry.object, retry.user, retry.key, retry.skill, retry.hasHit ? retry.hit : nullptr);
+      GateTrace("verified book retried once");
+    }
+  }
   if (command.empty()) return;
-  // Drain before entering InterpretCmd: it calls TickTags again.
-  if (NativeCommand(command)) {
+  // Drain before sending, so a nested game callback cannot submit twice.
+  if (SendGateReply(command)) {
     AcquireSRWLockExclusive(&gateLock);
     gateLastSent = command;
     ReleaseSRWLockExclusive(&gateLock);
-    GateTrace("verification reply submitted to InterpretCmd");
+    GateTrace("verification reply submitted quietly to SendNewText");
   } else {
     AcquireSRWLockExclusive(&gateLock);
     if (gatePending.empty()) gatePending = std::move(command);
