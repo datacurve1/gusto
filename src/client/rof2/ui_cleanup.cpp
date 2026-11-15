@@ -2,6 +2,7 @@
 #include "gusto/client/rof2/ui_cleanup_policy.hpp"
 #include "gusto/client/rof2/addresses.hpp"
 #include "gusto/client/rof2/globals.hpp"
+#include "gusto/client/rof2/hook_utils.hpp"
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
@@ -18,6 +19,8 @@ StringFn makeString = nullptr;
 FreeStringFn freeString = nullptr;
 FindFn findChild = nullptr;
 RemoveFn removePage = nullptr;
+using DrawFn = int(__thiscall *)(void*);
+DrawFn originalDrawWindows = nullptr;
 void* lastInventory = nullptr;
 void* lastEqMain = nullptr;
 void Trace(const char* message) {
@@ -81,6 +84,10 @@ bool RemoveTab(void* tab, void* page) {
   }
   Hide(page); return false;
 }
+int __fastcall DrawWindowsHook(void* manager, void*) {
+  TickUiCleanup();
+  return originalDrawWindows(manager);
+}
 }
 bool InitializeUiCleanup(HMODULE module, const ValidatedClient& validation) {
   if (!validation.IsValidFor(module)) return false;
@@ -102,12 +109,25 @@ bool InitializeUiCleanup(HMODULE module, const ValidatedClient& validation) {
   }
   makeString = make; freeString = release; findChild = find; removePage = remove;
   game = module; token = validation;
+  constexpr BYTE drawBytes[] = {0x6a,0xff,0x64,0xa1,0,0,0,0};
+  if (!originalDrawWindows && !InstallDetour(module, validation, 0x877600, drawBytes, sizeof(drawBytes),
+      reinterpret_cast<void*>(&DrawWindowsHook), reinterpret_cast<void**>(&originalDrawWindows))) {
+    Trace("ERROR: UI draw hook unavailable"); return false;
+  }
   Trace("native UI cleanup initialized"); return true;
 }
 void TickUiCleanup() {
   if (!game || !token.IsValidFor(game)) return;
   int state = 0;
-  if (!Read(Global(0xe67ccc), 0x5c8, state) || state != 5) return;
+  if (!Read(Global(0xe67ccc), 0x5c8, state)) return;
+  if (state == 1) {
+    auto* select = Global(0xd1fc34, 0x220);
+    auto* create = Global(0xd1fc78, 0x220);
+    for (const auto* control : CharacterSelectHiddenControls) Hide(Child(select, control));
+    for (const auto* control : CharacterCreateHiddenControls) Hide(Child(create, control));
+    return;
+  }
+  if (state != 5) return;
   // CDisplay::CreateWindows stores these roots at 498b86 and 498a13.
   auto* inventory = Global(0xd1fc8c, 0x220);
   auto* eqMain = Global(0xf713c0, 0x220);

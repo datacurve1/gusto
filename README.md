@@ -10,9 +10,9 @@ Daybreak Game Company.
 
 For server-select features, use an early loader such as the included [`dinput8.dll`](dinput8.dll) beside `eqgame.exe` and `GUSTO.asi`. The Miles audio loader starts Gusto after login and cannot modify the initial server list. On Wine, enable the `dinput8` native,builtin override for `eqgame.exe`. Fully restart after installation.
 
-Vanguard server names are matched automatically at server select, including differences in case, spacing, punctuation, or a single typo. Matching entries appear first under **Legends** on this client. Vanguard's `[R]` prefix becomes `[]`, including nested brackets, extra spaces, and lowercase variants; other servers keep their relative order. Connection details and server availability remain unchanged; `gusto-server-select.log` records hook installation and matches.
-
 The in-game UI cleanup removes the Evolution, Shrouds, and Alt. Currency inventory tabs; Radiant/Ebon crystal controls; Reclaim and Plot Items buttons; the Power Source slot; and the floating Marketplace/EQ-menu button panel. Inventory and Stats remain available. The cleanup reapplies after UI reloads, with diagnostics in `gusto-ui-cleanup.log`.
+
+Character select hides Buy Slot, Gold membership/upgrade offers, and Drakkin race-selection buttons (including the purchase controls in character creation). Gusto also blocks PvP-off commands and disabling toggles before submission in zones labeled `(PVP)`/`[PVP]` or native PvP areas. Explicit enabling commands and toggles outside those zones remain available. `gusto-pvp-guard.log` records installation and blocked attempts.
 
 ## Download and install
 

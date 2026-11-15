@@ -24,6 +24,7 @@ add_library(gusto SHARED
     src/client/rof2/bank.cpp
     src/client/rof2/mercenary_ui.cpp
     src/client/rof2/ui_cleanup.cpp
+    src/client/rof2/pvp_guard.cpp
     src/client/rof2/initialization.cpp
     src/client/rof2/server_select.cpp
     src/client/rof2/globals.cpp
@@ -76,6 +77,7 @@ add_executable(gusto_safety_tests
     src/client/rof2/bank.cpp
     src/client/rof2/mercenary_ui.cpp
     src/client/rof2/ui_cleanup.cpp
+    src/client/rof2/pvp_guard.cpp
     src/client/rof2/initialization.cpp
     src/client/rof2/server_select.cpp
     src/client/rof2/globals.cpp
@@ -243,3 +245,7 @@ target_link_libraries(gusto_early_loader_tests PRIVATE dxguid)
 if(MINGW)
     target_link_options(gusto_early_loader_tests PRIVATE -static-libgcc -static-libstdc++)
 endif()
+
+add_executable(gusto_pvp_guard_tests test/pvp_guard_tests.cpp)
+target_include_directories(gusto_pvp_guard_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_features(gusto_pvp_guard_tests PRIVATE cxx_std_20)

@@ -4,6 +4,7 @@
 #include "gusto/client/rof2/server_select_model.hpp"
 #include "gusto/client/rof2/ui_cleanup.hpp"
 #include "gusto/client/rof2/ui_cleanup_policy.hpp"
+#include "gusto/client/rof2/pvp_guard.hpp"
 
 #include <cstdio>
 #include <cstring>
@@ -82,6 +83,48 @@ void __fastcall CaptureCommand(void *game, void *, int channel, const char *targ
     sentGame = game;
     sent = command;
     TickInstanceGate();
+}
+int pvpSent=0,pvpBlocked=0;
+void __fastcall CapturePvpSend(void*,void*,int,const char*,const char*,int) { ++pvpSent; }
+void __fastcall CapturePvpNotice(void*,void*,const char*,int,bool,bool) { ++pvpBlocked; }
+void PvpGuardTest(const Image& image,const ValidatedClient& token) {
+    ValidatedClient invalid;
+    Check(!InstallPvpGuard(image.module,invalid),"invalid token installed PvP guard");
+    // SendNewText's relocated exception-handler push remains in the trampoline.
+    BYTE unwind[]={0x83,0xc4,0x08,0xe9,0,0,0,0};
+    auto* thunk=static_cast<BYTE*>(VirtualAlloc(nullptr,sizeof(unwind),MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE));
+    Check(thunk!=nullptr,"PvP test thunk allocation failed");
+    auto delta=static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&CapturePvpSend)-reinterpret_cast<std::uintptr_t>(thunk)-sizeof(unwind));
+    std::memcpy(unwind+4,&delta,4);std::memcpy(thunk,unwind,sizeof(unwind));
+    Jump(image,0x51dcd7,thunk);
+    // SEC_IMAGE private mappings do not run the PE loader's base relocations.
+    auto handler=static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(image.At(0x978448)));
+    Write(image.At(0x51dcd3,4),&handler,4);
+    Check(InstallPvpGuard(image.module,token),"PvP send guard installation failed");
+    BYTE chatBytes[6];std::memcpy(chatBytes,image.At(0x51f1a0,6),6);
+    Jump(image,0x51f1a0,reinterpret_cast<const void*>(&CapturePvpNotice));
+    std::vector<BYTE> eq(0x600),player(0x2000);
+    int state=5;std::memcpy(eq.data()+0x5c8,&state,4);player[0x349]=1;
+    void* eqPointer=eq.data();void* playerPointer=player.data();
+    Write(image.At(0xe67ccc,4),&eqPointer,4);Write(image.At(0xdd2630,4),&playerPointer,4);
+    char zone[128]="Velketor's Labyrinth (PVP)";Write(image.At(0xddf8f0+0xc0,128),zone,128);
+    using Send=void(__thiscall *)(void*,int,const char*,const char*,int);
+    auto send=reinterpret_cast<Send>(image.At(0x51dcd0));
+    send(eqPointer,8,nullptr,"#pvp",0);
+    Check(pvpSent==0&&pvpBlocked==1,"off toggle reached server transport");
+    Check(RejectPvpOffCommand(eqPointer,"/say #set pvp off"),"command-entry guard missed off command");
+    send(eqPointer,8,nullptr,"#pvp on",0);
+    Check(pvpSent==1,"explicit PvP enable was blocked");
+    player[0x349]=0;send(eqPointer,8,nullptr,"#pvp",0);
+    Check(pvpSent==2,"enabling toggle was blocked");
+    player[0x349]=1;std::strcpy(zone,"Velketor's Labyrinth (GUILD)");Write(image.At(0xddf8f0+0xc0,128),zone,128);
+    send(eqPointer,8,nullptr,"#pvp",0);Check(pvpSent==3,"ordinary-zone toggle blocked");
+    player[0x2e1]=1;send(eqPointer,8,nullptr,"#pvp off",0);
+    Check(pvpSent==3,"native PvP-area off command reached server");
+    send(eqPointer,2,nullptr,"#pvp",0);Check(pvpSent==4,"non-command chat was blocked");
+    Write(image.At(0x51f1a0,6),chatBytes,6);
+    std::puts("PASS PvP client guard: marked zones and native PvP areas block off before transport; on/ordinary zones pass");
+    VirtualFree(thunk,0,MEM_RELEASE);
 }
 void GateTest(const Image& image, const ValidatedClient& token) {
     // Preserve UseSwitch's validated prologue, but capture its continuation.
@@ -284,6 +327,7 @@ void ServerSelectTest(const Image& client, const ValidatedClient& token, const c
 
 std::map<std::pair<void*,std::string>,void*> uiChildren;
 int stringsMade = 0, stringsFreed = 0, windowsHidden = 0, pagesRemoved = 0;
+int __fastcall CaptureUiDraw(void*,void*) { return 77; }
 void* __fastcall MakeUiString(void* field, void*, const char* name) {
     *static_cast<const char**>(field) = name; ++stringsMade; return field;
 }
@@ -317,6 +361,12 @@ void UiCleanupTest(const Image& image, const ValidatedClient& token) {
     Jump(image,0x868330,reinterpret_cast<const void*>(&FindUiChild));
     Jump(image,0x865290,reinterpret_cast<const void*>(&HideUiWindow));
     Jump(image,0x88d650,reinterpret_cast<const void*>(&RemoveUiPage));
+    BYTE drawUnwind[]={0x83,0xc4,0x04,0xe9,0,0,0,0};
+    auto* drawThunk=static_cast<BYTE*>(VirtualAlloc(nullptr,sizeof(drawUnwind),MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE));
+    Check(drawThunk!=nullptr,"UI draw thunk allocation failed");
+    auto drawDelta=static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&CaptureUiDraw)-reinterpret_cast<std::uintptr_t>(drawThunk)-sizeof(drawUnwind));
+    std::memcpy(drawUnwind+4,&drawDelta,4);std::memcpy(drawThunk,drawUnwind,sizeof(drawUnwind));
+    Jump(image,0x877608,drawThunk);
     using Window = std::array<BYTE,0x240>;
     std::array<Window,22> windows{};
     std::array<BYTE,0x164> vtable{};
@@ -363,6 +413,23 @@ void UiCleanupTest(const Image& image, const ValidatedClient& token) {
     inventory = nullptr; eqMain = nullptr;
     Write(image.At(0xd1fc8c,4),&inventory,4); Write(image.At(0xf713c0,4),&eqMain,4);
     TickUiCleanup();
+    std::array<Window,13> character{};
+    for(auto& window:character) {void* table=vtable.data();std::memcpy(window.data(),&table,4);window[0x196]=1;}
+    void* select=character[0].data();void* create=character[1].data();
+    Write(image.At(0xd1fc34,4),&select,4);Write(image.At(0xd1fc78,4),&create,4);
+    for(int i=0;i<4;++i)uiChildren[{select,CharacterSelectHiddenControls[i]}]=character[2+i].data();
+    for(int i=0;i<5;++i)uiChildren[{create,CharacterCreateHiddenControls[i]}]=character[6+i].data();
+    uiChildren[{select,"EnterWorld_Button"}]=character[11].data();
+    uiChildren[{create,"CC_Race_Human_Button"}]=character[12].data();
+    state=1;std::memcpy(eq.data()+0x5c8,&state,4);
+    using Draw=int(__thiscall *)(void*);auto draw=reinterpret_cast<Draw>(image.At(0x877600));
+    Check(draw(eq.data())==77,"UI draw return value changed");
+    for(int i=2;i<11;++i)Check(!character[i][0x196],"character-select offer or Drakkin control still visible");
+    for(int i:{0,1,11,12})Check(character[i][0x196],"normal character selection/races hidden");
+    Check(stringsMade==stringsFreed,"character cleanup leaked strings");
+    select=nullptr;create=nullptr;Write(image.At(0xd1fc34,4),&select,4);Write(image.At(0xd1fc78,4),&create,4);
+    VirtualFree(drawThunk,0,MEM_RELEASE);
+    std::puts("PASS character-select pre-render cleanup: buy/gold/Drakkin hidden; Enter World and Human preserved");
     std::puts("PASS UI cleanup: three tabs, crystals/reclaim/plot/power-source, EQ/Marketplace panel, preserved ammo/Stats, UI reload and string lifecycle");
 }
 
@@ -380,6 +447,7 @@ int main(int argc, char** argv)
             std::fprintf(stderr, "validation status: %u\n", static_cast<unsigned>(report.status));
             Check(false, "unsupported client image");
         }
+        PvpGuardTest(image, token);
         GateTest(image, token);
         if (argc == 3) ServerSelectTest(image, token, argv[2]);
         UiCleanupTest(image, token);

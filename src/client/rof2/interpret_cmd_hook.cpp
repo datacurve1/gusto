@@ -1,4 +1,5 @@
 #include "gusto/client/rof2/interpret_cmd_hook.hpp"
+#include "gusto/client/rof2/pvp_guard.hpp"
 
 #include "gusto/client/rof2/tag_hooks.hpp"
 #include "gusto/client/rof2/hud_overlay.hpp"
@@ -390,6 +391,7 @@ namespace gusto::client::rof2
                 return;
             }
             text = safeText;
+            if (RejectPvpOffCommand(self, text)) return;
             TickTags();
             std::string hudReply;
             if (HandleHudCommand(text, hudReply)) {
