@@ -11,6 +11,11 @@ int main() {
   for (auto name : {"", "Project Quarm", "EverQuest"}) check(!IsVanguardServer(name));
   check(!IsVanguardServer("Vanilla Guard"));
   check(!IsVanguardServer("Vanguzzd"));
+  check(VanguardDisplayName("[R] Vanguard") == "Vanguard");
+  check(VanguardDisplayName("[R]Vanguard - Quarm") == "Vanguard - Quarm");
+  check(VanguardDisplayName("[R]  Vanguard") == "Vanguard");
+  check(VanguardDisplayName("Vanguard [R]") == "Vanguard [R]");
+  check(VanguardDisplayName("[R] Other Server") == "[R] Other Server");
   auto packet = [](const char* name) {
     std::vector<std::uint8_t> v;
     auto str = [&](const char* s) { while (*s) v.push_back(*s++); v.push_back(0); };

@@ -33,19 +33,27 @@ inline bool IsVanguardServer(std::string_view name) {
   }
   return matched || closeWord(word) || compact.find(wanted) != compact.npos;
 }
+inline std::string_view VanguardDisplayName(std::string_view name) {
+  if (!IsVanguardServer(name) || !name.starts_with("[R]")) return name;
+  name.remove_prefix(3);
+  while (!name.empty() && (name.front() == ' ' || name.front() == '\t')) name.remove_prefix(1);
+  return name;
+}
 // ReadServerData's wire record: address\0, flags/u32, ID/u32, name\0, ...
-// EQClientServerData::Flags (+0x30) controls the frontend's category.
-inline bool PromoteVanguardServer(std::span<const std::uint8_t> wire, std::span<std::uint8_t> record) {
-  if (record.size() < 0x48 || wire.size() > 4096) return false;
+inline std::string_view ServerSelectWireName(std::span<const std::uint8_t> wire) {
+  if (wire.size() > 4096) return {};
   auto zero = std::find(wire.begin(), wire.end(), 0);
-  if (zero == wire.end()) return false;
+  if (zero == wire.end()) return {};
   auto offset = std::size_t(zero - wire.begin()) + 1;
-  if (wire.size() - offset < 9) return false;
+  if (wire.size() - offset < 9) return {};
   offset += 8;
   zero = std::find(wire.begin() + offset, wire.end(), 0);
-  if (zero == wire.end()) return false;
-  const std::string_view name(reinterpret_cast<const char*>(wire.data() + offset), zero - (wire.begin() + offset));
-  if (name.size() > 512 || !IsVanguardServer(name)) return false;
+  if (zero == wire.end() || zero - (wire.begin() + offset) > 512) return {};
+  return {reinterpret_cast<const char*>(wire.data() + offset), std::size_t(zero - (wire.begin() + offset))};
+}
+// EQClientServerData::Flags (+0x30) controls the frontend's category.
+inline bool PromoteVanguardServer(std::span<const std::uint8_t> wire, std::span<std::uint8_t> record) {
+  if (record.size() < 0x48 || !IsVanguardServer(ServerSelectWireName(wire))) return false;
   std::uint32_t flags = 0;
   std::memcpy(&flags, record.data() + 0x30, 4);
   // AddServer checks Preferred before Legends, so clear Preferred explicitly.

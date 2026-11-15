@@ -1,6 +1,7 @@
 #include "gusto/client/rof2/bank.hpp"
 #include "gusto/client/rof2/tag_hooks.hpp"
 #include "gusto/client/rof2/server_select.hpp"
+#include "gusto/client/rof2/server_select_model.hpp"
 
 #include <cstdio>
 #include <cstring>
@@ -153,6 +154,11 @@ void GateTest(const Image& image, const ValidatedClient& token) {
     Check(bookUses == 3, "duplicate confirmation replayed book twice");
     std::puts("PASS link challenges, quiet transport, context/reentry/retry, hidden confirmation and one-click book replay");
 }
+std::string assignedName;
+void* assignedNameField = nullptr;
+void* __fastcall CaptureName(void* field, void*, const char* name) {
+    assignedName = name; assignedNameField = field; return field;
+}
 int serverWireSize = 0;
 int __stdcall CaptureServerParser(const std::uint8_t*, void* record) {
     std::memset(record, 0xa5, 0x48);
@@ -177,6 +183,14 @@ void ServerSelectTest(const Image& client, const ValidatedClient& token, const c
     BYTE jump[] = {0xe9,0,0,0,0};
     delta = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(thunk) - reinterpret_cast<std::uintptr_t>(at(0x1a605)) - 5);
     std::memcpy(jump+1,&delta,4); Write(at(0x1a605,5),jump,5);
+    // CXStr's assignment prologue saves EBP. Unwind it for the mock setter.
+    BYTE setterUnwind[] = {0x5d,0xe9,0,0,0,0};
+    auto* setterThunk = static_cast<BYTE*>(VirtualAlloc(nullptr,sizeof(setterUnwind),MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE));
+    Check(setterThunk != nullptr, "name setter thunk allocation failed");
+    delta = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&CaptureName) - reinterpret_cast<std::uintptr_t>(setterThunk) - sizeof(setterUnwind));
+    std::memcpy(setterUnwind+2,&delta,4); std::memcpy(setterThunk,setterUnwind,sizeof(setterUnwind));
+    delta = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(setterThunk) - reinterpret_cast<std::uintptr_t>(at(0x475e6)) - 5);
+    std::memcpy(jump+1,&delta,4); Write(at(0x475e6,5),jump,5);
     ValidatedClient invalid;
     Check(!InstallServerSelectHook(client.module, invalid, frontend.module), "invalid client installed frontend hook");
     BYTE saved = *at(0x3678a), bad = saved ^ 1;
@@ -188,16 +202,20 @@ void ServerSelectTest(const Image& client, const ValidatedClient& token, const c
     Check(InstallServerSelectHook(client.module, token, frontend.module), "frontend hook not idempotent");
     using Parse = int(__stdcall *)(const std::uint8_t*,void*);
     auto parse = reinterpret_cast<Parse>(at(0x1a600));
-    for (const char* name : {"[V a n g u a r d] Quarm", "Other Server"}) {
+    for (const char* name : {"[V a n g u a r d] Quarm", "[R] Vanguard", "Other Server", "[R] Other Server"}) {
         std::string wire("world.example"); wire += '\0';
         wire.append(8,'\0'); wire += name; wire += '\0';
         wire += "US"; wire += '\0'; wire += "EN"; wire += '\0'; wire.append(8,'\0');
         serverWireSize = int(wire.size());
         std::vector<BYTE> record(0x48);
+        assignedName.clear(); assignedNameField = nullptr;
         Check(parse(reinterpret_cast<const std::uint8_t*>(wire.data()),record.data()) == serverWireSize,
             "frontend parser return value changed");
         unsigned flags = 0; std::memcpy(&flags,record.data()+0x30,4);
-        Check(flags == (name[0] == '[' ? 17u : 9u), "frontend classification incorrect");
+        Check(flags == (IsVanguardServer(name) ? 17u : 9u), "frontend classification incorrect");
+        if (VanguardDisplayName(name) != name) {
+            Check(assignedName == "Vanguard" && assignedNameField == record.data()+4, "Vanguard display prefix not removed through CXStr");
+        } else Check(assignedName.empty(), "unrelated display name changed");
         std::memset(record.data()+0x30,0xa5,4);
         for (auto byte : record) Check(byte == 0xa5, "frontend changed server identity/status");
     }
@@ -209,6 +227,7 @@ void ServerSelectTest(const Image& client, const ValidatedClient& token, const c
     StartServerSelectHooks(client.module, token);
     StopServerSelectHooks();
     std::puts("PASS real eqmain detour, relocation, signature rejection, fuzzy Legends categorization, record preservation and service restart");
+    VirtualFree(setterThunk,0,MEM_RELEASE);
     VirtualFree(thunk,0,MEM_RELEASE);
 }
 

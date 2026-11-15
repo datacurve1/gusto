@@ -8,6 +8,8 @@ namespace gusto::client::rof2 {
 namespace {
 using ReadServerFn = int(__stdcall *)(const std::uint8_t*, void*);
 ReadServerFn originalReadServer = nullptr;
+using AssignNameFn = void*(__thiscall *)(void*, const char*);
+AssignNameFn assignName = nullptr;
 HANDLE worker = nullptr, stopping = nullptr;
 SRWLOCK serviceLock = SRWLOCK_INIT;
 HMODULE clientModule = nullptr;
@@ -37,8 +39,17 @@ bool Readable(const void* data, std::size_t size) {
 int __stdcall ReadServerHook(const std::uint8_t* wire, void* record) {
   const int consumed = originalReadServer(wire, record);
   if (consumed > 0 && consumed <= 4096 && Readable(wire, consumed) && Readable(record, 0x48) &&
-      PromoteVanguardServer({wire, std::size_t(consumed)}, {static_cast<std::uint8_t*>(record), 0x48}))
+      PromoteVanguardServer({wire, std::size_t(consumed)}, {static_cast<std::uint8_t*>(record), 0x48})) {
+    const auto name = ServerSelectWireName({wire, std::size_t(consumed)});
+    const auto display = VanguardDisplayName(name);
+    if (assignName && display != name) {
+      // Use the frontend's CXStr assignment so reference counts stay correct.
+      const std::string copy(display);
+      assignName(static_cast<BYTE*>(record) + 4, copy.c_str());
+      Trace("Vanguard leading [R] removed from displayed name");
+    }
     Trace("Vanguard matched; categorized as Legends");
+  }
   return consumed;
 }
 DWORD WINAPI Worker(void*) {
@@ -61,6 +72,10 @@ bool InstallServerSelectHook(HMODULE client, const ValidatedClient& validation, 
   // AddServer @10036750 (flags+0x30, preferred=8, legends=16).
   auto* entry = reinterpret_cast<BYTE*>(ResolvePreferredVA(frontend, PreferredImageBase + 0x1a600, 5));
   auto* category = reinterpret_cast<BYTE*>(ResolvePreferredVA(frontend, PreferredImageBase + 0x3678a, 8));
+  auto* setter = reinterpret_cast<BYTE*>(ResolvePreferredVA(frontend, PreferredImageBase + 0x475e0, 6));
+  constexpr BYTE setterBytes[] = {0x55,0x8b,0xec,0x8b,0x45,0x08};
+  if (!Readable(setter, 6) || std::memcmp(setter, setterBytes, 6)) return false;
+  assignName = reinterpret_cast<AssignNameFn>(setter);
   constexpr BYTE categoryBytes[] = {0x8b,0x43,0x30,0x83,0xcf,0xff,0xa8,0x08};
   if (!Readable(entry, 5) || !Readable(category, 8) || std::memcmp(category, categoryBytes, 8)) return false;
   if (entry[0] == 0xe9) {
