@@ -33,8 +33,8 @@ inline bool IsVanguardServer(std::string_view name) {
   }
   return matched || closeWord(word) || compact.find(wanted) != compact.npos;
 }
-inline std::string_view VanguardDisplayName(std::string_view name) {
-  if (!IsVanguardServer(name)) return name;
+inline std::string VanguardDisplayName(std::string_view name) {
+  if (!IsVanguardServer(name)) return std::string(name);
   const auto space = [](char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; };
   std::size_t end = 0;
   int depth = 0;
@@ -49,7 +49,7 @@ inline std::string_view VanguardDisplayName(std::string_view name) {
     // Keep unrelated later tags intact, including their opening brackets.
     if (sawBracket && sawTag && depth == 0) end = i + 1;
   }
-  return end && IsVanguardServer(name.substr(end)) ? name.substr(end) : name;
+  return end && IsVanguardServer(name.substr(end)) ? "[] " + std::string(name.substr(end)) : std::string(name);
 }
 // ReadServerData's wire record: address\0, flags/u32, ID/u32, name\0, ...
 inline std::string_view ServerSelectWireName(std::span<const std::uint8_t> wire) {

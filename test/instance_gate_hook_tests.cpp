@@ -7,6 +7,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <vector>
+#include <array>
 
 // Build as a 32-bit executable at image base 0x10000000. Run:
 // gusto_instance_gate_hook_tests.exe [path-to-May-10-2013-eqgame.exe]
@@ -159,6 +160,9 @@ void* assignedNameField = nullptr;
 void* __fastcall CaptureName(void* field, void*, const char* name) {
     assignedName = name; assignedNameField = field; return field;
 }
+int refreshCalls = 0;
+void* refreshedWindow = nullptr;
+void __fastcall CaptureRefresh(void* window, void*) { ++refreshCalls; refreshedWindow = window; }
 int serverWireSize = 0;
 int __stdcall CaptureServerParser(const std::uint8_t*, void* record) {
     std::memset(record, 0xa5, 0x48);
@@ -191,6 +195,13 @@ void ServerSelectTest(const Image& client, const ValidatedClient& token, const c
     std::memcpy(setterUnwind+2,&delta,4); std::memcpy(setterThunk,setterUnwind,sizeof(setterUnwind));
     delta = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(setterThunk) - reinterpret_cast<std::uintptr_t>(at(0x475e6)) - 5);
     std::memcpy(jump+1,&delta,4); Write(at(0x475e6,5),jump,5);
+    BYTE refreshUnwind[] = {0x83,0xc4,0x04,0x5d,0xe9,0,0,0,0};
+    auto* refreshThunk = static_cast<BYTE*>(VirtualAlloc(nullptr,sizeof(refreshUnwind),MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE));
+    Check(refreshThunk != nullptr, "refresh thunk allocation failed");
+    delta = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&CaptureRefresh) - reinterpret_cast<std::uintptr_t>(refreshThunk) - sizeof(refreshUnwind));
+    std::memcpy(refreshUnwind+5,&delta,4); std::memcpy(refreshThunk,refreshUnwind,sizeof(refreshUnwind));
+    delta = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(refreshThunk) - reinterpret_cast<std::uintptr_t>(at(0x37835)) - 5);
+    std::memcpy(jump+1,&delta,4); Write(at(0x37835,5),jump,5);
     ValidatedClient invalid;
     Check(!InstallServerSelectHook(client.module, invalid, frontend.module), "invalid client installed frontend hook");
     BYTE saved = *at(0x3678a), bad = saved ^ 1;
@@ -214,11 +225,47 @@ void ServerSelectTest(const Image& client, const ValidatedClient& token, const c
         unsigned flags = 0; std::memcpy(&flags,record.data()+0x30,4);
         Check(flags == (IsVanguardServer(name) ? 17u : 9u), "frontend classification incorrect");
         if (VanguardDisplayName(name) != name) {
-            Check(assignedName == "Vanguard" && assignedNameField == record.data()+4, "Vanguard display prefix not removed through CXStr");
+            Check(assignedName == "[] Vanguard" && assignedNameField == record.data()+4, "Vanguard display prefix not removed through CXStr");
         } else Check(assignedName.empty(), "unrelated display name changed");
         std::memset(record.data()+0x30,0xa5,4);
         for (auto byte : record) Check(byte == 0xa5, "frontend changed server identity/status");
     }
+    // Model the native doubly linked server list, including CXStr payloads.
+    std::array<std::array<BYTE,0x48>,4> servers{};
+    std::array<std::array<BYTE,160>,4> names{};
+    const char* texts[] = {"Other A", "[] Vanguard", "Other B", "Vanguard Test"};
+    struct Node { void* data; Node* next; Node* previous; };
+    std::array<Node,4> nodes{};
+    for (int i=0;i<4;++i) {
+        const unsigned length = unsigned(std::strlen(texts[i]));
+        std::memcpy(names[i].data()+8,&length,4);
+        std::memcpy(names[i].data()+0x14,texts[i],length+1);
+        void* rep = names[i].data(); std::memcpy(servers[i].data()+4,&rep,4);
+        nodes[i] = {servers[i].data(),i<3?&nodes[i+1]:nullptr,i?&nodes[i-1]:nullptr};
+    }
+    std::array<BYTE,0xf0> login{};
+    void* head = &nodes[0]; void* tail = &nodes[3]; unsigned count = 4;
+    std::memcpy(login.data()+0xd8,&head,4); std::memcpy(login.data()+0xdc,&tail,4);
+    std::memcpy(login.data()+0xec,&count,4);
+    void* loginPointer = login.data(); Write(at(0x15016c,4),&loginPointer,4);
+    const auto recordsBefore = servers;
+    using Refresh = void(__thiscall *)(void*);
+    auto refresh = reinterpret_cast<Refresh>(at(0x37830));
+    refresh(loginPointer);
+    Check(refreshCalls == 1 && refreshedWindow == loginPointer, "native refresh not forwarded");
+    Check(nodes[0].data == servers[1].data() && nodes[1].data == servers[3].data() &&
+          nodes[2].data == servers[0].data() && nodes[3].data == servers[2].data(), "Vanguard not stably pinned to top");
+    Check(servers == recordsBefore, "pinning changed server records");
+    for (int i=0;i<4;++i) Check(nodes[i].next == (i<3?&nodes[i+1]:nullptr) &&
+        nodes[i].previous == (i?&nodes[i-1]:nullptr), "pinning changed node links");
+    auto pinned = nodes;
+    refresh(loginPointer);
+    for (int i=0;i<4;++i) Check(nodes[i].data == pinned[i].data, "repeated refresh reordered entries");
+    for (int i=0;i<4;++i) nodes[i].data = servers[i].data();
+    nodes[2].previous = nullptr;
+    refresh(loginPointer);
+    for (int i=0;i<4;++i) Check(nodes[i].data == servers[i].data(), "malformed list was modified");
+    loginPointer = nullptr; Write(at(0x15016c,4),&loginPointer,4);
     const BYTE originalEntry[] = {0x55,0x8b,0xec,0x51,0x53};
     Write(at(0x1a600,5),originalEntry,5);
     Check(InstallServerSelectHook(client.module, token, frontend.module), "reloaded frontend was not rehooked");
@@ -226,7 +273,8 @@ void ServerSelectTest(const Image& client, const ValidatedClient& token, const c
     StopServerSelectHooks();
     StartServerSelectHooks(client.module, token);
     StopServerSelectHooks();
-    std::puts("PASS real eqmain detour, relocation, signature rejection, fuzzy Legends categorization, record preservation and service restart");
+    std::puts("PASS real eqmain detour, relocation, signature rejection, empty brackets, stable top pinning, record preservation and service restart");
+    VirtualFree(refreshThunk,0,MEM_RELEASE);
     VirtualFree(setterThunk,0,MEM_RELEASE);
     VirtualFree(thunk,0,MEM_RELEASE);
 }
