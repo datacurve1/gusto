@@ -210,3 +210,13 @@ add_custom_target(gusto_mercenary_ui ALL
     COMMENT "Generating GUSTO mercenary UI"
     VERBATIM
 )
+
+# Exercise the actual chat detour against a privately mapped RoF2 image.
+add_executable(gusto_instance_gate_hook_tests EXCLUDE_FROM_ALL test/instance_gate_hook_tests.cpp ${GUSTO_BANK_TEST_SOURCES})
+target_include_directories(gusto_instance_gate_hook_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_features(gusto_instance_gate_hook_tests PRIVATE cxx_std_20)
+target_compile_definitions(gusto_instance_gate_hook_tests PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+target_link_libraries(gusto_instance_gate_hook_tests PRIVATE bcrypt gdi32)
+if(MINGW)
+    target_link_options(gusto_instance_gate_hook_tests PRIVATE -Wl,--image-base,0x10000000)
+endif()

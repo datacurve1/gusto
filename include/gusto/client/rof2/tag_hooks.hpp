@@ -10,6 +10,8 @@ struct TagDisplayOptions {
 TagDisplayOptions GetTagDisplayOptions();
 void SetTagDisplayOptions(const TagDisplayOptions& options);
 void RequestClearTags();
+bool InstallInstanceGateHooks(HMODULE module, const ValidatedClient &validation);
+void TickInstanceGate();
 bool InstallTagHooks(HMODULE module, const ValidatedClient &validation);
 using TagSendCommand = void (*)(void *context, const char *command);
 bool HandleTagCommand(std::string_view command, void *context,

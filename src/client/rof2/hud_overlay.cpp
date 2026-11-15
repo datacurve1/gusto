@@ -1929,6 +1929,7 @@ void DrawHudWorldBars(IDirect3DDevice9* device,void* render){
   saved->Apply();saved->Release();
 }
 void DrawHudOverlay(IDirect3DDevice9 *device, void *render) {
+  TickInstanceGate();
   if (!InGame() || !device)
     return;
   PollHudGamepad();

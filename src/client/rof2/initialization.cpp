@@ -50,6 +50,8 @@ namespace gusto::client::rof2
             return InitializationStatus::ValidationFailed;
         }
 
+        InstallInstanceGateHooks(module, g_validation);
+
         InstallBankExpansion(module, g_validation);
 
         InstallMercenaryUiExpansion(module, g_validation);

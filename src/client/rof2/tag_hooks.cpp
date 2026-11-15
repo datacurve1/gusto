@@ -10,9 +10,9 @@
 #include "gusto/client/rof2/tag_channels.hpp"
 #include "gusto/client/rof2/tag_models.hpp"
 #include "gusto/client/rof2/tag_state.hpp"
+#include "gusto/client/rof2/instance_gate.hpp"
 #include <algorithm>
 #include <atomic>
-#include "gusto/client/rof2/instance_gate.hpp"
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -54,6 +54,14 @@ ValidatedClient validation;
 GetSpawnFn getSpawn = nullptr;
 NameStateFn refreshName = nullptr;
 ChatFn originalChat = nullptr;
+SRWLOCK gateLock = SRWLOCK_INIT;
+std::string gatePending, gateLastSent;
+void GateTrace(const char *event) {
+  if (auto *file = std::fopen("gusto-instance-gate.log", "a")) {
+    std::fprintf(file, "%lu %s\n", GetTickCount(), event);
+    std::fclose(file);
+  }
+}
 GameStateFn originalGameState = nullptr;
 RemoveSpawnFn originalRemoveSpawn = nullptr;
 SRWLOCK lock = SRWLOCK_INIT;
@@ -233,14 +241,14 @@ void SetChannelName(std::string_view name) {
   tagChannel = name;
   ReleaseSRWLockExclusive(&lock);
 }
-void NativeCommand(const std::string &text) {
+bool NativeCommand(const std::string &text) {
   using InterpretFn = void(__thiscall *)(void *, void *, const char *);
   const auto address = ResolvePreferredVA(module, 0x51fce0, 1);
-  const auto *state = GetClientState();
+  auto *player = Global(addresses::LocalPlayer, addresses::PlayerClientReferenceSize);
   auto *game = Global(EverQuest);
-  if (address && state && state->GetLocalPlayer() && game)
-    reinterpret_cast<InterpretFn>(address)(game, state->GetLocalPlayer(),
-                                           text.c_str());
+  if (!address || !player || !game) return false;
+  reinterpret_cast<InterpretFn>(address)(game, player, text.c_str());
+  return true;
 }
 std::vector<std::string> JoinedChannels(std::size_t proxyOffset) {
   void *proxy = nullptr, *list = nullptr;
@@ -276,7 +284,10 @@ void __fastcall ChatHook(void *self, void *, const char *message, int color,
   if (Text(message, text)) {
     const auto command = InstanceGateCommand(text);
     if (!command.empty()) {
-      NativeCommand(command);
+      AcquireSRWLockExclusive(&gateLock);
+      if (command != gateLastSent) gatePending = command;
+      ReleaseSRWLockExclusive(&gateLock);
+      GateTrace("challenge received; reply queued");
       return;
     }
   }
@@ -328,6 +339,10 @@ void *__fastcall RemoveSpawnHook(void *self, void *, void *spawn) {
   return originalRemoveSpawn ? originalRemoveSpawn(self, spawn) : nullptr;
 }
 void __fastcall GameStateHook(void *self, void *, int state) {
+  AcquireSRWLockExclusive(&gateLock);
+  gatePending.clear();
+  gateLastSent.clear();
+  ReleaseSRWLockExclusive(&gateLock);
   ResetHudState();
   // Drop identities before any zone or character transition can recycle spawn
   // IDs.
@@ -523,6 +538,7 @@ void DrawTagModels() {
 // Keep the early callback for frame identity; draw only once the world is
 // complete, before C2DPrimitiveManager emits its first label/UI pass.
 void RenderTags() {
+  TickInstanceGate();
   ++renderFrames;
   if (previousRender)
     previousRender();
@@ -553,7 +569,42 @@ void __fastcall PrimitiveRenderHook(void *self, void *, bool firstPass,
 }
 } // namespace
 
+bool InstallInstanceGateHooks(HMODULE clientModule, const ValidatedClient &clientValidation) {
+  if (!clientValidation.IsValidFor(clientModule)) return false;
+  if (originalChat) return module == clientModule;
+  module = clientModule;
+  validation = clientValidation;
+  constexpr BYTE bytes[] = {0x64, 0xa1, 0, 0, 0, 0};
+  const bool installed = InstallDetour(module, validation, 0x51f1a0, bytes, sizeof(bytes),
+      reinterpret_cast<void *>(&ChatHook), reinterpret_cast<void **>(&originalChat));
+  GateTrace(installed ? "chat hook installed" : "ERROR: chat hook installation failed");
+  return installed;
+}
+
+void TickInstanceGate() {
+  int gameState = 0;
+  if (!originalChat || !Read(Global(EverQuest), 0x5c8, gameState) || gameState != 5) return;
+  std::string command;
+  AcquireSRWLockExclusive(&gateLock);
+  command.swap(gatePending);
+  ReleaseSRWLockExclusive(&gateLock);
+  if (command.empty()) return;
+  // Drain before entering InterpretCmd: it calls TickTags again.
+  if (NativeCommand(command)) {
+    AcquireSRWLockExclusive(&gateLock);
+    gateLastSent = command;
+    ReleaseSRWLockExclusive(&gateLock);
+    GateTrace("verification reply submitted to InterpretCmd");
+  } else {
+    AcquireSRWLockExclusive(&gateLock);
+    if (gatePending.empty()) gatePending = std::move(command);
+    ReleaseSRWLockExclusive(&gateLock);
+    GateTrace("reply deferred: native command context unavailable");
+  }
+}
+
 void TickTags() {
+  TickInstanceGate();
   // Bootstrap only after the initialization worker has finished installing
   // game hooks; two patching threads must never suspend one another.
   if (!InGame() || GetInitializationStatus() != InitializationStatus::Ready)
@@ -919,17 +970,14 @@ bool InstallTagHooks(HMODULE clientModule,
   refreshName = reinterpret_cast<NameStateFn>(nameAddress);
   constexpr BYTE stateBytes[] = {0x8b, 0x44, 0x24, 4, 0x89,
                                  0x81, 0xc8, 5,    0, 0};
-  constexpr BYTE chatBytes[] = {0x64, 0xa1, 0, 0, 0, 0};
+
   if (!originalGameState &&
       !InstallDetour(module, validation, 0x519750, stateBytes,
                      sizeof(stateBytes),
                      reinterpret_cast<void *>(&GameStateHook),
                      reinterpret_cast<void **>(&originalGameState)))
     return false;
-  if (!originalChat &&
-      !InstallDetour(module, validation, 0x51f1a0, chatBytes, sizeof(chatBytes),
-                     reinterpret_cast<void *>(&ChatHook),
-                     reinterpret_cast<void **>(&originalChat)))
+  if (!InstallInstanceGateHooks(clientModule, clientValidation))
     return false;
   constexpr BYTE removeBytes[] = {0x51, 0x56, 0x8b, 0x74, 0x24, 0x0c};
   if (!originalRemoveSpawn &&
