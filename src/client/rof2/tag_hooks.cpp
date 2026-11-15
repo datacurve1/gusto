@@ -12,7 +12,7 @@
 #include "gusto/client/rof2/tag_state.hpp"
 #include <algorithm>
 #include <atomic>
-#include <cctype>
+#include "gusto/client/rof2/instance_gate.hpp"
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -274,21 +274,10 @@ void __fastcall ChatHook(void *self, void *, const char *message, int color,
                          bool log, bool percent) {
   std::string text;
   if (Text(message, text)) {
-    constexpr std::string_view gateMarker = "GUSTO_INSTANCE_GATE:";
-    const auto marker = text.find(gateMarker);
-    if (marker != text.npos) {
-      const auto tokenStart = marker + gateMarker.size();
-      std::string token;
-      for (auto i = tokenStart; i < text.size() && token.size() < 64; ++i) {
-        const auto c = static_cast<unsigned char>(text[i]);
-        if (!std::isxdigit(c))
-          break;
-        token.push_back(static_cast<char>(c));
-      }
-      if (!token.empty()) {
-        NativeCommand("#gusto verify " + token);
-        return;
-      }
+    const auto command = InstanceGateCommand(text);
+    if (!command.empty()) {
+      NativeCommand(command);
+      return;
     }
   }
 

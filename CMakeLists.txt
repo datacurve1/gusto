@@ -146,6 +146,10 @@ add_executable(gusto_pipe_model_tests test/pipe_model_tests.cpp src/client/rof2/
 target_include_directories(gusto_pipe_model_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_compile_features(gusto_pipe_model_tests PRIVATE cxx_std_20)
 
+add_executable(gusto_instance_gate_tests test/instance_gate_tests.cpp)
+target_include_directories(gusto_instance_gate_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_features(gusto_instance_gate_tests PRIVATE cxx_std_20)
+
 add_executable(gusto_pipe_tests test/pipe_tests.cpp src/client/rof2/named_pipe.cpp)
 target_include_directories(gusto_pipe_tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_compile_features(gusto_pipe_tests PRIVATE cxx_std_20)

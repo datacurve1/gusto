@@ -43,6 +43,14 @@ std::vector<std::pair<int,std::string>> BuildPipeMessages(const PipeSnapshot& s,
  if(s.petEntity)gauge(16,Percent(s.petEntity->hp,s.petEntity->maxHP,1000));
  push(1,labels);push(2,gauges);
  Json player={{"zone",s.zone},{"spawn_id",s.self.id},{"autoattack",s.autoattack}};
+ Field(player,"level",s.self.level);
+ Field(player,"class_id",s.self.cls);
+ Field(player,"hp_current",s.self.hp);
+ Field(player,"hp_max",s.self.maxHP);
+ Field(player,"mana_current",s.mana);
+ Field(player,"mana_max",s.maxMana);
+ Field(player,"endurance_current",s.endurance);
+ Field(player,"endurance_max",s.maxEndurance);
  if(s.self.position){player["location"]=Loc(s.self);player["heading"]=s.self.heading;}
  if(s.pet)player["pet_id"]=s.pet;
  if(s.target){const auto& t=*s.target;player["target_id"]=t.id;player["target_name"]=t.name;Field(player,"target_type",t.type);Field(player,"target_level",t.level);Field(player,"target_class",t.cls);Field(player,"target_race",t.race);
