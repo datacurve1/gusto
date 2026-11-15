@@ -107,6 +107,11 @@ void GateTest(const Image& image, const ValidatedClient& token) {
     chat(gamePointer, "GUSTO_INSTANCE_GATE:fedcba4321", 0, true, true);
     TickInstanceGate();
     Check(sent == "/say #gusto verify fedcba4321", "bare marker did not send");
+    sent.clear();
+    const char *liveChallenge = "GUSTO.asi is required for this guild or PvP instance. If installed, it will verify automatically; after the confirmation, click the book again. Verification code: [\x12" "0FFFFF01CC2000000000000000000000000000000000000000000000GUSTO_INSTANCE_GATE:8d6af9918d70ba3bd8\x12]";
+    chat(gamePointer, liveChallenge, 0, true, true);
+    TickInstanceGate();
+    Check(sent == "/say #gusto verify 8d6af9918d70ba3bd8", "live saylink challenge did not send");
     std::puts("PASS real RoF2 chat entry -> deferred native command, context, reentry, deduplication and retry");
 }
 }
