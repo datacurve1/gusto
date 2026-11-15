@@ -59,11 +59,13 @@ toolchain on PATH, then run from the source checkout:
 
 ```powershell
 cmake -S . -B build-win32 -G Ninja -DCMAKE_TOOLCHAIN_FILE=cmake/mingw32-toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-cmake --build build-win32 --target gusto
+cmake --build build-win32 --target gusto gusto_early_loader
 ```
 
-The output is `build-win32/GUSTO.dll`. Distribute it as `GUSTO.asi` using
-the Windows packaging script described below. For a public update, commit
+The outputs are `build-win32/GUSTO.dll` and `build-win32/dinput8.dll`.
+Distribute the first as `GUSTO.asi`; install both beside `eqgame.exe` to enable
+Vanguard's server-select hook. Building or loading only the ASI starts Gusto too
+late to change the initial server list. For a public update, commit
 the source fix first, bump `VERSION`, then rebuild and test that version on
 Windows. Publish the versioned Windows ZIP and its matching SHA-256 as
 release assets, and update the download links above. The Windows x86 download above includes the startup and `/gusto` command

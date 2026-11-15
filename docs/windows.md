@@ -37,9 +37,10 @@ The required executable/graphics hashes are in BUILD.json and the installer.
 
 ## Early loading for server select
 
-The repository includes a small x86 `dinput8.dll` startup loader built with
-`cmake --build build --target gusto_early_loader`. It forwards DirectInput to
-Windows and loads only `GUSTO.asi` beside itself. Copy both files beside
+The repository includes a small x86 `dinput8.dll` startup loader. Build it
+alongside Gusto with `cmake --build build --target gusto gusto_early_loader`.
+It forwards DirectInput to Windows and loads only `GUSTO.asi` beside itself.
+Copy both files beside
 `eqgame.exe` and fully restart the game. Keep an existing DirectInput proxy
 if it already loads Gusto early; do not replace another mod's proxy blindly.
 
