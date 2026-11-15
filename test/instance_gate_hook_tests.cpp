@@ -202,7 +202,7 @@ void ServerSelectTest(const Image& client, const ValidatedClient& token, const c
     Check(InstallServerSelectHook(client.module, token, frontend.module), "frontend hook not idempotent");
     using Parse = int(__stdcall *)(const std::uint8_t*,void*);
     auto parse = reinterpret_cast<Parse>(at(0x1a600));
-    for (const char* name : {"[V a n g u a r d] Quarm", "[R] Vanguard", "Other Server", "[R] Other Server"}) {
+    for (const char* name : {"[V a n g u a r d] Quarm", "[R] Vanguard", "[[R] ] Vanguard", "[[R]] Vanguard", " [ r ] Vanguard", "Other Server", "[R] Other Server"}) {
         std::string wire("world.example"); wire += '\0';
         wire.append(8,'\0'); wire += name; wire += '\0';
         wire += "US"; wire += '\0'; wire += "EN"; wire += '\0'; wire.append(8,'\0');

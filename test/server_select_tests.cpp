@@ -16,6 +16,16 @@ int main() {
   check(VanguardDisplayName("[R]  Vanguard") == "Vanguard");
   check(VanguardDisplayName("Vanguard [R]") == "Vanguard [R]");
   check(VanguardDisplayName("[R] Other Server") == "[R] Other Server");
+  check(VanguardDisplayName("[[R] ] Vanguard") == "Vanguard");
+  check(VanguardDisplayName("[[R]] Vanguard") == "Vanguard");
+  check(VanguardDisplayName("  [ r ]  Vanguard") == "Vanguard");
+  check(VanguardDisplayName("[R] [R] Vanguard") == "Vanguard");
+  check(VanguardDisplayName("[R] [PvP] Vanguard") == "[PvP] Vanguard");
+  check(VanguardDisplayName("[[R] ] [PvP] Vanguard") == "[PvP] Vanguard");
+  check(VanguardDisplayName("[R] Vangaurd") == "Vangaurd");
+  check(VanguardDisplayName("[RP] Vanguard") == "[RP] Vanguard");
+  check(VanguardDisplayName("R Vanguard") == "R Vanguard");
+  check(VanguardDisplayName("[[R] ] Other Server") == "[[R] ] Other Server");
   auto packet = [](const char* name) {
     std::vector<std::uint8_t> v;
     auto str = [&](const char* s) { while (*s) v.push_back(*s++); v.push_back(0); };

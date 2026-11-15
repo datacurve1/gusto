@@ -34,10 +34,22 @@ inline bool IsVanguardServer(std::string_view name) {
   return matched || closeWord(word) || compact.find(wanted) != compact.npos;
 }
 inline std::string_view VanguardDisplayName(std::string_view name) {
-  if (!IsVanguardServer(name) || !name.starts_with("[R]")) return name;
-  name.remove_prefix(3);
-  while (!name.empty() && (name.front() == ' ' || name.front() == '\t')) name.remove_prefix(1);
-  return name;
+  if (!IsVanguardServer(name)) return name;
+  const auto space = [](char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; };
+  std::size_t end = 0;
+  int depth = 0;
+  bool sawBracket = false, sawTag = false;
+  for (std::size_t i = 0; i < name.size(); ++i) {
+    const char c = name[i];
+    if (c == '[') { ++depth; sawBracket = true; }
+    else if (c == ']') { if (depth > 0) --depth; }
+    else if ((c == 'R' || c == 'r') && depth > 0 &&
+             (i + 1 == name.size() || space(name[i + 1]) || name[i + 1] == ']')) sawTag = true;
+    else if (!space(c)) break;
+    // Keep unrelated later tags intact, including their opening brackets.
+    if (sawBracket && sawTag && depth == 0) end = i + 1;
+  }
+  return end && IsVanguardServer(name.substr(end)) ? name.substr(end) : name;
 }
 // ReadServerData's wire record: address\0, flags/u32, ID/u32, name\0, ...
 inline std::string_view ServerSelectWireName(std::span<const std::uint8_t> wire) {
