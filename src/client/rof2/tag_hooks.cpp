@@ -286,7 +286,7 @@ void __fastcall ChatHook(void *self, void *, const char *message, int color,
         token.push_back(static_cast<char>(c));
       }
       if (!token.empty()) {
-        NativeCommand("#gusto verify " + token);
+        NativeCommand("/say #gusto verify " + token);
         return;
       }
     }
