@@ -12,6 +12,7 @@
 #include "gusto/client/rof2/tag_state.hpp"
 #include <algorithm>
 #include <atomic>
+#include <cctype>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -272,6 +273,25 @@ int ChannelNumber() {
 void __fastcall ChatHook(void *self, void *, const char *message, int color,
                          bool log, bool percent) {
   std::string text;
+  if (Text(message, text)) {
+    constexpr std::string_view gateMarker = "GUSTO_INSTANCE_GATE:";
+    const auto marker = text.find(gateMarker);
+    if (marker != text.npos) {
+      const auto tokenStart = marker + gateMarker.size();
+      std::string token;
+      for (auto i = tokenStart; i < text.size() && token.size() < 64; ++i) {
+        const auto c = static_cast<unsigned char>(text[i]);
+        if (!std::isxdigit(c))
+          break;
+        token.push_back(static_cast<char>(c));
+      }
+      if (!token.empty()) {
+        NativeCommand("#gusto verify " + token);
+        return;
+      }
+    }
+  }
+
   std::string pipeText;if(Text(message,pipeText))PipeChat(pipeText.c_str(),color);
   const bool group = color == 258 || color == 309 || color == 327;
   const int number = ChannelNumber();
