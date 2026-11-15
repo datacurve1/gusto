@@ -13,6 +13,9 @@ Daybreak Game Company.
 - [Verified Windows x86 build](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/windows-x86-build.zip) · [SHA256](releases/windows-x86-build.zip.sha256) · [Corresponding source](https://github.com/datacurve1/gusto/archive/cf16e962d81f591d35fba99083338a99a8bac708.zip)
 - [Beta.3 Windows package (Wine-tested)](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/GUSTO-1.1.0-beta.3-RoF2-Windows.zip) · [SHA256](releases/GUSTO-1.1.0-beta.3-RoF2-Windows.zip.sha256)
 - [Windows/Wine package with artwork, previews and documentation](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/GUSTO-1.1.0-beta.3-RoF2-Windows-Wine.zip) · [SHA256](releases/GUSTO-1.1.0-beta.3-RoF2-Windows-Wine.zip.sha256)
+- [Quarm guild/PvP instance-gate build](https://github.com/datacurve1/gusto/raw/refs/heads/master/GUSTO-Quarm-Instance-Gate.asi) · [SHA256](GUSTO-Quarm-Instance-Gate.asi.sha256)
+
+For Quarm guild/PvP instances, rename this download to `GUSTO.asi` and place it beside `eqgame.exe`. It answers the server's one-use verification challenge.
 
 1. Fully exit EverQuest and back up your existing `GUSTO.asi`.
 2. Extract a package and copy `GUSTO.asi` beside `eqgame.exe`.
