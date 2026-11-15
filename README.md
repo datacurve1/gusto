@@ -8,6 +8,8 @@ This beta follows Gusto 1.0 and replaces the numbered HUD development previews.
 Gusto is an independent community project, not affiliated with or endorsed by
 Daybreak Game Company.
 
+For server-select features, use an early loader such as the included [`dinput8.dll`](dinput8.dll) beside `eqgame.exe` and `GUSTO.asi`. The Miles audio loader starts Gusto after login and cannot modify the initial server list. On Wine, enable the `dinput8` native,builtin override for `eqgame.exe`. Fully restart after installation.
+
 Vanguard server names are matched automatically at server select, including differences in case, spacing, punctuation, or a single typo. Matching entries appear in **Legends** on this client. Connection details and server availability remain unchanged; `gusto-server-select.log` records hook installation and matches.
 
 ## Download and install

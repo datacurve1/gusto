@@ -58,3 +58,6 @@ zeal-source/
 zeal-src/
 **/zeal/
 **/Zeal/
+
+# Gusto early startup loader release artifact
+!/dinput8.dll

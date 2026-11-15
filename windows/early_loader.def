@@ -1,0 +1,8 @@
+LIBRARY dinput8
+EXPORTS
+    DirectInput8Create=GustoDirectInput8Create@20 @1
+    DllCanUnloadNow=GustoDllCanUnloadNow@0 @2
+    DllGetClassObject=GustoDllGetClassObject@12 @3
+    DllRegisterServer=GustoDllRegisterServer@0 @4
+    DllUnregisterServer=GustoDllUnregisterServer@0 @5
+    GetdfDIJoystick=GustoGetdfDIJoystick@0 @6

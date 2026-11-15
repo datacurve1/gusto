@@ -35,6 +35,21 @@ Miles ASI provider startup path. Initialization still validates the exact
 supported executable before installing hooks. Other EQ versions are rejected.
 The required executable/graphics hashes are in BUILD.json and the installer.
 
+## Early loading for server select
+
+The repository includes a small x86 `dinput8.dll` startup loader built with
+`cmake --build build --target gusto_early_loader`. It forwards DirectInput to
+Windows and loads only `GUSTO.asi` beside itself. Copy both files beside
+`eqgame.exe` and fully restart the game. Keep an existing DirectInput proxy
+if it already loads Gusto early; do not replace another mod's proxy blindly.
+
+On Wine, add an application-specific `dinput8=native,builtin` override for
+`eqgame.exe` in the prefix used by your launcher. The desktop launcher in this
+setup uses `.wine-eq`, even though its game folder is inside `.wine`.
+`gusto-loader.log` confirms early loading; `gusto-server-select.log` confirms
+the frontend hook and Vanguard matches. A Miles audio-only loader starts too
+late to modify the initial server list.
+
 ## Runtime and portability
 
 Gusto's C++ and compiler runtimes are statically linked. The package's plugin
