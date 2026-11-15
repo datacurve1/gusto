@@ -5,6 +5,7 @@
 #include "gusto/client/rof2/server_select.hpp"
 #include "gusto/client/rof2/mercenary_ui.hpp"
 #include "gusto/client/rof2/ui_cleanup.hpp"
+#include "gusto/client/rof2/chat_input.hpp"
 #include "gusto/client/rof2/pvp_guard.hpp"
 #include "gusto/client/rof2/interpret_cmd_hook.hpp"
 #include "gusto/client/rof2/slow_turn_keys.hpp"
@@ -60,6 +61,7 @@ namespace gusto::client::rof2
         InstallMercenaryUiExpansion(module, g_validation);
 
         InitializeUiCleanup(module, g_validation);
+        InitializeChatInput(module, g_validation);
         InstallPvpGuard(module, g_validation);
 
         InstallTagHooks(module, g_validation);

@@ -14,6 +14,8 @@ The in-game UI cleanup removes the Evolution, Shrouds, and Alt. Currency invento
 
 Character select hides Buy Slot, Gold membership/upgrade offers, and Drakkin race-selection buttons (including the purchase controls in character creation). Gusto also blocks PvP-off commands and disabling toggles before submission in zones labeled `(PVP)`/`[PVP]` or native PvP areas. Explicit enabling commands and toggles outside those zones remain available. `gusto-pvp-guard.log` records installation and blocked attempts.
 
+Chat input supports Ctrl+A/C/X/V, arrow-key movement, Shift+arrow selection, and Home/End. Clipboard copy and paste preserve RoF2 item-link markup; diagnostics are written to `gusto-chat-input.log`.
+
 ## Download and install
 
 - [Verified Windows x86 build](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/windows-x86-build.zip) · [SHA256](releases/windows-x86-build.zip.sha256) · [Corresponding source](https://github.com/datacurve1/gusto/archive/cf16e962d81f591d35fba99083338a99a8bac708.zip)

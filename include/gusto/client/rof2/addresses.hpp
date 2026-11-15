@@ -65,6 +65,10 @@ namespace gusto::client::rof2::addresses
         0x015D3D00, Storage::PointerStorage
     };
 
+    inline constexpr Global ChatWindowManager{
+        0x00F71070, Storage::PointerStorage
+    };
+
     // Documented relationship:
     // EverQuestInfo::ZoneInfo is at offset 0x2D8.
     inline constexpr std::uintptr_t ZoneInfoOffset = 0x2D8;
