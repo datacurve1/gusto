@@ -8,6 +8,8 @@ This beta follows Gusto 1.0 and replaces the numbered HUD development previews.
 Gusto is an independent community project, not affiliated with or endorsed by
 Daybreak Game Company.
 
+Vanguard server names are matched automatically at server select, including differences in case, spacing, punctuation, or a single typo. Matching entries appear in **Legends** on this client. Connection details and server availability remain unchanged; `gusto-server-select.log` records hook installation and matches.
+
 ## Download and install
 
 - [Verified Windows x86 build](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/windows-x86-build.zip) · [SHA256](releases/windows-x86-build.zip.sha256) · [Corresponding source](https://github.com/datacurve1/gusto/archive/cf16e962d81f591d35fba99083338a99a8bac708.zip)

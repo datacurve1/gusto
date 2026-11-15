@@ -3,6 +3,7 @@
 #include "gusto/client/rof2/compatibility.hpp"
 #include "gusto/client/rof2/slow_turn_keys.hpp"
 #include "gusto/client/rof2/initialization.hpp"
+#include "gusto/client/rof2/server_select.hpp"
 
 #include <windows.h>
 
@@ -290,6 +291,7 @@ namespace
 
     void WINAPI GustoAsiShutdown()
     {
+        gusto::client::rof2::StopServerSelectHooks();
         gusto::client::rof2::ShutdownHudOverlay();
         gusto::client::rof2::shutdown_slow_turn_keys();
 

@@ -1,5 +1,6 @@
 #include "gusto/client/rof2/bank.hpp"
 #include "gusto/client/rof2/tag_hooks.hpp"
+#include "gusto/client/rof2/server_select.hpp"
 
 #include <cstdio>
 #include <cstring>
@@ -32,14 +33,14 @@ struct Image {
         Check(address != 0, "client address outside image");
         return reinterpret_cast<BYTE*>(address);
     }
-    void Open(const char* path) {
+    void Open(const char* path, std::uintptr_t preferred = PreferredImageBase) {
         file = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ, nullptr,
             OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
         Check(file != INVALID_HANDLE_VALUE, "cannot open eqgame.exe");
         mapping = CreateFileMappingA(file, nullptr, PAGE_READONLY | SEC_IMAGE, 0, 0, nullptr);
         Check(mapping != nullptr, "SEC_IMAGE mapping failed");
         module = static_cast<HMODULE>(MapViewOfFileEx(mapping, FILE_MAP_READ, 0, 0, 0,
-            reinterpret_cast<void*>(PreferredImageBase)));
+            reinterpret_cast<void*>(preferred)));
         Check(module != nullptr, "cannot map client image");
     }
 };
@@ -152,14 +153,73 @@ void GateTest(const Image& image, const ValidatedClient& token) {
     Check(bookUses == 3, "duplicate confirmation replayed book twice");
     std::puts("PASS link challenges, quiet transport, context/reentry/retry, hidden confirmation and one-click book replay");
 }
+int serverWireSize = 0;
+int __stdcall CaptureServerParser(const std::uint8_t*, void* record) {
+    std::memset(record, 0xa5, 0x48);
+    const unsigned flags = 9;
+    std::memcpy(static_cast<BYTE*>(record) + 0x30, &flags, 4);
+    return serverWireSize;
+}
+void ServerSelectTest(const Image& client, const ValidatedClient& token, const char* path) {
+    Image frontend;
+    frontend.Open(path, 0);
+    auto at = [&](unsigned rva, unsigned size = 1) {
+        return reinterpret_cast<BYTE*>(ResolvePreferredVA(frontend.module, PreferredImageBase + rva, size));
+    };
+    // ReadServerData's 5-byte prologue saves EBP/ECX/EBX. Restore these
+    // before calling a stand-in parser from its continuation.
+    BYTE unwind[] = {0x5b,0x83,0xc4,0x04,0x5d,0xe9,0,0,0,0};
+    auto* thunk = static_cast<BYTE*>(VirtualAlloc(nullptr,sizeof(unwind),MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE));
+    Check(thunk != nullptr, "frontend parser test thunk allocation failed");
+    auto delta = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(&CaptureServerParser) -
+        reinterpret_cast<std::uintptr_t>(thunk) - sizeof(unwind));
+    std::memcpy(unwind+6,&delta,4); std::memcpy(thunk,unwind,sizeof(unwind));
+    BYTE jump[] = {0xe9,0,0,0,0};
+    delta = static_cast<std::uint32_t>(reinterpret_cast<std::uintptr_t>(thunk) - reinterpret_cast<std::uintptr_t>(at(0x1a605)) - 5);
+    std::memcpy(jump+1,&delta,4); Write(at(0x1a605,5),jump,5);
+    ValidatedClient invalid;
+    Check(!InstallServerSelectHook(client.module, invalid, frontend.module), "invalid client installed frontend hook");
+    BYTE saved = *at(0x3678a), bad = saved ^ 1;
+    Write(at(0x3678a),&bad,1);
+    Check(!InstallServerSelectHook(client.module, token, frontend.module), "unknown frontend profile accepted");
+    Check(*at(0x1a600) == 0x55, "rejected hook modified frontend");
+    Write(at(0x3678a),&saved,1);
+    Check(InstallServerSelectHook(client.module, token, frontend.module), "frontend server-list hook failed");
+    Check(InstallServerSelectHook(client.module, token, frontend.module), "frontend hook not idempotent");
+    using Parse = int(__stdcall *)(const std::uint8_t*,void*);
+    auto parse = reinterpret_cast<Parse>(at(0x1a600));
+    for (const char* name : {"[V a n g u a r d] Quarm", "Other Server"}) {
+        std::string wire("world.example"); wire += '\0';
+        wire.append(8,'\0'); wire += name; wire += '\0';
+        wire += "US"; wire += '\0'; wire += "EN"; wire += '\0'; wire.append(8,'\0');
+        serverWireSize = int(wire.size());
+        std::vector<BYTE> record(0x48);
+        Check(parse(reinterpret_cast<const std::uint8_t*>(wire.data()),record.data()) == serverWireSize,
+            "frontend parser return value changed");
+        unsigned flags = 0; std::memcpy(&flags,record.data()+0x30,4);
+        Check(flags == (name[0] == '[' ? 17u : 9u), "frontend classification incorrect");
+        std::memset(record.data()+0x30,0xa5,4);
+        for (auto byte : record) Check(byte == 0xa5, "frontend changed server identity/status");
+    }
+    const BYTE originalEntry[] = {0x55,0x8b,0xec,0x51,0x53};
+    Write(at(0x1a600,5),originalEntry,5);
+    Check(InstallServerSelectHook(client.module, token, frontend.module), "reloaded frontend was not rehooked");
+    StartServerSelectHooks(client.module, token);
+    StopServerSelectHooks();
+    StartServerSelectHooks(client.module, token);
+    StopServerSelectHooks();
+    std::puts("PASS real eqmain detour, relocation, signature rejection, fuzzy Legends categorization, record preservation and service restart");
+    VirtualFree(thunk,0,MEM_RELEASE);
+}
+
 }
 
 int main(int argc, char** argv)
 {
     try {
-        Check(argc <= 2, "usage: gusto_instance_gate_hook_tests.exe [eqgame.exe]");
+        Check(argc <= 3, "usage: gusto_instance_gate_hook_tests.exe [eqgame.exe] [eqmain.dll]");
         Image image;
-        image.Open(argc == 2 ? argv[1] : "eqgame.exe");
+        image.Open(argc >= 2 ? argv[1] : "eqgame.exe");
         ValidationReport report;
         ValidatedClient token;
         if (!ValidateLoadedClient(image.module, report, token)) {
@@ -167,6 +227,7 @@ int main(int argc, char** argv)
             Check(false, "unsupported client image");
         }
         GateTest(image, token);
+        if (argc == 3) ServerSelectTest(image, token, argv[2]);
         return 0;
     } catch (const std::exception& error) {
         std::fprintf(stderr, "FAIL: %s (Win32 error %lu)\n", error.what(), GetLastError());
