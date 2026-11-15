@@ -23,6 +23,7 @@ add_library(gusto SHARED
     src/client/rof2/compatibility.cpp
     src/client/rof2/bank.cpp
     src/client/rof2/mercenary_ui.cpp
+    src/client/rof2/ui_cleanup.cpp
     src/client/rof2/initialization.cpp
     src/client/rof2/server_select.cpp
     src/client/rof2/globals.cpp
@@ -74,6 +75,7 @@ add_executable(gusto_safety_tests
     src/client/rof2/compatibility.cpp
     src/client/rof2/bank.cpp
     src/client/rof2/mercenary_ui.cpp
+    src/client/rof2/ui_cleanup.cpp
     src/client/rof2/initialization.cpp
     src/client/rof2/server_select.cpp
     src/client/rof2/globals.cpp

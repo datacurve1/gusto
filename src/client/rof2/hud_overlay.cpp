@@ -1,4 +1,5 @@
 #include "gusto/client/rof2/bank.hpp"
+#include "gusto/client/rof2/ui_cleanup.hpp"
 // Zeal-inspired map/combat/camera features with Hailstone's modern minimap
 // layout and Midnight palette. MIT reference attributions in
 // THIRD_PARTY_NOTICES.md.
@@ -1932,6 +1933,7 @@ void DrawHudOverlay(IDirect3DDevice9 *device, void *render) {
   TickInstanceGate();
   if (!InGame() || !device)
     return;
+  TickUiCleanup();
   PollHudGamepad();
   TickNameplateOptions();
   Guard guard;

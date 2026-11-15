@@ -2,12 +2,15 @@
 #include "gusto/client/rof2/tag_hooks.hpp"
 #include "gusto/client/rof2/server_select.hpp"
 #include "gusto/client/rof2/server_select_model.hpp"
+#include "gusto/client/rof2/ui_cleanup.hpp"
+#include "gusto/client/rof2/ui_cleanup_policy.hpp"
 
 #include <cstdio>
 #include <cstring>
 #include <stdexcept>
 #include <vector>
 #include <array>
+#include <map>
 
 // Build as a 32-bit executable at image base 0x10000000. Run:
 // gusto_instance_gate_hook_tests.exe [path-to-May-10-2013-eqgame.exe]
@@ -279,6 +282,90 @@ void ServerSelectTest(const Image& client, const ValidatedClient& token, const c
     VirtualFree(thunk,0,MEM_RELEASE);
 }
 
+std::map<std::pair<void*,std::string>,void*> uiChildren;
+int stringsMade = 0, stringsFreed = 0, windowsHidden = 0, pagesRemoved = 0;
+void* __fastcall MakeUiString(void* field, void*, const char* name) {
+    *static_cast<const char**>(field) = name; ++stringsMade; return field;
+}
+void __fastcall FreeUiString(void* field, void*, void* value) {
+    Check(*static_cast<void**>(field) == value, "wrong native string released");
+    *static_cast<void**>(field) = nullptr; ++stringsFreed;
+}
+void* __fastcall FindUiChild(void* parent, void*, const void* field) {
+    const auto key = std::make_pair(parent,std::string(*static_cast<const char* const*>(field)));
+    auto found = uiChildren.find(key); return found == uiChildren.end() ? nullptr : found->second;
+}
+int __fastcall HideUiWindow(void* window, void*, bool shown, bool top, bool layout) {
+    Check(!shown && !top && layout, "wrong native hide arguments");
+    static_cast<BYTE*>(window)[0x196] = 0; ++windowsHidden; return 0;
+}
+void __fastcall RemoveUiPage(void* tab, void*, void* page) {
+    auto* bytes = static_cast<BYTE*>(tab);
+    int count = 0; void** pages = nullptr;
+    std::memcpy(&count,bytes+0x1e0,4); std::memcpy(&pages,bytes+0x1e4,4);
+    int i = 0; while (i<count && pages[i]!=page) ++i;
+    Check(i<count, "removed a page that is not a tab");
+    for (;i+1<count;++i) pages[i] = pages[i+1];
+    --count; std::memcpy(bytes+0x1e0,&count,4); ++pagesRemoved;
+}
+void UiCleanupTest(const Image& image, const ValidatedClient& token) {
+    ValidatedClient invalid;
+    Check(!InitializeUiCleanup(image.module,invalid), "invalid client initialized UI cleanup");
+    Check(InitializeUiCleanup(image.module,token), "UI cleanup signature checks failed");
+    Jump(image,0x805c20,reinterpret_cast<const void*>(&MakeUiString));
+    Jump(image,0x805b20,reinterpret_cast<const void*>(&FreeUiString));
+    Jump(image,0x868330,reinterpret_cast<const void*>(&FindUiChild));
+    Jump(image,0x865290,reinterpret_cast<const void*>(&HideUiWindow));
+    Jump(image,0x88d650,reinterpret_cast<const void*>(&RemoveUiPage));
+    using Window = std::array<BYTE,0x240>;
+    std::array<Window,22> windows{};
+    std::array<BYTE,0x164> vtable{};
+    void* show = image.At(0x865290); std::memcpy(vtable.data()+0xd8,&show,4);
+    for (auto& window : windows) {
+        void* table = vtable.data(); std::memcpy(window.data(),&table,4); window[0x196] = 1;
+    }
+    auto root = windows[0].data(); auto tabs = windows[1].data();
+    void* gamePointer = windows[21].data();
+    std::vector<BYTE> eq(0x600); gamePointer = eq.data();
+    int state = 0; std::memcpy(eq.data()+0x5c8,&state,4);
+    Write(image.At(0xe67ccc,4),&gamePointer,4);
+    void* inventory = root; void* eqMain = windows[16].data();
+    Write(image.At(0xd1fc8c,4),&inventory,4); Write(image.At(0xf713c0,4),&eqMain,4);
+    uiChildren[{root,"IW_Subwindows"}] = tabs;
+    void* pages[] = {windows[2].data(),windows[3].data(),windows[4].data(),windows[5].data(),windows[6].data()};
+    for (int i=0;i<3;++i) uiChildren[{root,InventoryRemovedPages[i]}] = pages[i+2];
+    int count = 5; void* pageArray = pages;
+    std::memcpy(tabs+0x1e0,&count,4); std::memcpy(tabs+0x1e4,&pageArray,4);
+    for (int i=0;i<int(InventoryHiddenControls.size());++i) uiChildren[{root,InventoryHiddenControls[i]}] = windows[7+i].data();
+    uiChildren[{root,"InvSlot22"}] = windows[14].data();
+    uiChildren[{root,"IW_Destroy"}] = windows[15].data();
+    for (int i=0;i<3;++i) uiChildren[{eqMain,EqMainHiddenControls[i]}] = windows[17+i].data();
+    TickUiCleanup();
+    Check(stringsMade == 0 && windowsHidden == 0, "cleanup touched login UI");
+    state = 5; std::memcpy(eq.data()+0x5c8,&state,4);
+    TickUiCleanup();
+    std::memcpy(&count,tabs+0x1e0,4);
+    Check(count == 2 && pages[0] == windows[2].data() && pages[1] == windows[3].data(), "Inventory/Stats tabs not retained");
+    Check(pagesRemoved == 3, "requested inventory tabs were not removed");
+    for (int i=4;i<=13;++i) Check(!windows[i][0x196], "requested inventory control still visible");
+    for (int i=16;i<=19;++i) Check(!windows[i][0x196], "EQ/Marketplace panel control still visible");
+    for (int i : {0,2,3,14,15}) Check(windows[i][0x196], "unrelated inventory control hidden");
+    Check(stringsMade == stringsFreed, "native lookup strings leaked");
+    const int hidden = windowsHidden;
+    TickUiCleanup();
+    Check(pagesRemoved == 3 && windowsHidden == hidden, "cleanup is not idempotent");
+    // Reload a skin at the same object addresses; no stale cache may skip it.
+    for (int i=0;i<5;++i) pages[i] = windows[i+2].data();
+    count = 5; std::memcpy(tabs+0x1e0,&count,4);
+    for (auto& window : windows) window[0x196] = 1;
+    TickUiCleanup();
+    Check(pagesRemoved == 6 && stringsMade == stringsFreed, "cleanup did not reapply after UI reload");
+    inventory = nullptr; eqMain = nullptr;
+    Write(image.At(0xd1fc8c,4),&inventory,4); Write(image.At(0xf713c0,4),&eqMain,4);
+    TickUiCleanup();
+    std::puts("PASS UI cleanup: three tabs, crystals/reclaim/plot/power-source, EQ/Marketplace panel, preserved ammo/Stats, UI reload and string lifecycle");
+}
+
 }
 
 int main(int argc, char** argv)
@@ -295,6 +382,7 @@ int main(int argc, char** argv)
         }
         GateTest(image, token);
         if (argc == 3) ServerSelectTest(image, token, argv[2]);
+        UiCleanupTest(image, token);
         return 0;
     } catch (const std::exception& error) {
         std::fprintf(stderr, "FAIL: %s (Win32 error %lu)\n", error.what(), GetLastError());

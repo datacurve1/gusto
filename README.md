@@ -12,6 +12,8 @@ For server-select features, use an early loader such as the included [`dinput8.d
 
 Vanguard server names are matched automatically at server select, including differences in case, spacing, punctuation, or a single typo. Matching entries appear first under **Legends** on this client. Vanguard's `[R]` prefix becomes `[]`, including nested brackets, extra spaces, and lowercase variants; other servers keep their relative order. Connection details and server availability remain unchanged; `gusto-server-select.log` records hook installation and matches.
 
+The in-game UI cleanup removes the Evolution, Shrouds, and Alt. Currency inventory tabs; Radiant/Ebon crystal controls; Reclaim and Plot Items buttons; the Power Source slot; and the floating Marketplace/EQ-menu button panel. Inventory and Stats remain available. The cleanup reapplies after UI reloads, with diagnostics in `gusto-ui-cleanup.log`.
+
 ## Download and install
 
 - [Verified Windows x86 build](https://github.com/datacurve1/gusto/raw/refs/heads/master/releases/windows-x86-build.zip) · [SHA256](releases/windows-x86-build.zip.sha256) · [Corresponding source](https://github.com/datacurve1/gusto/archive/cf16e962d81f591d35fba99083338a99a8bac708.zip)
